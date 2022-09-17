@@ -158,7 +158,7 @@ All scenarios are run with the following GCs of the Motoko implementation:
 | `compacting`  | Compacting GC             |
 | `copying`     | Copying GC                |
 
-`NoGC`: To gain additional information, the GC was also disabled in the runtime system code and the scenarios were manually measured. See spreadsheet results for the corrsponding results.
+`NoGC`: To gain additional information, the GC was also disabled in the runtime system code and the scenarios were manually measured. See [spreadsheet](GC-Measurements.pdf) results for the corrsponding results.
 
 # Metrics
 
@@ -203,7 +203,7 @@ To analyze scalability, the test scenarios have also been modified to allocate a
 ( 1000, func() { populate(100_000) } ),
 ```
 
-The results have been manually measured and added to the spreadsheet.
+The results have been manually measured and added to the [spreadsheet](GC-Measurements.pdf).
 
 # Observations
 
