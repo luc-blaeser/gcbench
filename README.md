@@ -20,6 +20,7 @@ Initial benchmarking of GC performance of Motoko, to be extended and refined...
     ``` 
     cd util
     cargo build --release
+    cd ..
     ``` 
 
 ## Running Benchmark
