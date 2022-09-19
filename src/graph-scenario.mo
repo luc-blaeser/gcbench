@@ -7,7 +7,7 @@ actor class GraphScenario() {
     class FullyConnectedGraph() {
         public type Node = {value: Nat; edges: Collections.ArrayList<Node>};
         
-        var nodes = Collections.ArrayList<Node>();
+        let nodes = Collections.ArrayList<Node>();
         
         public func append(value: Nat) {
             var newNode = {value; edges = Collections.ArrayList<Node>()};
@@ -58,6 +58,11 @@ actor class GraphScenario() {
     public shared func runStep(): async Runtime.Statistics {
         let operation = script.next();
         operation();
+        Runtime.collectStatistics()
+    };
+
+    public shared func fill(amount: Nat): async Runtime.Statistics {
+        populate(amount);
         Runtime.collectStatistics()
     }
 }

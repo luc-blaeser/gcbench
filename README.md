@@ -53,13 +53,19 @@ For example, to run the linked list test with the compacting GC:
 
 The scenario names are lised below.
 
+Moreover, GC limit tests can be selectively run (see also below):
+
+```
+./test-limit.sh <compacting|copying> <scenario_name>
+```
+
 ## Reports and Charts
 
 The `reports` folder contains the measurement results:
 
 * CSV file per test case: Each line lists the measurement values at the end of a message call, i.e. scenario step.
 * Chart file per test case: Different HTML5 charts, showing memory, allocation, and runtime behavior over the series of execution steps.
-* One summary HTML page: Aggregation of different metrics for all test cases, with links to the corresponding chart pages.
+* One summary HTML page: Aggregation of different metrics for all test cases, with links to the corresponding chart pages. Additionally, it shows the maximimum number allocations and heap space that can be performed in the scenario.
 
 # Cases
 
@@ -101,7 +107,7 @@ A simple exponentially growing array list with amortized costs (growth rate 1.5)
 ( 5, func() { traverse() } )
 ```
 
-**Ratiomnale**: Measuring the heap with relatively large objects, with the extra large-growing list-internal array. Relatively few pointers are used. However, fragmentation could become noticable.
+**Rationale**: Measuring the heap with relatively large objects, with the extra large-growing list-internal array. Relatively few pointers are used. However, fragmentation could become noticable.
 
 ## Graph (Fully Connected)
 
@@ -175,6 +181,8 @@ The following metrics are computed by the benchmark:
 
 Minimum mutator utilization is the smallest value of mutator utilization, calculated for every time slice, here for every message processing. This is an indicator for real-time feasability, related to max GC pause.
 
+Moreover, the benchmark performs a separate measurement for determining the maximum number of allocations and heap size that can be used (see below).
+
 Additonal metrics that would be interesting, but currently not available:
 * Throughput of instructions per time unit
 * Effective costs on IC
@@ -198,13 +206,16 @@ The generated charts show the following properties over the time axis of caniste
 
 # Limit Tests
 
-To analyze scalability, the test scenarios have also been modified to allocate as many objects as possible in order to examine when a limit is hit (message instruction limit or heap size limit). For this purpose, the `script` variable in `*-scenario.mo` can be adjusted, e.g. to:
+For each scenario, the maximum amoung of allocations are also examined until the program hits the message instruction limit or the heap size limit. The tests run as part of the `measure-all.sh`, and continuoulsy allocate and add new elements (populate-steps) until program failure.
 
-```
-( 1000, func() { populate(100_000) } ),
-```
+The second table in the summary page `summary.html` shows the results of these measurements:
 
-The results have been manually measured and added to the [spreadsheet](GC-Measurements.pdf).
+| Name                  | Description                                   | Better    |
+| --------------------- | --------------------------------------------- | --------- |
+| Allocations           | Maximum number of elements addded             | higher    |
+| Heap Maximum          | Heap size before when the limit               | higher    |
+
+Limit test can also be selectively run (see above).
 
 # Observations
 

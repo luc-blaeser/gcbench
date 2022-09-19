@@ -4,7 +4,7 @@ import Collections "collections";
 import Scripting "scripting";
 
 actor class ArrayListScenario() {
-    var list = Collections.ArrayList<[var Nat]>();
+    let list = Collections.ArrayList<[var Nat]>();
 
     func populate(amount: Nat) {
         Prim.debugPrint("Array list populate " # debug_show(amount));
@@ -46,6 +46,11 @@ actor class ArrayListScenario() {
     public shared func runStep(): async Runtime.Statistics {
         let operation = script.next();
         operation();
+        Runtime.collectStatistics()
+    };
+
+    public shared func fill(amount: Nat): async Runtime.Statistics {
+        populate(amount);
         Runtime.collectStatistics()
     }
 }

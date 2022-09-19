@@ -5,7 +5,7 @@ for name in $CASES
 do
     ./measure.sh compacting $name
     ./measure.sh copying $name
+    ./test-limit.sh compacting $name
+    ./test-limit.sh copying $name
 done
 util/target/release/report summary reports/
-
-

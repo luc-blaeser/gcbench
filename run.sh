@@ -17,4 +17,10 @@ fi
 dfx start --clean --background
 dfx deploy $BENCHMARK
 dfx canister call $BENCHMARK run "()"
+if [ $? != 0 ]
+then
+    echo "Canister call failed"
+    dfx stop
+    exit 1
+fi
 dfx stop

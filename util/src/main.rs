@@ -1,4 +1,5 @@
 use crate::chart_page::ChartPage;
+use crate::limit::Limit;
 use crate::measurement::Measurement;
 use crate::summary_page::SummaryPage;
 use std::env;
@@ -8,6 +9,7 @@ use std::process;
 
 pub mod chart;
 pub mod chart_page;
+pub mod limit;
 pub mod measurement;
 pub mod summary_page;
 
@@ -47,7 +49,20 @@ fn generate_chart(input_file: &str, output_file: &str) {
 }
 
 fn generate_summary(directory: &str) {
-    let prefix = "measurement-";
+    let measurement_files = collect_csv_files(directory, "measurement-");
+    let measurements: Vec<Measurement> = measurement_files
+        .iter()
+        .map(|f| read_measurement(f))
+        .collect();
+    let limit_files = collect_csv_files(directory, "limit-");
+    let limits: Vec<Limit> = limit_files.iter().map(|f| read_limit(f)).collect();
+    let page = SummaryPage::new(measurements, limits);
+    let output = page.render();
+    let summary_file = Path::new(directory).join("summary.html");
+    fs::write(summary_file, output).expect("cannot write summary file");
+}
+
+fn collect_csv_files(directory: &str, prefix: &str) -> Vec<String> {
     let suffix = ".csv";
     let mut csv_files: Vec<String> = fs::read_dir(directory)
         .expect("invalid directory")
@@ -55,11 +70,7 @@ fn generate_summary(directory: &str) {
         .filter(|n| get_file_name(n).starts_with(&prefix) && n.ends_with(&suffix))
         .collect();
     csv_files.sort();
-    let measurements: Vec<Measurement> = csv_files.iter().map(|f| read_measurement(f)).collect();
-    let page = SummaryPage::new(measurements);
-    let output = page.render();
-    let summary_file = Path::new(directory).join("summary.html");
-    fs::write(summary_file, output).expect("cannot write summary file");
+    csv_files
 }
 
 fn get_file_name(path: &str) -> &str {
@@ -70,4 +81,10 @@ fn read_measurement(input_file: &str) -> Measurement {
     let content = fs::read_to_string(input_file).expect("invalid input file");
     let name = get_file_name(input_file);
     Measurement::parse(name, &content)
+}
+
+fn read_limit(input_file: &str) -> Limit {
+    let content = fs::read_to_string(input_file).expect("invalid input file");
+    let name = get_file_name(input_file);
+    Limit::parse(name, &content)
 }
