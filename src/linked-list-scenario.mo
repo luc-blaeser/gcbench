@@ -55,5 +55,10 @@ actor class LinkedListScenario() {
         let operation = script.next();
         operation();
         Runtime.collectStatistics()
+    };
+
+    public shared func fill(amount: Nat): async Runtime.Statistics {
+        populate(amount);
+        Runtime.collectStatistics()
     }
 }

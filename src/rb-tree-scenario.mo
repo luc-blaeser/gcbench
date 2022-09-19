@@ -73,4 +73,9 @@ actor class RBTreeScenario() {
         operation();
         Runtime.collectStatistics()
     };
+
+    public shared func fill(amount: Nat): async Runtime.Statistics {
+        populate(amount);
+        Runtime.collectStatistics()
+    }
 }
