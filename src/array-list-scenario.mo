@@ -4,14 +4,13 @@ import Collections "collections";
 import Scripting "scripting";
 
 actor class ArrayListScenario() {
-    let list = Collections.ArrayList<[var Nat]>();
+    let list = Collections.ArrayList<Nat>();
 
     func populate(amount: Nat) {
         Prim.debugPrint("Array list populate " # debug_show(amount));
         var count = 0;
         while (count < amount) {
-            let item = Prim.Array_init<Nat>(4096, 0);
-            list.add(item);
+            list.add(count);
             count += 1
         }
     };
@@ -23,20 +22,29 @@ actor class ArrayListScenario() {
         }
     };
 
+    func discard(amount: Nat) {
+        Prim.debugPrint("Array list discard last " # debug_show(amount));
+        var count = 0;
+        while (count < amount) {
+            ignore list.remove(list.size() - 1);
+            count += 1
+        }
+    };
+
     func clear() {
         Prim.debugPrint("Array list clear");
         list.clear()
     };
     
     let script = Scripting.Script([
-        ( 10, func() { populate(1000) } ),
-        ( 5, func() { traverse() } ),
+        ( 50, func() { populate(100_000) } ),
+        ( 10, func() { traverse() } ),
+        ( 25, func() { discard(100_000) } ),
+        ( 10, func() { traverse() } ),
+        ( 25, func() { populate(100_000) } ),
         ( 1, func() { clear() } ),
-        ( 20, func() { populate(1000) } ),
-        ( 5, func() { traverse() } ),
-        ( 1, func() { clear() } ),
-        ( 29, func() { populate(1000) } ),
-        ( 5, func() { traverse() } )
+        ( 50, func() { populate(100_000) } ),
+        ( 10, func() { traverse() } )
     ]);
 
     public shared func totalSteps(): async Nat {

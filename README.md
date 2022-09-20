@@ -92,22 +92,36 @@ A singly linked list of Nat numbers, used in a scenario of several message steps
 
 **Rationale**: Having a simplest but large-scaling case with many small objects and a very simple pointer structure, i.e. with as few pointers as possible for the amount of objects. External fragmentation should be relatively unproblematic.
 
-## Array List (Large Items)
+## Array List (Small Items)
 
-A simple exponentially growing array list with amortized costs (growth rate 1.5), containing relatively large items, each constituting an array of 4096 Nat numbers. Scenario of several message steps:
+A simple exponentially growing array list with amortized costs (growth rate 1.5), containing simple Nat numbers. Same scenario as for linked list:
 
 ```
-( 10, func() { populate(1000) } ),
-( 5, func() { traverse() } ),
+( 50, func() { populate(100_000) } ),
+( 10, func() { traverse() } ),
+( 25, func() { discard(100_000) } ),
+( 10, func() { traverse() } ),
+( 25, func() { populate(100_000) } ),
 ( 1, func() { clear() } ),
-( 20, func() { populate(1000) } ),
+( 50, func() { populate(100_000) } ),
+( 10, func() { traverse() } )
+```
+
+**Rationale**: Measuring the heap with a memory-compact data structure, except for the large-growing list-internal array. Few pointers are used. Fragmentation could become noticable with growing list.
+
+## Blobs (Large Items)
+
+An array list containing 64KB BLOBS as element items. Scenario of several steps:
+
+```
+( 10, func() { allocate(1000) } ),
 ( 5, func() { traverse() } ),
-( 1, func() { clear() } ),
-( 29, func() { populate(1000) } ),
+( 1, func() { discardAll() } ),
+( 24, func() { allocate(1000) } ),
 ( 5, func() { traverse() } )
 ```
 
-**Rationale**: Measuring the heap with relatively large objects, with the extra large-growing list-internal array. Relatively few pointers are used. However, fragmentation could become noticable.
+**Rationale**: Measuring the heap with relatively large objects and relatively few pointers. High moving costs compared to the number of objects. Fragmentation should be relatively unproblematic due to the mostly same-sized objects.
 
 ## Graph (Fully Connected)
 
@@ -148,13 +162,14 @@ The current Motoko base library implementation of red-black trees. Scenario:
 | ------------- | ------------------------- |
 | `linked-list` | Small element linked list |
 | `array-list`  | Large element array list  |
+| `blob`        | Large blobs array list    |
 | `graph`       | Fully connected graph     |
 | `rb-tree`     | Red-black tree            |
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into message sequence steps, to trigger the GC in between.
 
-**Note**: This is NOT intended to compare data structures' efficiency, as the scenarios are deliberately different in their configuration (large vs. small elements, different access patterns).
+**Note**: This is NOT intended to compare data structures' efficiency, as most scenarios are deliberately different in their configuration (different allocation sizes and different access patterns).
 
 # GCs
 
@@ -206,7 +221,7 @@ The generated charts show the following properties over the time axis of caniste
 
 # Limit Tests
 
-For each scenario, the maximum amoung of allocations are also examined until the program hits the message instruction limit or the heap size limit. The tests run as part of the `measure-all.sh`, and continuoulsy allocate and add new elements (populate-steps) until program failure.
+For data-structure-like scenarios, the maximum amoung of allocations are also examined until the program hits the message instruction limit or the heap size limit. The tests run as part of the `measure-all.sh`, and continuoulsy allocate and add new elements (populate-steps) until program failure.
 
 The second table in the summary page `summary.html` shows the results of these measurements:
 
@@ -214,6 +229,8 @@ The second table in the summary page `summary.html` shows the results of these m
 | --------------------- | --------------------------------------------- | --------- |
 | Allocations           | Maximum number of elements addded             | higher    |
 | Heap Maximum          | Heap size before when the limit               | higher    |
+
+**Note**: Graph scenario is deliberately not tested for limit, as it is not designed to scale.
 
 Limit test can also be selectively run (see above).
 
@@ -226,3 +243,6 @@ Shortcomings:
 - **Long GC pauses**: High GC spikes can be observed in the runtime chart with growing scenarios (due to the stop-the-world GC design). This soon exceeds the message instruction limit, meaning that the program can only scale to relatively small heap size (e.g. linked list with small blocks can only use up to 160 MB heap space with both compacting and copying GC). An incremental GC would alleviate this limitation.
 - **High runtime costs**: Mutator utlization is relatively low, meaning that the GC consumes a substantial amount of runtime (e.g. for array list with large objects, the mutator only runs 24% programs instructions, while GC accounts for the remaining 76% of the total number of instructions). Reducing GC costs, e.g. with generational or partitioned collection, would be beneficial.
 - **Stack root set**: The current GC implementations do not yet scan the call stack for the root set, such that the GC can only run on very specific moments when the stack is empty, such as before or after message calls. If memory grows too fast during a message call, the GC cannot reclaim memory in meantime, such that the programs runs out of heap space.
+
+Specific:
+- **Compacting vs. copying**: For smaller objects, copying GC allows somewhat more allocations than compacting GC (`rb-tree` limit test). However, for larger objects, compacting GC scales much better than copying GC (`blobs` limit test).

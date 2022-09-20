@@ -20,9 +20,22 @@ module {
         public func get(index: Nat): T {
             assert(index >= 0 and index < free);
             switch (array[index]) {
-                case (?value) { return value };
-                case null { Prim.trap("Invalid element") }
+                case (?value) value;
+                case null Prim.trap("Invalid element")
             }
+        };
+
+        public func remove(index: Nat): T {
+            assert(index >= 0 and index < free);
+            let result = get(index);
+            var current = index;
+            while (current + 1 < free) {
+                array[current] := array[current + 1];
+                current += 1
+            };
+            array[free - 1] := null;
+            free -= 1;
+            result
         };
 
         public func elements(): Iter<T> {
@@ -83,15 +96,11 @@ module {
 
         public func remove(): T {
             switch head {
-                case null {
-                    Prim.trap("Empty list")
-                };
+                case null Prim.trap("Empty list");
                 case (?node) {
                     head := node.next;
                     switch (head) {
-                        case null {
-                            tail := null
-                        };
+                        case null tail := null;
                         case _ {}
                     };
                     return node.value
@@ -105,7 +114,7 @@ module {
 
                 public func next(): ?T {
                     switch current {
-                        case null { null };
+                        case null null;
                         case (?node) {
                             current := node.next;
                             ?node.value
