@@ -25,7 +25,13 @@ Initial benchmarking of GC performance of Motoko, to be extended and refined...
 
 ## Running Benchmark
 1. Open `nix-shell` in the motoko project and switch to this benchmark folder.
-2. Run all benchmark cases:
+2. Configure DFX to use the latest Motoko compiler `moc` (required for the primitive `rts_mutator_instructions()` and `rts_collector_instructions()` calls):
+
+    ``` 
+    export DFX_MOC_PATH=<motoko_repo_path>/bin/moc
+    ``` 
+
+3. Run all benchmark cases:
  
     ```
     ./measure-all.sh
@@ -33,7 +39,7 @@ Initial benchmarking of GC performance of Motoko, to be extended and refined...
 
     The tests run several minutes.
 
-3. Results are stored in the `reports` folder: 
+4. Results are stored in the `reports` folder: 
     
     Open `summary.html` in the browser to see the aggregated measurement numbers and to navigate to the specific performance charts.
 
@@ -56,7 +62,7 @@ The scenario names are lised below.
 Moreover, GC limit tests can be selectively run (see also below):
 
 ```
-./test-limit.sh <compacting|copying> <scenario_name>
+./limit-test.sh <compacting|copying> <scenario_name>
 ```
 
 ## Reports and Charts

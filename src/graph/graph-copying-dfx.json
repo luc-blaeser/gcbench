@@ -1,12 +1,12 @@
 {
   "canisters": {
-    "rb-tree-scenario": {
-      "main": "src/rb-tree/rb-tree-scenario.mo",
+    "graph-scenario": {
+      "main": "src/graph/graph-scenario.mo",
       "type": "motoko",
       "args" : "--copying-gc"
     },
-    "rb-tree-benchmark": {
-      "main": "src/rb-tree/rb-tree-benchmark.mo",
+    "graph-benchmark": {
+      "main": "src/graph/graph-benchmark.mo",
       "type": "motoko",
       "args" : "--copying-gc"
     }

@@ -1,20 +1,18 @@
 import Prim "mo:prim";
-import Collections "collections";
 import Runtime "runtime";
-import Scenario "rb-tree-scenario";
 
-actor RBTreeLimitTest {
-    public shared func run(): async Text {
-        Prim.debugPrint("RB Tree Limit Test");
-        Prim.cyclesAdd(2_000_000_000_000);
-        let scenario = await Scenario.RBTreeScenario();
-        let batchSize = 10_000;
+module {
+    public type TestCase = actor {
+        fill: shared (Nat) -> async Runtime.Statistics;
+    };
+
+    public func run(testCase: TestCase, batchSize: Nat): async Text {
         var limit = 0;
         var heapSize = 0;
         try {
             loop {
                 Prim.debugPrint("Limit " # debug_show(limit));
-                let statistics = await scenario.fill(batchSize);
+                let statistics = await testCase.fill(batchSize);
                 heapSize := statistics.heapSize;
                 Prim.debugPrint(Runtime.dumpStatistics(statistics));
                 limit += batchSize

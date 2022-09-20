@@ -9,7 +9,7 @@ done
 LIMIT_CASES="linked-list array-list rb-tree blobs"
 for name in $LIMIT_CASES
 do
-    ./test-limit.sh compacting $name
-    ./test-limit.sh copying $name
+    ./limit-test.sh compacting $name
+    ./limit-test.sh copying $name
 done
 util/target/release/report summary reports/
