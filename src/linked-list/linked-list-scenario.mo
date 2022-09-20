@@ -1,41 +1,41 @@
 import Prim "mo:prim";
-import Runtime "runtime";
-import Collections "collections";
-import Scripting "scripting";
+import Runtime "../runtime";
+import Collections "../collections";
+import Scripting "../scripting";
 
-actor class ArrayListScenario() {
-    let list = Collections.ArrayList<Nat>();
+actor {
+    let list = Collections.LinkedList<Nat>();
 
     func populate(amount: Nat) {
-        Prim.debugPrint("Array list populate " # debug_show(amount));
+        Prim.debugPrint("Linked list populate " # debug_show(amount));
         var count = 0;
         while (count < amount) {
-            list.add(count);
+            list.append(amount);
             count += 1
         }
     };
 
     func traverse() {
-        Prim.debugPrint("Array list traverse " # debug_show(list.size()));
+        Prim.debugPrint("Linked list traverse " # debug_show(list.size()));
         for (value in list.elements()) {
             ignore value
         }
     };
 
     func discard(amount: Nat) {
-        Prim.debugPrint("Array list discard last " # debug_show(amount));
+        Prim.debugPrint("Linked list discard " # debug_show(list.size()));
         var count = 0;
         while (count < amount) {
-            ignore list.remove(list.size() - 1);
+            ignore list.remove();
             count += 1
         }
     };
 
     func clear() {
-        Prim.debugPrint("Array list clear");
+        Prim.debugPrint("Linked list clear");
         list.clear()
     };
-    
+
     let script = Scripting.Script([
         ( 50, func() { populate(100_000) } ),
         ( 10, func() { traverse() } ),

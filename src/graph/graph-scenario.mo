@@ -1,9 +1,9 @@
 import Prim "mo:prim";
-import Runtime "runtime";
-import Collections "collections";
-import Scripting "scripting";
+import Runtime "../runtime";
+import Collections "../collections";
+import Scripting "../scripting";
 
-actor class GraphScenario() {
+actor {
     class FullyConnectedGraph() {
         public type Node = {value: Nat; edges: Collections.ArrayList<Node>};
         
