@@ -1,10 +1,10 @@
 import Prim "mo:prim";
-import Runtime "runtime";
-import RB "base/RBTree";
-import O "base/Order";
-import Scripting "scripting";
+import RB "../base/RBTree";
+import O "../base/Order";
+import Runtime "../runtime";
+import Scripting "../scripting";
 
-actor class RBTreeScenario() {
+actor {
     let tree = RB.RBTree<Nat, Nat>(func (x, y) {
         if (x < y) {
             #less

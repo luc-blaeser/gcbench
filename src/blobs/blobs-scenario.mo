@@ -1,9 +1,9 @@
 import Prim "mo:prim";
-import Runtime "runtime";
-import Collections "collections";
-import Scripting "scripting";
+import Runtime "../runtime";
+import Collections "../collections";
+import Scripting "../scripting";
 
-actor class BlobsScenario() {
+actor {
     let list = Collections.ArrayList<Blob>();
 
     let block_size = 65536;
