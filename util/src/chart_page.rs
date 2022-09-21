@@ -32,9 +32,9 @@ impl ChartPage {
 
         fn append_chart(output: &mut String, name: &str, data_set: &[Series]) {
             let identifier = &name.to_lowercase(); // TODO: check that identifier is valid
-            output.push_str("<h1>");
+            output.push_str("<div style=\"float: left; width: 1500px;\"><h1>");
             output.push_str(name);
-            output.push_str("</h1><div><canvas id=\"");
+            output.push_str("</h1><canvas id=\"");
             output.push_str(identifier);
             output.push_str("Chart\"></canvas></div><script>const ");
             output.push_str(identifier);

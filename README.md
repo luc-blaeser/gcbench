@@ -145,9 +145,9 @@ In this scenario, traversal is implicitly contained in the population steps, sin
 
 **Motivation**: Analyzing a highly connected structure, with a massive amount of pointers compared to the amount of objects. This demonstrates the performance of updating pointers in moving GCs (compacting/copying), while also observing  the efficiency of write/read barriers in potential future incremental GCs. 
 
-## Red-Black Tree
+## Red-Black Tree (Small Items)
 
-The current Motoko base library implementation of red-black trees. Scenario:
+The current Motoko base library implementation of a red-black tree, storing Nat to Nat entries. Scenario:
 
 ```
 ( 30, func() { populate(10_000) } ),
@@ -155,12 +155,29 @@ The current Motoko base library implementation of red-black trees. Scenario:
 ( 20, func() { discard(10_000) } ),
 ( 10, func() { retrieve() } ),
 ( 20, func() { populate(10_000) } ),
-( 1, func() { clear() } ),
+( 1, func() { deleteAll() } ),
 ( 40, func() { populate(10_000) } ),
 ( 10, func() { retrieve() } )
 ```
 
 **Motivation**: Having a real implementation and more complex data structure implementation, with more temporary object allocations.
+
+## Trie Map (Small Items)
+
+The current Motoko base library implementation of trie map storing Nat to Nat entries. Scenario:
+
+```
+( 30, func() { populate(10_000) } ),
+( 10, func() { retrieve() } ),
+( 20, func() { discard(10_000) } ),
+( 10, func() { retrieve() } ),
+( 20, func() { populate(10_000) } ),
+( 1, func() { deleteAll() } ),
+( 40, func() { populate(10_000) } ),
+( 10, func() { retrieve() } )
+```
+
+**Motivation**: Same as for red-black tree.
 
 ## Scenario Summary
 
@@ -171,6 +188,7 @@ The current Motoko base library implementation of red-black trees. Scenario:
 | `blob`        | Large blobs array list    |
 | `graph`       | Fully connected graph     |
 | `rb-tree`     | Red-black tree            |
+| `trie-map`    | Trie map                  |
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into message sequence steps, to trigger the GC in between.
@@ -205,7 +223,7 @@ The following metrics are computed by the benchmark:
 
 Minimum mutator utilization is the smallest value of mutator utilization, calculated for every time slice, here for every message processing. This is an indicator for real-time feasability, related to max GC pause.
 
-Survival rate makes more sense for generational garbage collection, concentrating on the young generation(s) and the the fraction of young live objects that get promoted to the older generation.
+Survival rate makes more sense for generational garbage collection, where the metric specifies the fraction of young live objects that get promoted to the older generation. Here, it denotes the fraction of alive objects per GC run.
 
 Moreover, the benchmark performs a separate measurement for determining the maximum number of allocations and heap size that can be used (see below).
 

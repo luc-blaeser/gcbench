@@ -1,0 +1,21 @@
+{
+  "canisters": {
+    "trie-map-scenario": {
+      "main": "src/trie-map/trie-map-scenario.mo",
+      "type": "motoko",
+      "args" : "--copying-gc"
+    },
+    "trie-map-benchmark": {
+      "main": "src/trie-map/trie-map-benchmark.mo",
+      "type": "motoko",
+      "args" : "--copying-gc"
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8123",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}
