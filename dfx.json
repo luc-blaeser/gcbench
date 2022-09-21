@@ -3,12 +3,12 @@
     "recorder": {
       "main": "src/recorder.mo",
       "type": "motoko",
-      "args" : "#GCFLAG#"
+      "args" : "--compacting-gc"
     },
-    "#SCENARIO#-benchmark": {
-      "main": "src/#SCENARIO#/#SCENARIO#-benchmark.mo",
+    "blobs-benchmark": {
+      "main": "src/blobs/blobs-benchmark.mo",
       "type": "motoko",
-      "args" : "#GCFLAG#"
+      "args" : "--compacting-gc"
     }
   },
   "networks": {

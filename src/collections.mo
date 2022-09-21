@@ -3,6 +3,22 @@ import Prim "mo:prim";
 module {
     public type Iter<T> = {next : () -> ?T};
 
+    public func iterate<T>(array: [T]): Iter<T> {
+        object {
+            var index = 0;
+
+            public func next(): ?T {
+                if (index < array.size()) {
+                    let value = array[index];
+                    index += 1;
+                    ?value
+                } else {
+                    null
+                }
+            }
+        }
+    };
+
     public class ArrayList<T>() {
         let initialSize = 2;
 
