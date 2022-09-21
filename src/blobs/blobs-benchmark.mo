@@ -48,6 +48,7 @@ actor {
 
     public shared func limit(): async Text {
         Prim.debugPrint("Blobs limit test");
-        await LimitTest.run(1_000, func (amount: Nat): async () { allocate(amount) })
+        let heapReserve = 750 * 1024 * 1024;
+        await LimitTest.run(1_000, heapReserve, func (amount: Nat): async () { allocate(amount) })
     }
 }

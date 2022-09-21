@@ -15,7 +15,7 @@ impl Limit {
             .skip(1)
             .filter(|x| !x.is_empty())
             .last()
-            .unwrap();
+            .unwrap_or("0, 0");
         let row: Vec<u64> = line
             .split(',')
             .map(|x| x.trim().parse::<u64>().expect("invalid number"))
