@@ -1,48 +1,48 @@
 import Prim "mo:prim";
 import Runtime "../runtime";
 import Scripting "../scripting";
-import RBBase "mo:base/RBTree";
+import TrieMapBase "mo:base/TrieMap";
 import NatBase "mo:base/Nat";
 
 actor {
-    let tree = RBBase.RBTree<Nat, Nat>(NatBase.compare);
+    let trie = TrieMapBase.TrieMap<Nat, Nat>(NatBase.equal, Prim.natToNat32);
 
     var total = 0;
 
     func populate(amount: Nat) {
-        Prim.debugPrint("RB tree populate " # debug_show(amount));
+        Prim.debugPrint("Trie map populate " # debug_show(amount));
         var count = 0;
         while (count < amount) {
-            tree.put(total, total);
+            trie.put(total, total);
             count += 1;
             total += 1
         }
     };
 
     func retrieve() {
-        Prim.debugPrint("RB tree retrieve " # debug_show(total));
+        Prim.debugPrint("Trie map retrieve " # debug_show(total));
         var count = 0;
         while (count < total) {
-            let result = tree.get(count);
+            let result = trie.get(count);
             assert(result == ?count);
             count += 1
         }
     };
 
     func discard(amount: Nat) {
-        Prim.debugPrint("RB tree discard " # debug_show(amount));
+        Prim.debugPrint("Trie map discard " # debug_show(amount));
         var count = 0;
         while (count < amount) {
             total -= 1;
-            ignore tree.remove(total);
+            ignore trie.remove(total);
             count += 1
         }
     };
 
     func deleteAll() {
-        Prim.debugPrint("RB tree delete all");
-        for ((key, value) in tree.entries()) {
-            tree.delete(key);
+        Prim.debugPrint("Trie map delete all");
+        for ((key, value) in trie.entries()) {
+            trie.delete(key);
         };
         total := 0
     };
