@@ -17,8 +17,7 @@ then
     echo "Second argument must be 'benchmark' or 'limit'"
     exit 1
 fi
-DFX_FILE=src/$3/$3-$1-dfx.json
-cp $DFX_FILE dfx.json
+awk '// {gsub("#SCENARIO#", "'$3'"); gsub("#GCFLAG#", "--'$1'-gc"); print }' template-dfx.json > dfx.json
 dfx start --clean --background
 dfx deploy
 dfx canister call $3-benchmark $2 "()"
