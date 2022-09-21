@@ -8,7 +8,7 @@ Initial benchmarking of GC performance of Motoko, to be extended and refined...
 
 ## Characteristics
 * **Running on DFX**: Measurements run in canisters on local replica by using DFX, in order to simulate a relatively realistic environment with the message instruction limits etc.
-* **Stepwise execution**: Test scenarios define a series of message-triggered steps, to allow frequent interaction of the GC. This is becuase the current GCs only run on message ends, when the call stack is (nearly) empty. 
+* **GC points**: Test scenarios are decomposed in multiple steps where the GC gets a chance to run in between. This is because the current GCs only run at specific times, when the call stack is (nearly) empty. 
 * **Generated charts**: Different GCs, different test scenarios, and different metrics are collected and rendered in visual charts, with a summary table showing aggregated metrics.
 
 # Running
@@ -30,6 +30,8 @@ Initial benchmarking of GC performance of Motoko, to be extended and refined...
     ``` 
     export DFX_MOC_PATH=<motoko_repo_path>/bin/moc
     ``` 
+
+    Yout can add this configuration also as environment variable to your shell config, e.g. `~/.zshrc`.
 
 3. Run all benchmark cases:
  
@@ -69,7 +71,7 @@ Moreover, GC limit tests can be selectively run (see also below):
 
 The `reports` folder contains the measurement results:
 
-* CSV file per test case: Each line lists the measurement values at the end of a message call, i.e. scenario step.
+* CSV file per test case: Each line lists the statistics values at measurement point, i.e. a scenario step where the GC got a chance to run.
 * Chart file per test case: Different HTML5 charts, showing memory, allocation, and runtime behavior over the series of execution steps.
 * One summary HTML page: Aggregation of different metrics for all test cases, with links to the corresponding chart pages. Additionally, it shows the maximimum number allocations and heap space that can be performed in the scenario.
 
@@ -77,13 +79,11 @@ The `reports` folder contains the measurement results:
 
 Different test scenarios are run with the available GC implementations, each such combination called a test case. 
 
-Each scenario operates on a specific heap structure with a specific pattern, consisting of object allocation, reading and traversing pointers, and/or again making objects unreachable. 
-
 All scenarios are configured to run successully in all cases, without hitting any limits (instruction limit, heap size limit). This is necessary for the comparability of the performance results.
 
 ## Linked List (Small Items)
 
-A singly linked list of Nat numbers, used in a scenario of several message steps. Each line denotes a tuple of how often the step is repeated and what operation is performed in each step. E.g. the first line specifies 50 message call steps of populate(100_000), where each populate() step inserts 100_000 new elements to the list.
+A singly linked list of Nat numbers, used in a scenario of several steps. Each line denotes a tuple of how often the step is repeated and what operation is performed in each step. E.g. the first line specifies 50 msteps of populate(100_000), where each populate() step inserts 100_000 new elements to the list.
 
 ```
 ( 50, func() { populate(100_000) } ),
@@ -179,6 +179,18 @@ The current Motoko base library implementation of trie map storing Nat to Nat en
 
 **Motivation**: Same as for red-black tree.
 
+## Random Maze
+
+Random Maze sample from the Motoko playground, with the following scenario. Additional GC measurement points are taken when awaiting results of message calls to the random number canister. 
+
+```
+( 10, func(): async () { await generate(10) } ),
+( 10, func(): async () { await generate(100) } ),
+( 5, func(): async () { await generate(200) } )
+```
+
+**Motivation**: Include a more representative example taken from the Motoko playground. The scenario is also relatively compute-intense.
+
 ## Scenario Summary
 
 | Name          | Description               |
@@ -189,9 +201,10 @@ The current Motoko base library implementation of trie map storing Nat to Nat en
 | `graph`       | Fully connected graph     |
 | `rb-tree`     | Red-black tree            |
 | `trie-map`    | Trie map                  |
+| `random-maze` | Random Maze               |
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
-A current difficulty is that benchmarked programs need to be split into message sequence steps, to trigger the GC in between.
+A current difficulty is that benchmarked programs need to be split into measurement steps, to give the GC a possibility to run in between.
 
 **Note**: This is NOT intended to compare data structures' efficiency, as most scenarios are deliberately different in their configuration (different allocation sizes and different access patterns).
 
@@ -221,7 +234,7 @@ The following metrics are computed by the benchmark:
 | Survival Rate         | Fraction of retained objects per GC run       | neutral   | `1-AVG(reclaimed[i] / SUM(allocated[0..i]) - SUM(reclaimed[0..i-1])`
 
 
-Minimum mutator utilization is the smallest value of mutator utilization, calculated for every time slice, here for every message processing. This is an indicator for real-time feasability, related to max GC pause.
+Minimum mutator utilization is the smallest value of mutator utilization, calculated for every time slice, here for every scenario step. This is an indicator for real-time feasability, related to max GC pause.
 
 Survival rate makes more sense for generational garbage collection, where the metric specifies the fraction of young live objects that get promoted to the older generation. Here, it denotes the fraction of alive objects per GC run.
 
@@ -239,7 +252,7 @@ Additonal metrics that would be interesting, but currently not available:
 
 # Charts
 
-The generated charts show the following properties over the time axis of canister message calls (scripted steps) per benchmark test case (test scenario and GC version):
+The generated charts show the following properties over the time axis of the steps per benchmark test case (test scenario and GC version):
 
 * Memory chart
     - Memory space, heap space, live objects
@@ -271,7 +284,7 @@ Strength:
 Shortcomings:
 - **Long GC pauses**: High GC spikes can be observed in the runtime chart with growing scenarios (due to the stop-the-world GC design). This soon exceeds the message instruction limit, meaning that the program can only scale to relatively small heap size (e.g. linked list with small blocks can only use up to 160 MB heap space with both compacting and copying GC). An incremental GC would alleviate this limitation.
 - **High runtime costs**: Mutator utlization is relatively low, meaning that the GC consumes a substantial amount of runtime (e.g. for array list with large objects, the mutator only runs 24% programs instructions, while GC accounts for the remaining 76% of the total number of instructions). Reducing GC costs, e.g. with generational or partitioned collection, would be beneficial.
-- **Stack root set**: The current GC implementations do not yet scan the call stack for the root set, such that the GC can only run on very specific moments when the stack is empty, such as before or after message calls. If memory grows too fast during a message call, the GC cannot reclaim memory in meantime, such that the programs runs out of heap space.
+- **Stack root set**: The current GC implementations do not yet scan the call stack for the root set, such that the GC can only run on very specific moments when the stack is empty, such as before or after message calls, including continuation points (await). If memory grows too fast during a message call, the GC cannot reclaim memory in meantime, such that the programs runs out of heap space.
 
 Specific:
 - **Compacting vs. copying**: For smaller objects, copying GC allows somewhat more allocations than compacting GC (`rb-tree` limit test). However, for larger objects, compacting GC scales much better than copying GC (`blobs` limit test).

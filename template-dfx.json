@@ -1,7 +1,7 @@
 {
   "canisters": {
-    "#SCENARIO#-scenario": {
-      "main": "src/#SCENARIO#/#SCENARIO#-scenario.mo",
+    "recorder": {
+      "main": "src/recorder.mo",
       "type": "motoko",
       "args" : "#GCFLAG#"
     },
