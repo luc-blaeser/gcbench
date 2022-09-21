@@ -1,0 +1,21 @@
+{
+  "canisters": {
+    "#SCENARIO#-scenario": {
+      "main": "src/#SCENARIO#/#SCENARIO#-scenario.mo",
+      "type": "motoko",
+      "args" : "#GCFLAG#"
+    },
+    "#SCENARIO#-benchmark": {
+      "main": "src/#SCENARIO#/#SCENARIO#-benchmark.mo",
+      "type": "motoko",
+      "args" : "#GCFLAG#"
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8123",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}
