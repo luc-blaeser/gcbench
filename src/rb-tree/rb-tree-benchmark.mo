@@ -66,6 +66,6 @@ actor {
 
     public shared func limit(): async Text {
         Prim.debugPrint("RB tree limit test");
-        await LimitTest.run(10_000, func (amount: Nat): async () { populate(amount) })
+        await LimitTest.run(10_000, 0, func (amount: Nat): async () { populate(amount) })
     }
 }

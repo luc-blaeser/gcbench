@@ -54,6 +54,6 @@ actor {
 
     public shared func limit(): async Text {
         Prim.debugPrint("Linked list limit test");
-        await LimitTest.run(100_000, func (amount: Nat): async () { populate(amount) })
+        await LimitTest.run(100_000, 0, func (amount: Nat): async () { populate(amount) })
     }
 }
