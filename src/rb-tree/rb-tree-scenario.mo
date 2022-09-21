@@ -1,19 +1,11 @@
 import Prim "mo:prim";
-import RB "../base/RBTree";
-import O "../base/Order";
 import Runtime "../runtime";
 import Scripting "../scripting";
+import RBBase "mo:base/RBTree";
+import NatBase "mo:base/Nat";
 
 actor {
-    let tree = RB.RBTree<Nat, Nat>(func (x, y) {
-        if (x < y) {
-            #less
-        } else if (x > y) {
-            #greater
-        } else {
-            #equal
-        }
-    });
+    let tree = RBBase.RBTree<Nat, Nat>(NatBase.compare);
 
     var total = 0;
 
@@ -49,7 +41,9 @@ actor {
 
     func clear() {
         Prim.debugPrint("Linked list clear");
-        tree.clear();
+        for ((key, value) in tree.entries()) {
+            tree.delete(key);
+        };
         total := 0
     };
 
