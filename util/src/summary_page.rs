@@ -28,15 +28,17 @@ impl SummaryPage {
         let prefix = "measurement-";
         let suffix = ".csv";
         output.push_str("<h2>Benchmark</h2>");
-        output.push_str("<table><thead><th>Scenario</th><th>Heap Size</th><th>Memory Overhead</th><th>Mutator Utilization</th><th>Max GC Pause</th><th>Minimum Mutator Utilization (MMU)</th></thead>");
+        output.push_str("<table><thead><th>Scenario</th><th>Heap Size</th><th>Memory Overhead</th><th>Mutator Utilization</th><th>Max GC Pause</th><th>Minimum Mutator Utilization (MMU)</th><th>Instruction Total</th><th>Survival Rate</th></thead>");
         for measurement in &self.measurements {
             let heap_size = measurement.heap_size() / (1024 * 1024);
             let memory_overhead = measurement.memory_overhead() * 100.0;
             let mutator_utilization = measurement.mutator_utilization() * 100.0;
             let max_gc_pause = measurement.max_gc_pause() as f64 / 1e9;
             let mmu = measurement.minimum_mutator_utilization() * 100.0;
+            let instruction_total = measurement.instruction_total() as f64 / 1e9;
+            let survival_rate = measurement.survival_rate() * 100.0;
             let name = Self::cut_off(&measurement.name, prefix, suffix);
-            write!(output, "<tr><td><a href=\"chart-{name}.html\">{name}</a></td><td>{heap_size} MB</td><td>{memory_overhead:.1} %</td><td>{mutator_utilization:.1} %</td><td>{max_gc_pause:0.1} E+9</td><td>{mmu:.1} %</td></tr>").unwrap();
+            write!(output, "<tr><td><a href=\"chart-{name}.html\">{name}</a></td><td>{heap_size} MB</td><td>{memory_overhead:.1} %</td><td>{mutator_utilization:.1} %</td><td>{max_gc_pause:0.1} E+9</td><td>{mmu:.1} %</td><td>{instruction_total:0.1} E+9</td><td>{survival_rate:.1} %</td></tr>").unwrap();
         }
         output.push_str("</table>");
     }

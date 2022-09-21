@@ -199,8 +199,13 @@ The following metrics are computed by the benchmark:
 | Mutator Utilization   | Fraction of mutator of total program time     | higher    | `SUM(mutator) / (SUM(mutator) + SUM(collector))`
 | Max GC Pause          | Longest GC run blocking mutator (instructions)| lower     | `MAX(collector)`
 | MMU                   | Minimum mutator utilzation per call           | higher    | `MIN(mutator / (mutator + collector))`
+| Instruction Total     | Number of instructions executed               | lower     | `SUM(mutator) + SUM(collector)`
+| Survival Rate         | Fraction of retained objects per GC run       | neutral   | `1-AVG(reclaimed[i] / SUM(allocated[0..i]) - SUM(reclaimed[0..i-1])`
+
 
 Minimum mutator utilization is the smallest value of mutator utilization, calculated for every time slice, here for every message processing. This is an indicator for real-time feasability, related to max GC pause.
+
+Survival rate makes more sense for generational garbage collection, concentrating on the young generation(s) and the the fraction of young live objects that get promoted to the older generation.
 
 Moreover, the benchmark performs a separate measurement for determining the maximum number of allocations and heap size that can be used (see below).
 
