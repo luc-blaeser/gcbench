@@ -75,4 +75,26 @@ impl Measurement {
             .map(|(m, c)| *m as f64 / (*m as f64 + *c as f64))
             .fold(f64::INFINITY, |x, y| x.min(y))
     }
+
+    pub fn instruction_total(&self) -> u64 {
+        self.mutator.iter().sum::<u64>() + self.collector.iter().sum::<u64>()
+    }
+
+    pub fn survival_rate(&self) -> f64 {
+        let mut alive = 0;
+        let mut reclaimed = 0;
+        let mut survival_rates: Vec<f64> = Vec::new();
+        for index in 0..self.mutator.len() {
+            alive += self.allocated.get(index).unwrap();
+            reclaimed += self.reclaimed.get(index).unwrap();
+            // ignore very low collector count as GC did not run then
+            if self.collector.get(index).unwrap() > &1000 {
+                let rate = 1.0 - reclaimed as f64 / alive as f64;
+                survival_rates.push(rate);
+                alive -= reclaimed;
+                reclaimed = 0;
+            }
+        }
+        survival_rates.iter().sum::<f64>() / survival_rates.len() as f64
+    }
 }
