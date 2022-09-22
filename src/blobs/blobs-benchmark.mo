@@ -1,7 +1,7 @@
 import Prim "mo:prim";
 import Collections "../collections";
 import Benchmark "../benchmark";
-import LimitTest "../limit-test";
+import Runtime "../runtime";
 
 actor {
     let list = Collections.ArrayList<Blob>();
@@ -41,14 +41,15 @@ actor {
         ( 5, func() { traverse() } )
     ];
 
-    public shared func benchmark(): async Text {
+    public shared func run(): async Text {
         Prim.debugPrint("Blobs benchmark");
         await Benchmark.measure(script)
     };
 
-    public shared func limit(): async Text {
-        Prim.debugPrint("Blobs limit test");
-        let heapReserve = 750 * 1024 * 1024;
-        await LimitTest.run(1_000, heapReserve, func (amount: Nat): async () { allocate(amount) })
+    public shared func limitTest(): async (Nat, Runtime.Statistics) {
+        let amount = 1000;
+        Prim.debugPrint("Blobs limit test " # debug_show(amount));
+        allocate(amount);
+        (amount, Runtime.collectStatistics())
     }
 }

@@ -13,8 +13,8 @@ actor {
         ( 5, func(): async () { await generate(200) } )
     ];
 
-    public shared func benchmark(): async Text {
+    public shared func run(): async Text {
         Prim.debugPrint("Random maze benchmark");
-        Benchmark.measureAsync(script)
+        await Benchmark.measureAsync(script)
     }
 }

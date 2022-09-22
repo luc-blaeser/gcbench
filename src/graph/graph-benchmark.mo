@@ -50,7 +50,7 @@ actor {
         ( 50, func() { populate(100) } )
     ];
 
-    public shared func benchmark(): async Text {
+    public shared func run(): async Text {
         Prim.debugPrint("Graph benchmark");
         await Benchmark.measure(script)
     }
