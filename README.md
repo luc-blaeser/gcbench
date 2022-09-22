@@ -191,6 +191,16 @@ Random Maze sample from the Motoko playground, with the following scenario. Addi
 
 **Motivation**: Include a more representative example taken from the Motoko playground. The scenario is also relatively compute-intense.
 
+## Game of Life
+
+Game of Life sample version 2 from the Motoko playground with size 512: 
+
+```
+( 10, func(): async () { await step() } )
+```
+
+**Motivation**: Similar to Random Maze.
+
 ## Scenario Summary
 
 | Name          | Description               |
@@ -202,6 +212,7 @@ Random Maze sample from the Motoko playground, with the following scenario. Addi
 | `rb-tree`     | Red-black tree            |
 | `trie-map`    | Trie map                  |
 | `random-maze` | Random Maze               |
+| `game-of-life`| Game of Life              |
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into measurement steps, to give the GC a possibility to run in between.
