@@ -3,7 +3,7 @@ import RBBase "mo:base/RBTree";
 import NatBase "mo:base/Nat";
 
 import Benchmark "../benchmark";
-import LimitTest "../limit-test";
+import Runtime "../runtime";
 
 actor {
     let tree = RBBase.RBTree<Nat, Nat>(NatBase.compare);
@@ -59,13 +59,15 @@ actor {
         ( 10, func() { retrieve() } )
     ];
 
-    public shared func benchmark(): async Text {
+    public shared func run(): async Text {
         Prim.debugPrint("RB tree benchmark");
         await Benchmark.measure(script)
     };
 
-    public shared func limit(): async Text {
-        Prim.debugPrint("RB tree limit test");
-        await LimitTest.run(10_000, 0, func (amount: Nat): async () { populate(amount) })
+    public shared func limitTest(): async (Nat, Runtime.Statistics) {
+        let amount = 10_000;
+        Prim.debugPrint("RB tree limit test " # debug_show(amount));
+        populate(amount);
+        (amount, Runtime.collectStatistics())
     }
 }

@@ -17,10 +17,18 @@ then
     echo "Second argument must be 'benchmark' or 'limit'"
     exit 1
 fi
-awk '// {gsub("#SCENARIO#", "'$3'"); gsub("#GCFLAG#", "--'$1'-gc"); print }' template-dfx.json > dfx.json
+if [ "$2" == "benchmark" ]
+then
+    DFXTEMPLATE=benchmark-dfx.json
+    CANISTER=benchmark
+else 
+    DFXTEMPLATE=limit-test-dfx.json
+    CANISTER=limit-tester
+fi
+awk '// {gsub("#SCENARIO#", "'$3'"); gsub("#GCFLAG#", "--'$1'-gc"); print }' $DFXTEMPLATE > dfx.json
 dfx start --clean --background
 dfx deploy
-dfx canister call $3-benchmark $2 "()"
+dfx canister call $CANISTER run "()"
 if [ $? != 0 ]
 then
     echo "Canister call failed"
