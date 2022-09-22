@@ -179,7 +179,7 @@ The current Motoko base library implementation of trie map storing Nat to Nat en
 
 **Motivation**: Same as for red-black tree.
 
-## Random Maze
+## Random Maze (Motoko Playground)
 
 Random Maze sample from the Motoko playground, with the following scenario. Additional GC measurement points are taken when awaiting results of message calls to the random number canister. 
 
@@ -189,9 +189,11 @@ Random Maze sample from the Motoko playground, with the following scenario. Addi
 ( 5, func(): async () { await generate(200) } )
 ```
 
+(Compiler warning originates from the embedded sample code.)
+
 **Motivation**: Include a more representative example taken from the Motoko playground. The scenario is also relatively compute-intense.
 
-## Game of Life
+## Game of Life (Motoko Playground)
 
 Game of Life sample version 2 from the Motoko playground with size 512: 
 
@@ -201,18 +203,34 @@ Game of Life sample version 2 from the Motoko playground with size 512:
 
 **Motivation**: Similar to Random Maze.
 
+## Extendable Token (Toniq Labs)
+
+Source: [https://github.com/Toniq-Labs/extendable-token](https://github.com/Toniq-Labs/extendable-token)
+
+Extendable Token project by Toniq Labs (MIT license), using standard extension and measuring repeated transfers. Measurement trace point inserted at once place in third-party standard.mo.
+
+```
+( 1, func(): async () { await initialize() } ),
+( 100, func(): async () { await transfer() } )
+```
+
+(Compiler warnings originate from the third-party code.)
+
+**Motivation**: Using a real external application with higher code complexity. 
+
 ## Scenario Summary
 
-| Name          | Description               |
-| ------------- | ------------------------- |
-| `linked-list` | Small element linked list |
-| `array-list`  | Large element array list  |
-| `blob`        | Large blobs array list    |
-| `graph`       | Fully connected graph     |
-| `rb-tree`     | Red-black tree            |
-| `trie-map`    | Trie map                  |
-| `random-maze` | Random Maze               |
-| `game-of-life`| Game of Life              |
+| Name                  | Description               |
+| --------------------- | ------------------------- |
+| `linked-list`         | Small element linked list |
+| `array-list`          | Large element array list  |
+| `blob`                | Large blobs array list    |
+| `graph`               | Fully connected graph     |
+| `rb-tree`             | Red-black tree            |
+| `trie-map`            | Trie map                  |
+| `random-maze`         | Random Maze               |
+| `game-of-life`        | Game of Life              |
+| `extendable-token`    | Game of Life              |
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into measurement steps, to give the GC a possibility to run in between.
