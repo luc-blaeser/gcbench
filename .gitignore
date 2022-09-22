@@ -4,3 +4,4 @@ Cargo.lock
 **/.dfx/
 /build/
 /log/
+/reports/*.csv
