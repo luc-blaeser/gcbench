@@ -1,7 +1,7 @@
 import Prim "mo:prim";
 import Collections "../collections";
 import Benchmark "../benchmark";
-import LimitTest "../limit-test";
+import Runtime "../runtime";
 
 actor {
     let list = Collections.ArrayList<Nat>();
@@ -47,13 +47,15 @@ actor {
         ( 10, func() { traverse() } )
     ];
 
-    public shared func benchmark(): async Text {
+    public shared func run(): async Text {
         Prim.debugPrint("Array list benchmark");
         await Benchmark.measure(script)
     };
 
-    public shared func limit(): async Text {
-        Prim.debugPrint("Array list limit test");
-        await LimitTest.run(100_000, 0, func (amount: Nat): async () { populate(amount) })
+    public shared func limitTest(): async (Nat, Runtime.Statistics) {
+        let amount = 100_000;
+        Prim.debugPrint("Array list limit test " # debug_show(amount));
+        populate(amount);
+        (amount, Runtime.collectStatistics())
     }
 }

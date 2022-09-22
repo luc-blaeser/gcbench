@@ -5,8 +5,13 @@
       "type": "motoko",
       "args" : "#GCFLAG#"
     },
-    "#SCENARIO#-benchmark": {
+    "benchmark": {
       "main": "src/#SCENARIO#/#SCENARIO#-benchmark.mo",
+      "type": "motoko",
+      "args" : "#GCFLAG#"
+    },
+    "limit-tester": {
+      "main": "src/limit-tester.mo",
       "type": "motoko",
       "args" : "#GCFLAG#"
     }
