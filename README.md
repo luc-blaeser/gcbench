@@ -2,6 +2,9 @@
 
 Initial benchmarking of GC performance of Motoko, to be extended and refined...
 
+**LICENSE ASPECT**: Contains proprietary third-party code by Motoko users that is not to be released but can only used for internal benchmarking.
+- messity by dBox **DO NOT RELEASE PUBLICLY**
+
 ## Goals
 * Analyze and understand the current GC properties in more detail.
 * Provide a baseline for evaluating potentially new GC implementations.
