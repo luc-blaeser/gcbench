@@ -2,9 +2,6 @@
 
 Initial benchmarking of GC performance of Motoko, to be extended and refined...
 
-**LICENSE ASPECT**: Contains proprietary third-party code by Motoko users that is not to be released but can only used for internal benchmarking.
-- messity by dBox **DO NOT RELEASE PUBLICLY**
-
 ## Goals
 * Analyze and understand the current GC properties in more detail.
 * Provide a baseline for evaluating potentially new GC implementations.
@@ -221,15 +218,9 @@ Extendable Token project by Toniq Labs (MIT license), using standard extension a
 
 **Motivation**: Using a real external application with higher code complexity. 
 
-## Messity (dBox Foundation) **INTERNAL USE ONLY**
+## More test cases (propertary)
 
-Source: [https://github.com/dboxfoundation/messity](https://github.com/dboxfoundation/messity)
-
-Messity project by dBox foundation (proprietary), measuring 100 message tranmissions. Measuring the `Box` actor GC properties by insertion of corresponding trace point in the third-party code `Box.mo`.
-
-(Compiler warnings originate from the third-party code.)
-
-**Motivation**: Same as for Extendable Token. 
+There exist more test cases that are proprietary but excluded from the current benchmark code version.
 
 
 ## Scenario Summary
@@ -245,7 +236,6 @@ Messity project by dBox foundation (proprietary), measuring 100 message tranmiss
 | `random-maze`         | Random Maze                   |
 | `game-of-life`        | Game of Life                  |
 | `extendable-token`    | Extendable Token (Toniq Labs) |
-| `messity`             | Messity (dBox foundation)     |
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into measurement steps, to give the GC a possibility to run in between.
