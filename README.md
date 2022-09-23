@@ -221,7 +221,7 @@ Extendable Token project by Toniq Labs (MIT license), using standard extension a
 
 **Motivation**: Using a real external application with higher code complexity. 
 
-## Messity (dBox Foundation)
+## Messity (dBox Foundation) **INTERNAL USE ONLY**
 
 Source: [https://github.com/dboxfoundation/messity](https://github.com/dboxfoundation/messity)
 

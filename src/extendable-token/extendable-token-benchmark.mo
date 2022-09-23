@@ -1,6 +1,5 @@
 import Prim "mo:prim";
 import Principal "mo:base/Principal";
-import Benchmark "../benchmark";
 import ExtStandard "toniq-labs-code/examples/standard";
 import Trace "../trace";
 
@@ -36,7 +35,6 @@ actor {
                     notify = false;
                     subaccount = null
                 });
-                await Trace.point();
                 switch (response) {
                     case (#ok _) {};
                     case (_) Prim.trap("Transaction failed")
@@ -47,7 +45,6 @@ actor {
                     user = #principal sender;
                     token
                 });
-                await Trace.point();
                 assert(#ok senderBalance == actualSenderBalance);
                 let actualReceiverBalance = await platform.balance({
                     user = #address receiver;
@@ -59,14 +56,14 @@ actor {
             case _ Prim.trap("No platform")
         }
     };
-   
-    let script = [
-        ( 1, func(): async () { await initialize() } ),
-        ( 100, func(): async () { await transfer() } )
-    ];
 
     public shared(msg) func run(): async Text {
-        Prim.debugPrint("Extendable Token benchmark");
-        await Benchmark.measureAsync(script)
+        await initialize();
+        var count = 0;
+        while (count < 100) {
+            await transfer();
+            count += 1
+        };
+        await Trace.result()
     }
 }
