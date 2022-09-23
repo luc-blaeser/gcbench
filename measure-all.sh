@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MEASUREMENT_CASES="linked-list array-list rb-tree trie-map blobs graph random-maze"
+MEASUREMENT_CASES="linked-list array-list rb-tree trie-map blobs graph random-maze extendable-token"
 for name in $MEASUREMENT_CASES
 do
     ./measure.sh compacting $name
