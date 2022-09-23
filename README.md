@@ -218,19 +218,31 @@ Extendable Token project by Toniq Labs (MIT license), using standard extension a
 
 **Motivation**: Using a real external application with higher code complexity. 
 
+## Messity (dBox Foundation)
+
+Source: [https://github.com/dboxfoundation/messity](https://github.com/dboxfoundation/messity)
+
+Messity project by dBox foundation (proprietary), measuring 100 message tranmissions. Measuring the `Box` actor GC properties by insertion of corresponding trace point in the third-party code `Box.mo`.
+
+(Compiler warnings originate from the third-party code.)
+
+**Motivation**: Same as for Extendable Token. 
+
+
 ## Scenario Summary
 
-| Name                  | Description               |
-| --------------------- | ------------------------- |
-| `linked-list`         | Small element linked list |
-| `array-list`          | Large element array list  |
-| `blob`                | Large blobs array list    |
-| `graph`               | Fully connected graph     |
-| `rb-tree`             | Red-black tree            |
-| `trie-map`            | Trie map                  |
-| `random-maze`         | Random Maze               |
-| `game-of-life`        | Game of Life              |
-| `extendable-token`    | Game of Life              |
+| Name                  | Description                   |
+| --------------------- | ------------------------- ----|
+| `linked-list`         | Small element linked list     |
+| `array-list`          | Large element array list      |
+| `blob`                | Large blobs array list        |
+| `graph`               | Fully connected graph         |
+| `rb-tree`             | Red-black tree                |
+| `trie-map`            | Trie map                      |
+| `random-maze`         | Random Maze                   |
+| `game-of-life`        | Game of Life                  |
+| `extendable-token`    | Extendable Token (Toniq Labs) |
+| `messity`             | Messity (dBox foundation)     |
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into measurement steps, to give the GC a possibility to run in between.
@@ -311,9 +323,12 @@ Strength:
 - **Space efficiency**: Due to compaction, heap size space is quite efficiently used and external fragmentation avoided. The compacting GC minimizes space usage, while copying GC requires extra copying space (two space copy technique).
 
 Shortcomings:
-- **Long GC pauses**: High GC spikes can be observed in the runtime chart with growing scenarios (due to the stop-the-world GC design). This soon exceeds the message instruction limit, meaning that the program can only scale to relatively small heap size (e.g. linked list with small blocks can only use up to 160 MB heap space with both compacting and copying GC). An incremental GC would alleviate this limitation.
-- **High runtime costs**: Mutator utlization is relatively low, meaning that the GC consumes a substantial amount of runtime (e.g. for array list with large objects, the mutator only runs 24% programs instructions, while GC accounts for the remaining 76% of the total number of instructions). Reducing GC costs, e.g. with generational or partitioned collection, would be beneficial.
+- **Long GC pauses**: High GC spikes can be observed in the runtime chart with growing and allocation-intense scenarios (due to the stop-the-world GC design). This soon exceeds the message instruction limit, meaning that the program can only scale to relatively small heap size (e.g. linked list with small blocks can only use up to 160 MB heap space with both compacting and copying GC). An incremental GC would alleviate this limitation.
+- **High runtime costs**: Mutator utlization is relatively low for allocation-intense scenarios, meaning that the GC consumes a substantial amount of runtime (e.g. for array list with large objects, the mutator only runs 24% programs instructions, while GC accounts for the remaining 76% of the total number of instructions). Reducing GC costs, e.g. with generational or partitioned collection, or simply by more sophistcated GC scheduling heurtistics, would be beneficial.
 - **Stack root set**: The current GC implementations do not yet scan the call stack for the root set, such that the GC can only run on very specific moments when the stack is empty, such as before or after message calls, including continuation points (await). If memory grows too fast during a message call, the GC cannot reclaim memory in meantime, such that the programs runs out of heap space.
 
 Specific:
-- **Compacting vs. copying**: For smaller objects, copying GC allows somewhat more allocations than compacting GC (`rb-tree` limit test). However, for larger objects, compacting GC scales much better than copying GC (`blobs` limit test).
+- For compute-intense cases, utilization is relatively high (`extendable-token` and `random-maze`).
+- Compacting GC allows many more allocations of larger objects (limit test case `blobs`).
+- Copying GC scales higherr and is more efficient for smaller objects (limit cases `rb-tree` and `trie-map` and instruction total for all cases except `blobs`).
+- A lot of temporary function-bound objects produce a high garbage load (e.g. cases `rb-tree`, `trie-map`).
