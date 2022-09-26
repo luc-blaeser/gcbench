@@ -1,19 +1,19 @@
 import Prim "mo:prim";
-import Collections "../collections";
+import Buffer "mo:base/Buffer";
 import Benchmark "../benchmark";
 
 actor {
     class FullyConnectedGraph() {
-        public type Node = {value: Nat; edges: Collections.ArrayList<Node>};
+        public type Node = {value: Nat; edges: Buffer.Buffer<Node>};
         
-        let nodes = Collections.ArrayList<Node>();
+        let nodes = Buffer.Buffer<Node>(4);
         
         public func append(value: Nat) {
-            var newNode = {value; edges = Collections.ArrayList<Node>()};
-            for (current in nodes.elements()) {
+            var newNode = {value; edges = Buffer.Buffer<Node>(4)};
+            for (current in nodes.vals()) {
                 newNode.edges.add(current);
             };
-            for (current in nodes.elements()) {
+            for (current in nodes.vals()) {
                 current.edges.add(newNode)
             };
             nodes.add(newNode);
@@ -45,9 +45,9 @@ actor {
     let script = [
         ( 10, func() { populate(100) } ),
         ( 1, func() { clear() } ),
-        ( 25, func() { populate(100) } ),
+        ( 20, func() { populate(100) } ),
         ( 1, func() { clear() } ),
-        ( 50, func() { populate(100) } )
+        ( 40, func() { populate(100) } )
     ];
 
     public shared func run(): async Text {

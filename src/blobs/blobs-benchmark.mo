@@ -1,10 +1,10 @@
 import Prim "mo:prim";
-import Collections "../collections";
+import Buffer "mo:base/Buffer";
 import Benchmark "../benchmark";
 import Runtime "../runtime";
 
 actor {
-    let list = Collections.ArrayList<Blob>();
+    let buffer = Buffer.Buffer<Blob>(8);
 
     let block_size = 65536;
     let header_size = 8;
@@ -16,21 +16,21 @@ actor {
         var count = 0;
         while (count < amount) {
             let item = Prim.stableMemoryLoadBlob(0, block_size - header_size);
-            list.add(item);
+            buffer.add(item);
             count += 1
         }
     };
 
     func traverse() {
-        Prim.debugPrint("Blobs traverse " # debug_show(list.size()));
-        for (value in list.elements()) {
+        Prim.debugPrint("Blobs traverse " # debug_show(buffer.size()));
+        for (value in buffer.vals()) {
             ignore value
         }
     };
 
     func discardAll() {
         Prim.debugPrint("Blobs discard all");
-        list.clear()
+        buffer.clear()
     };
     
     let script = [

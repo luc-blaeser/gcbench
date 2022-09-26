@@ -1,39 +1,39 @@
 import Prim "mo:prim";
-import Collections "../collections";
+import Buffer "mo:base/Buffer";
 import Benchmark "../benchmark";
 import Runtime "../runtime";
 
 actor {
-    let list = Collections.ArrayList<Nat>();
+    let buffer = Buffer.Buffer<Nat>(8);
 
     func populate(amount: Nat) {
-        Prim.debugPrint("Array list populate " # debug_show(amount));
+        Prim.debugPrint("Buffer populate " # debug_show(amount));
         var count = 0;
         while (count < amount) {
-            list.add(count);
+            buffer.add(count);
             count += 1
         }
     };
 
     func traverse() {
-        Prim.debugPrint("Array list traverse " # debug_show(list.size()));
-        for (value in list.elements()) {
+        Prim.debugPrint("Buffer traverse " # debug_show(buffer.size()));
+        for (value in buffer.vals()) {
             ignore value
         }
     };
 
     func discard(amount: Nat) {
-        Prim.debugPrint("Array list discard last " # debug_show(amount));
+        Prim.debugPrint("Buffer discard " # debug_show(amount));
         var count = 0;
         while (count < amount) {
-            ignore list.remove(list.size() - 1);
+            ignore buffer.removeLast();
             count += 1
         }
     };
 
     func clear() {
-        Prim.debugPrint("Array list clear");
-        list.clear()
+        Prim.debugPrint("Buffer clear");
+        buffer.clear()
     };
 
     let script = [
@@ -48,13 +48,13 @@ actor {
     ];
 
     public shared func run(): async Text {
-        Prim.debugPrint("Array list benchmark");
+        Prim.debugPrint("Buffer benchmark");
         await Benchmark.measure(script)
     };
 
     public shared func limitTest(): async (Nat, Runtime.Statistics) {
         let amount = 100_000;
-        Prim.debugPrint("Array list limit test " # debug_show(amount));
+        Prim.debugPrint("Buffer limit test " # debug_show(amount));
         populate(amount);
         (amount, Runtime.collectStatistics())
     }

@@ -98,9 +98,9 @@ A singly linked list of Nat numbers, used in a scenario of several steps. Each l
 
 **Rationale**: Having a simplest but large-scaling case with many small objects and a very simple pointer structure, i.e. with as few pointers as possible for the amount of objects. External fragmentation should be relatively unproblematic.
 
-## Array List (Small Items)
+## Buffer (Small Items)
 
-A simple exponentially growing array list with amortized costs (growth rate 1.5), containing simple Nat numbers. Same scenario as for linked list:
+Buffer of the Motoko base library containing Nat numbers. The buffer's implementation is a simple exponentially growing array list with amortized costs (growth rate 2), containing simple Nat numbers. Same scenario as for linked list:
 
 ```
 ( 50, func() { populate(100_000) } ),
@@ -113,11 +113,11 @@ A simple exponentially growing array list with amortized costs (growth rate 1.5)
 ( 10, func() { traverse() } )
 ```
 
-**Rationale**: Measuring the heap with a memory-compact data structure, except for the large-growing list-internal array. Few pointers are used. Fragmentation could become noticable with growing list.
+**Rationale**: Measuring the heap with a memory-compact data structure that is part of the Motoko base library. The scenario creates large-growing list-internal arrays on the heap. Few pointers are used.
 
 ## Blobs (Large Items)
 
-An array list containing 64KB BLOBS as element items. Scenario of several steps:
+A `Buffer` containing 64KB BLOBS as element items. Scenario of several steps:
 
 ```
 ( 10, func() { allocate(1000) } ),
@@ -131,14 +131,14 @@ An array list containing 64KB BLOBS as element items. Scenario of several steps:
 
 ## Graph (Fully Connected)
 
-A fully connected directed graph (clique), where each node holds an array list with pointers (directed edges) to each other node. Scales quadradically by design. Measurement scenario:
+A fully connected directed graph (clique), where each node holds a `Buffer` with pointers (directed edges) to each other node. Scales quadradically by design. Measurement scenario:
 
 ```
 ( 10, func() { populate(100) } ),
 ( 1, func() { clear() } ),
-( 25, func() { populate(100) } ),
+( 20, func() { populate(100) } ),
 ( 1, func() { clear() } ),
-( 50, func() { populate(100) } )
+( 40, func() { populate(100) } )
 ```
 
 In this scenario, traversal is implicitly contained in the population steps, since new nodes need to be connected to and from the other existing nodes.
@@ -228,8 +228,8 @@ There exist more test cases that are proprietary but excluded from the current b
 | Name                  | Description                   |
 | --------------------- | ------------------------- ----|
 | `linked-list`         | Small element linked list     |
-| `array-list`          | Large element array list      |
-| `blob`                | Large blobs array list        |
+| `buffer`              | Small element buffer          |
+| `blobs`               | Large blobs buffer            |
 | `graph`               | Fully connected graph         |
 | `rb-tree`             | Red-black tree                |
 | `trie-map`            | Trie map                      |
@@ -317,7 +317,7 @@ Strength:
 
 Shortcomings:
 - **Long GC pauses**: High GC spikes can be observed in the runtime chart with growing and allocation-intense scenarios (due to the stop-the-world GC design). This soon exceeds the message instruction limit, meaning that the program can only scale to relatively small heap size (e.g. linked list with small blocks can only use up to 160 MB heap space with both compacting and copying GC). An incremental GC would alleviate this limitation.
-- **High runtime costs**: Mutator utlization is relatively low for allocation-intense scenarios, meaning that the GC consumes a substantial amount of runtime (e.g. for array list with large objects, the mutator only runs 24% programs instructions, while GC accounts for the remaining 76% of the total number of instructions). Reducing GC costs, e.g. with generational or partitioned collection, or simply by more sophistcated GC scheduling heurtistics, would be beneficial.
+- **High runtime costs**: Mutator utlization is relatively low for allocation-intense scenarios, meaning that the GC consumes a substantial amount of runtime (e.g. for blobs with the copying GC, the mutator only runs 15% of the programs instructions, while GC accounts for the remaining 85% of the total number of instructions). Reducing GC costs, e.g. with generational or partitioned collection, or simply by more sophistcated GC scheduling heurtistics, would be beneficial.
 - **Stack root set**: The current GC implementations do not yet scan the call stack for the root set, such that the GC can only run on very specific moments when the stack is empty, such as before or after message calls, including continuation points (await). If memory grows too fast during a message call, the GC cannot reclaim memory in meantime, such that the programs runs out of heap space.
 
 Specific:
