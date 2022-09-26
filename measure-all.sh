@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MEASUREMENT_CASES="linked-list buffer rb-tree trie-map blobs graph random-maze extendable-token asset-store qr-code reversi sha256"
+MEASUREMENT_CASES="linked-list buffer rb-tree trie-map blobs graph random-maze extendable-token asset-store qr-code reversi sha256 cancan"
 for name in $MEASUREMENT_CASES
 do
     ./measure.sh compacting $name

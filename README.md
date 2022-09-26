@@ -207,7 +207,7 @@ Game of Life sample version 2 from the Motoko playground with size 512:
 
 Source: [https://github.com/Toniq-Labs/extendable-token](https://github.com/Toniq-Labs/extendable-token)
 
-Extendable Token project by Toniq Labs (MIT license), using standard extension and measuring 200 repeated transfers. Measurement trace point inserted at once place in third-party standard.mo.
+Extendable Token project by Toniq Labs (MIT license), using standard extension and measuring 200 repeated transfers. Measurement trace point inserted at one place in third-party `standard.mo`.
 
 (Compiler warnings originate from the third-party code.)
 
@@ -256,24 +256,37 @@ Taken from the Motoko performance tests, reduced to 64kb hashing due to instruct
 
 **Motivation**: Compute-intense existing performance test.
 
+## CanCan
+
+Source: [https://github.com/dfinity/cancan-archived](https://github.com/dfinity/cancan-archived)
+
+CanCan video-sharing service project by DFINITY (Apache 2.0 license). Measurement trace point inserted in `CanCan.mo`.
+
+Scenario:
+- 8 user created, each uploading a video of 16 chunks of 1 MB data (16MB video)
+
+(Compiler warnings originate from the included CanCan project.)
+
+**Motivation**: Using a real application that is more memory-intensive. 
+
 ## Scenario Summary
 
-| Name                  | Description                   |
-| --------------------- | ------------------------- ----|
-| `linked-list`         | Small element linked list     |
-| `buffer`              | Small element buffer          |
-| `blobs`               | Large blobs buffer            |
-| `graph`               | Fully connected graph         |
-| `rb-tree`             | Red-black tree                |
-| `trie-map`            | Trie map                      |
-| `random-maze`         | Random Maze (playground)      |
-| `game-of-life`        | Game of Life (playground)     |
-| `extendable-token`    | Extendable Token (Toniq Labs) |
-| `asset-storage`       | Asset storage (perf test)     |
-| `qr-code`             | QR code (perf test)           |
-| `reversi`             | Reversi (perf test)           |
-| `sha256`              | SHA256 (perf test)            |
-
+| Name                  | Description                       |
+| --------------------- | ----------------------------------|
+| `linked-list`         | Small element linked list         |
+| `buffer`              | Small element buffer              |
+| `blobs`               | Large blobs buffer                |
+| `graph`               | Fully connected graph             |
+| `rb-tree`             | Red-black tree                    |
+| `trie-map`            | Trie map                          |
+| `random-maze`         | Random Maze (playground)          |
+| `game-of-life`        | Game of Life (playground)         |
+| `extendable-token`    | Extendable Token (Toniq Labs)     |
+| `asset-storage`       | Asset storage (perf test)         |
+| `qr-code`             | QR code (perf test)               |
+| `reversi`             | Reversi (perf test)               |
+| `sha256`              | SHA256 (perf test)                |
+| `cancan`              | CanCan video sharing (DFINITY)    |
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into measurement steps, to give the GC a possibility to run in between.
