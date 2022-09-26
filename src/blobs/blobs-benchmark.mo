@@ -6,8 +6,8 @@ import Runtime "../runtime";
 actor {
     let buffer = Buffer.Buffer<Blob>(8);
 
-    let block_size = 65536;
-    let header_size = 8;
+    let blockSize = 65536;
+    let headerSize = 8;
 
     ignore Prim.stableMemoryGrow(1);
 
@@ -15,7 +15,7 @@ actor {
         Prim.debugPrint("Blobs allocate " # debug_show(amount));
         var count = 0;
         while (count < amount) {
-            let item = Prim.stableMemoryLoadBlob(0, block_size - header_size);
+            let item = Prim.stableMemoryLoadBlob(0, blockSize - headerSize);
             buffer.add(item);
             count += 1
         }

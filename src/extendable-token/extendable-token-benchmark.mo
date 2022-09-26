@@ -21,7 +21,7 @@ actor {
     private var receiverBalance = 0;
 
     public shared(msg) func transfer(): async () {
-        let amount = 100;
+        let amount = 10;
         let sender = msg.caller;
         switch (standard) {
             case (?platform) {
@@ -60,7 +60,7 @@ actor {
     public shared(msg) func run(): async Text {
         await initialize();
         var count = 0;
-        while (count < 100) {
+        while (count < 200) {
             await transfer();
             count += 1
         };

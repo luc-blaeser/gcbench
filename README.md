@@ -207,21 +207,54 @@ Game of Life sample version 2 from the Motoko playground with size 512:
 
 Source: [https://github.com/Toniq-Labs/extendable-token](https://github.com/Toniq-Labs/extendable-token)
 
-Extendable Token project by Toniq Labs (MIT license), using standard extension and measuring repeated transfers. Measurement trace point inserted at once place in third-party standard.mo.
-
-```
-( 1, func(): async () { await initialize() } ),
-( 100, func(): async () { await transfer() } )
-```
+Extendable Token project by Toniq Labs (MIT license), using standard extension and measuring 200 repeated transfers. Measurement trace point inserted at once place in third-party standard.mo.
 
 (Compiler warnings originate from the third-party code.)
 
 **Motivation**: Using a real external application with higher code complexity. 
 
-## More test cases (propertary)
+## Asset Storage (Motoko Perf Test)
 
-There exist more test cases that are proprietary but excluded from the current benchmark code version.
+Taken from the Motoko performance tests, simulating an asset storage:
 
+100 iterations of:
+- List the storage.
+- Store a new 1MB content blob (16 pages of 64KB).
+- List the storage.
+- Retrieving last stored content. 
+
+The existing performance test has been slightly adjusted, in particular to insert GC trace points.
+
+**Motivation**: Include existing Motoko performance tests that is memory-intense. 
+
+## QR Code (Motoko Perf Test)
+
+Taken from the Motoko performance tests:
+
+20 iterations of:
+- Compute 3 QR codes and show them
+
+Minor code adjustment for benchmark integration.
+
+**Motivation**: Include existing performance test that is compute-intense.
+
+## Reversi (Motoko Perf Test)
+
+Taken from the Motoko performance tests, 30 iterations.
+
+- Compute 3 QR codes and show them
+
+**Motivation**: Very simple existing performance test.
+
+## Sha256 (Motoko Perf Test)
+
+Taken from the Motoko performance tests, reduced to 64kb hashing due to instruction limit.
+
+```
+( 10, func() { Sha256.go() } ),
+```
+
+**Motivation**: Compute-intense existing performance test.
 
 ## Scenario Summary
 
@@ -233,9 +266,14 @@ There exist more test cases that are proprietary but excluded from the current b
 | `graph`               | Fully connected graph         |
 | `rb-tree`             | Red-black tree                |
 | `trie-map`            | Trie map                      |
-| `random-maze`         | Random Maze                   |
-| `game-of-life`        | Game of Life                  |
+| `random-maze`         | Random Maze (playground)      |
+| `game-of-life`        | Game of Life (playground)     |
 | `extendable-token`    | Extendable Token (Toniq Labs) |
+| `asset-storage`       | Asset storage (perf test)     |
+| `qr-code`             | QR code (perf test)           |
+| `reversi`             | Reversi (perf test)           |
+| `sha256`              | SHA256 (perf test)            |
+
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into measurement steps, to give the GC a possibility to run in between.

@@ -1,0 +1,2 @@
+assetstorage.mo:6.7-6.27: type error [M0108], actor class cannot take a context pattern
+  (This is a limitation of the current version and flag -wasi-system-api.)
