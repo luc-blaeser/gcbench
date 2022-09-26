@@ -43,7 +43,7 @@ actor {
         ( 10, func() { traverse() } ),
         ( 25, func() { populate(100_000) } ),
         ( 1, func() { clear() } ),
-        ( 50, func() { populate(100_000) } ),
+        ( 45, func() { populate(100_000) } ),
         ( 10, func() { traverse() } )
     ];
 

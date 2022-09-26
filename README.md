@@ -92,7 +92,7 @@ A singly linked list of Nat numbers, used in a scenario of several steps. Each l
 ( 10, func() { traverse() } ),
 ( 25, func() { populate(100_000) } ),
 ( 1, func() { clear() } ),
-( 50, func() { populate(100_000) } ),
+( 45, func() { populate(100_000) } ),
 ( 10, func() { traverse() } )
 ```
 
@@ -109,7 +109,7 @@ Buffer of the Motoko base library containing Nat numbers. The buffer's implement
 ( 10, func() { traverse() } ),
 ( 25, func() { populate(100_000) } ),
 ( 1, func() { clear() } ),
-( 50, func() { populate(100_000) } ),
+( 45, func() { populate(100_000) } ),
 ( 10, func() { traverse() } )
 ```
 
@@ -256,7 +256,7 @@ Taken from the Motoko performance tests, reduced to 64kb hashing due to instruct
 
 **Motivation**: Compute-intense existing performance test.
 
-## CanCan
+## CanCan (Video Sharing Service)
 
 Source: [https://github.com/dfinity/cancan-archived](https://github.com/dfinity/cancan-archived)
 
@@ -297,12 +297,39 @@ A current difficulty is that benchmarked programs need to be split into measurem
 
 All scenarios are run with the following GCs of the Motoko implementation:
 
-| Name          | Description               |
-| ------------- | ------------------------- |
-| `compacting`  | Compacting GC             |
-| `copying`     | Copying GC                |
+| Name          | Description                           |
+| ------------- | ------------------------------------- |
+| `compacting`  | Compacting GC                         |
+| `copying`     | Copying GC                            |
+| `none`        | No GC (defined by `$MOC_NO_GC_PATH`)  |
 
-`NoGC`: To gain additional information, the GC was also disabled in the runtime system code and the scenarios were manually measured. See [spreadsheet](GC-Measurements.pdf) results for the corrsponding results.
+For option `none`, the environment variable needs to be specified `$MOC_NO_GC_PATH` that denotes the Motoko compiler build that has deactivated GC.
+
+### Preparing "No GC"
+
+1. Copy a working and build Motoko repo to a separate folder, e.g. `nogc`.
+2. Edit `rts/motoko-rts/src/gc/mark_compact.rs` to deactivate the GC:
+
+```
+if super::should_do_gc(max_live) {
+    println!(100, "INFO: GC DISABLED!") // INSERTED
+    //compacting_gc(mem);               // <-- COMMENT
+}
+```
+
+3. Rebuild the runtime system. In directory `rts`:
+
+```
+make
+```
+
+4. Set the environment variable `MOC_NO_GC_PATH` to the separate Motoko repo:
+
+```
+export MOC_NO_GC_PATH="<PATH TO nogc FOLDER>/bin/moc"
+```
+
+Alternatively, you can store the environment variable in the shell config, e.g. `~/.zshrc`.
 
 # Metrics
 

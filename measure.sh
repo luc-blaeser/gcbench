@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Usage: measure.sh <compacting|copying> <scenario_name>
+# Usage: measure.sh <compacting|copying|none> <scenario_name>
 
 if [ -z "$1" ] || [ -z "$2" ]
 then
-    echo "Usage: measure.sh <compacting|copying> <scenario_name>"
+    echo "Usage: measure.sh <compacting|copying|none> <scenario_name>"
     exit 1
 fi
 mkdir -p log

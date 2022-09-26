@@ -11,6 +11,8 @@ pub struct Measurement {
     pub collector: Vec<u64>,
 }
 
+const GC_RELEVANCE_THRESHOLD: u64 = 1000;
+
 impl Measurement {
     fn new(name: &str) -> Measurement {
         Measurement {
@@ -72,6 +74,13 @@ impl Measurement {
         self.mutator
             .iter()
             .zip(self.collector.iter())
+            .map(|(m, c)| {
+                if *c > GC_RELEVANCE_THRESHOLD {
+                    (m, c)
+                } else {
+                    (m, &0)
+                }
+            })
             .map(|(m, c)| *m as f64 / (*m as f64 + *c as f64))
             .fold(f64::INFINITY, |x, y| x.min(y))
     }
@@ -88,7 +97,7 @@ impl Measurement {
             alive += self.allocated.get(index).unwrap();
             reclaimed += self.reclaimed.get(index).unwrap();
             // ignore very low collector count as GC did not run then
-            if self.collector.get(index).unwrap() > &1000 {
+            if self.collector.get(index).unwrap() > &GC_RELEVANCE_THRESHOLD {
                 let rate = 1.0 - reclaimed as f64 / alive as f64;
                 survival_rates.push(rate);
                 alive -= reclaimed;

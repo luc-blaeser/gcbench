@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Usage: limit-test.sh <compacting|copying> <scenario_name>
+# Usage: limit-test.sh <compacting|copying|none> <scenario_name>
 
 if [ -z "$1" ] || [ -z "$2" ]
 then
-    echo "Usage: limit-test.sh <compacting|copying> <scenario_name>"
+    echo "Usage: limit-test.sh <compacting|copying|none> <scenario_name>"
     exit 1
 fi
 OUT_FILE=log/limit-$2-$1.txt
