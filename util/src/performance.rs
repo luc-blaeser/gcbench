@@ -104,7 +104,11 @@ impl Performance {
 
     pub fn mutator_utilization(&self) -> f64 {
         let mutator_total: u64 = self.mutator.iter().sum();
-        let collector_total: u64 = self.collector.iter().sum();
+        let collector_total: u64 = self
+            .collector
+            .iter()
+            .map(|c| if *c > GC_RELEVANCE_THRESHOLD { c } else { &0 })
+            .sum();
         mutator_total as f64 / (mutator_total as f64 + collector_total as f64)
     }
 

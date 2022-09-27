@@ -6,7 +6,7 @@
       "args" : "--compacting-gc"
     },
     "benchmark": {
-      "main": "src/random-maze/random-maze-benchmark.mo",
+      "main": "src/rb-tree/rb-tree-benchmark.mo",
       "type": "motoko",
       "args" : "--compacting-gc"
     }

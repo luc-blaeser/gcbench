@@ -12,7 +12,7 @@ impl SummaryPage {
 
     pub fn render(&self) -> String {
         let mut output = String::new();
-        output.push_str("<html><head><title>GC Benchmark</title><link rel=\"stylesheet\" href=\"style.css\"/></head>");
+        output.push_str("<!DOCTYPE html><html><head><title>GC Benchmark</title><link rel=\"stylesheet\" href=\"style.css\"/></head>");
         output.push_str("<body><h1>GC Benchmark</h1>");
         output.push_str("<h2>Performance</h2>");
         for metric in PerformanceMetric::all() {

@@ -5,5 +5,5 @@ Cargo.lock
 /build/
 /log/
 /reports/*.csv
-dfx.json
-temporary.sh
+/dfx.json
+/temporary.sh

@@ -222,11 +222,13 @@ Extendable Token project by Toniq Labs (MIT license), using standard extension a
 
 Taken from the Motoko performance tests, simulating an asset storage:
 
-100 iterations of:
+70 iterations of:
 - List the storage.
 - Store a new 1MB content blob (16 pages of 64KB).
 - List the storage.
 - Retrieving last stored content. 
+
+(Note: For more iterations, the test case without GC (`no` GC) fails with the error message "IC0503: Canister ... trapped explicitly: could not perform remote call" although the heap is not full.)
 
 The existing performance test has been slightly adjusted, in particular to insert GC trace points.
 
@@ -234,10 +236,9 @@ The existing performance test has been slightly adjusted, in particular to inser
 
 ## QR Code (Motoko Perf Test)
 
-Taken from the Motoko performance tests:
+Taken from the Motoko performance tests. Computes 3 test QR codes and shows them.
 
-20 iterations of:
-- Compute 3 QR codes and show them
+(Note: For repeated iterations, the test case without GC (`no` GC) fails with the error message "IC0503: Canister ... trapped explicitly: could not perform remote call", see also above.)
 
 Minor code adjustment for benchmark integration.
 
@@ -352,6 +353,7 @@ The following performance metrics are computed by the benchmark:
 | Instruction Total     | Number of instructions executed               | lower     | `SUM(mutator) + SUM(collector)`
 | Survival Rate         | Fraction of retained objects per GC run       | neutral   | `1-AVG(reclaimed[i] / SUM(allocated[0..i]) - SUM(reclaimed[0..i-1])`
 
+`rts_collector_instructions()` always returns some small values (below 1000) even if GC has not run. Therefore, for these performance metric computations, collector values under 1000 instructions per measurement points (message call) are neglected (considered as 0).
 
 Minimum mutator utilization is the smallest value of mutator utilization, calculated for every time slice, here for every scenario step. This is an indicator for real-time feasability, related to max GC pause.
 

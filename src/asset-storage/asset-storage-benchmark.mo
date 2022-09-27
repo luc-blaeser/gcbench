@@ -12,9 +12,10 @@ actor {
         let blockSize = pages * 65536;
         let headerSize = 8;
         let pathPrefix = "mypath";
-        let runs = 100;
+        let runs = 70;
         var count = 0;
         while (count < runs) {
+            Prim.debugPrint("Iteration " # debug_show(count));
             let path = pathPrefix # debug_show(count);
             ignore test.list();
             await test.store(path, Prim.stableMemoryLoadBlob(0, blockSize - headerSize));
