@@ -12,17 +12,6 @@ pub fn collect_csv_files(directory: &str, prefix: &str) -> Vec<String> {
     csv_files
 }
 
-// pub fn collect_gc_types(directory: &str) -> Vec<String> {
-//     let mut types: Vec<String> = collect_csv_files(directory, "measurement-")
-//         .iter()
-//         .map(|f| String::from(extract_gc_type(f)))
-//         .filter(|f| !f.is_empty())
-//         .collect();
-//     types.sort();
-//     types.dedup();
-//     types
-// }
-
 pub fn remove_prefix<'a>(name: &'a str, prefix: &str) -> &'a str {
     if name.starts_with(prefix) {
         &name[prefix.len()..name.len()]

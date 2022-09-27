@@ -2,7 +2,7 @@ use benchmark::Benchmark;
 
 use crate::chart_page::ChartPage;
 use crate::limit::Limit;
-use crate::measurement::Measurement;
+use crate::performance::Performance;
 use crate::summary_page::SummaryPage;
 use std::env;
 use std::fs;
@@ -14,7 +14,7 @@ pub mod chart;
 pub mod chart_page;
 pub mod common;
 pub mod limit;
-pub mod measurement;
+pub mod performance;
 pub mod summary_page;
 pub mod test_case;
 
@@ -47,31 +47,31 @@ fn main() {
 }
 
 fn generate_chart(input_file: &str, output_file: &str) {
-    let measurement = read_measurement(input_file);
-    let page = ChartPage::new(&measurement);
+    let performance = read_performance(input_file);
+    let page = ChartPage::new(&performance);
     let output = page.render();
     fs::write(output_file, output).expect("cannot write output file");
 }
 
 fn generate_summary(directory: &str) {
-    let measurement_files = common::collect_csv_files(directory, "measurement-");
-    let measurements: Vec<Measurement> = measurement_files
+    let performance_files = common::collect_csv_files(directory, "measurement-");
+    let performance: Vec<Performance> = performance_files
         .iter()
-        .map(|f| read_measurement(f))
+        .map(|f| read_performance(f))
         .collect();
     let limit_files = common::collect_csv_files(directory, "limit-");
     let limits: Vec<Limit> = limit_files.iter().map(|f| read_limit(f)).collect();
-    let benchmark = Benchmark::new(measurements, limits);
+    let benchmark = Benchmark::new(performance, limits);
     let page = SummaryPage::new(benchmark);
     let output = page.render();
     let summary_file = Path::new(directory).join("summary.html");
     fs::write(summary_file, output).expect("cannot write summary file");
 }
 
-fn read_measurement(input_file: &str) -> Measurement {
+fn read_performance(input_file: &str) -> Performance {
     let content = fs::read_to_string(input_file).expect("invalid input file");
     let name = common::get_file_name(input_file);
-    Measurement::parse(name, &content)
+    Performance::parse(name, &content)
 }
 
 fn read_limit(input_file: &str) -> Limit {

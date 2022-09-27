@@ -1,6 +1,6 @@
 use crate::chart::Chart;
 use crate::chart::Series;
-use crate::measurement::Measurement;
+use crate::performance::Performance;
 use crate::test_case::TestCase;
 use std::fmt::Write;
 
@@ -11,15 +11,15 @@ pub struct ChartPage {
 }
 
 impl ChartPage {
-    pub fn new(measurement: &Measurement) -> ChartPage {
+    pub fn new(performance: &Performance) -> ChartPage {
         let charts = vec![
-            Chart::memory_chart(measurement),
-            Chart::allocation_chart(measurement),
-            Chart::runtime_chart(measurement),
+            Chart::memory_chart(performance),
+            Chart::allocation_chart(performance),
+            Chart::runtime_chart(performance),
         ];
         ChartPage {
-            test_case: measurement.test_case.clone(),
-            labels: measurement.labels.clone(),
+            test_case: performance.test_case.clone(),
+            labels: performance.labels.clone(),
             charts,
         }
     }
@@ -73,7 +73,7 @@ impl ChartPage {
         let mut output = String::new();
         write!(
             output,
-            "<html><head><title>GC Measurement {name} ({gc_type})</title></head>"
+            "<html><head><title>GC Performance {name} ({gc_type})</title></head>"
         )
         .unwrap();
         output += "<body><script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>";

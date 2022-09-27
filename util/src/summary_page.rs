@@ -1,4 +1,4 @@
-use crate::{benchmark::Benchmark, limit::LimitMetric, measurement::Metric};
+use crate::{benchmark::Benchmark, limit::LimitMetric, performance::PerformanceMetric};
 use std::fmt::Write;
 
 pub struct SummaryPage {
@@ -15,7 +15,7 @@ impl SummaryPage {
         output
             .push_str("<html><head><title>GC Benchmark</title></head><body><h1>GC Benchmark</h1>");
         output.push_str("<h2>Performance</h2>");
-        for metric in Metric::all() {
+        for metric in PerformanceMetric::all() {
             self.render_performance_metric(&mut output, metric);
         }
         output.push_str("<h2>Limits</h2>");
@@ -32,17 +32,17 @@ impl SummaryPage {
     fn render_performance_summary(&self, output: &mut String) {
         output.push_str("<h2>Performance</h2>");
         output.push_str("<table><thead><th>Scenario</th>");
-        for metric in Metric::all() {
+        for metric in PerformanceMetric::all() {
             let metric_name = metric.name();
             write!(output, "<th>{metric_name}</th>").unwrap()
         }
         output.push_str("</thead>");
-        for measurement in &self.benchmark.measurements {
-            let scenario_name = &measurement.test_case.scenario_name;
-            let gc_type = &measurement.test_case.gc_type;
+        for performance in &self.benchmark.performance {
+            let scenario_name = &performance.test_case.scenario_name;
+            let gc_type = &performance.test_case.gc_type;
             write!(output, "<tr><td><a href=\"chart-{scenario_name}-{gc_type}.html\">{scenario_name} ({gc_type})</a></td>").unwrap();
-            for metric in Metric::all() {
-                let value = measurement.get_value(&metric);
+            for metric in PerformanceMetric::all() {
+                let value = performance.get_value(&metric);
                 write!(output, "<td>{value}</td>").unwrap()
             }
             output.push_str("</tr>")
@@ -50,7 +50,7 @@ impl SummaryPage {
         output.push_str("</table>");
     }
 
-    fn render_performance_metric(&self, output: &mut String, metric: Metric) {
+    fn render_performance_metric(&self, output: &mut String, metric: PerformanceMetric) {
         let metric_name = metric.name();
         write!(output, "<h3>{metric_name}</h3>").unwrap();
         output.push_str("<table><thead><th>Scenario</th>");
@@ -58,12 +58,12 @@ impl SummaryPage {
             write!(output, "<th>{gc_type}</th>").unwrap();
         }
         output.push_str("</thead>");
-        for scenario_name in &self.benchmark.measurement_scenarios {
+        for scenario_name in &self.benchmark.performance_scenarios {
             write!(output, "<tr><td>{scenario_name}</td>").unwrap();
             for gc_type in &self.benchmark.gc_types {
-                match self.benchmark.get_measurement(scenario_name, gc_type) {
-                    Some(measurement) => {
-                        let value = measurement.get_value(&metric);
+                match self.benchmark.get_performance(scenario_name, gc_type) {
+                    Some(performance) => {
+                        let value = performance.get_value(&metric);
                         write!(
                             output,
                             "<td><a href=\"chart-{scenario_name}-{gc_type}.html\">{value}</a></td>"
@@ -109,8 +109,8 @@ impl SummaryPage {
             write!(output, "<tr><td>{scenario_name}</td>").unwrap();
             for gc_type in &self.benchmark.gc_types {
                 match self.benchmark.get_limits(scenario_name, gc_type) {
-                    Some(measurement) => {
-                        let value = measurement.get_value(&metric);
+                    Some(limits) => {
+                        let value = limits.get_value(&metric);
                         write!(
                             output,
                             "<td><a href=\"chart-{scenario_name}-{gc_type}.html\">{value}</a></td>"
