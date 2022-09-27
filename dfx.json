@@ -1,0 +1,21 @@
+{
+  "canisters": {
+    "recorder": {
+      "main": "src/recorder.mo",
+      "type": "motoko",
+      "args" : "--compacting-gc"
+    },
+    "benchmark": {
+      "main": "src/asset-storage/asset-storage-benchmark.mo",
+      "type": "motoko",
+      "args" : "--compacting-gc"
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8123",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}

@@ -1,12 +1,33 @@
+use crate::{common, test_case::TestCase};
+use std::fmt::Write;
+
 #[derive(Clone)]
 pub struct Limit {
-    pub name: String,
+    pub test_case: TestCase,
     pub allocations: u64,
     pub heap: u64,
 }
 
+pub enum LimitMetric {
+    AllocationLimit,
+    HeapMaximum,
+}
+
+impl LimitMetric {
+    pub fn name(&self) -> &str {
+        match &self {
+            Self::AllocationLimit => "AllocationLimit",
+            Self::HeapMaximum => "HeapMaximum",
+        }
+    }
+
+    pub fn all() -> Vec<LimitMetric> {
+        vec![Self::AllocationLimit, Self::HeapMaximum]
+    }
+}
+
 impl Limit {
-    pub fn parse(name: &str, content: &str) -> Limit {
+    pub fn parse(file_name: &str, content: &str) -> Limit {
         fn pick(row: &[u64], index: usize) -> u64 {
             *row.get(index).unwrap()
         }
@@ -23,9 +44,26 @@ impl Limit {
         let allocations = pick(&row, 0);
         let heap = pick(&row, 1);
         Limit {
-            name: String::from(name),
+            test_case: TestCase::new(file_name),
             allocations,
             heap,
+        }
+    }
+
+    pub fn get_value(&self, metric: &LimitMetric) -> String {
+        match metric {
+            LimitMetric::AllocationLimit => {
+                let value = self.allocations;
+                let mut result = String::new();
+                write!(&mut result, "{value}").unwrap();
+                result
+            }
+            LimitMetric::HeapMaximum => {
+                let value = common::to_mb(self.heap);
+                let mut result = String::new();
+                write!(&mut result, "{value} MB").unwrap();
+                result
+            }
         }
     }
 }

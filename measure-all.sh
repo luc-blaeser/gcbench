@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MEASUREMENT_CASES="linked-list buffer rb-tree trie-map blobs graph random-maze extendable-token asset-store qr-code reversi sha256 cancan"
+MEASUREMENT_CASES="linked-list buffer rb-tree trie-map blobs graph random-maze extendable-token asset-storage qr-code reversi sha256 cancan"
 for name in $MEASUREMENT_CASES
 do
     if [ "$MOC_NO_GC_PATH" ]

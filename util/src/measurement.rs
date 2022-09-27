@@ -1,6 +1,9 @@
+use crate::{common, test_case::TestCase};
+use std::fmt::Write;
+
 #[derive(Clone)]
 pub struct Measurement {
-    pub name: String,
+    pub test_case: TestCase,
     pub labels: Vec<u64>,
     pub memory: Vec<u64>,
     pub heap: Vec<u64>,
@@ -11,12 +14,51 @@ pub struct Measurement {
     pub collector: Vec<u64>,
 }
 
+pub enum Metric {
+    HeapSize,
+    MemoryOverhead,
+    MutatorUtilization,
+    MaxGcPause,
+    MMU,
+    TotalInstructions,
+    TotalMutator,
+    SurvivalRate,
+}
+
+impl Metric {
+    pub fn name(&self) -> &str {
+        match &self {
+            Self::HeapSize => "Heap Size",
+            Self::MemoryOverhead => "Memory Overhead",
+            Self::MutatorUtilization => "Mutator Utilization",
+            Self::MaxGcPause => "Max GC Pause",
+            Self::MMU => "Minimum Mutator Utilization (MMU)",
+            Self::TotalInstructions => "Total Instructions",
+            Self::TotalMutator => "Total Mutator",
+            Self::SurvivalRate => "Survival Rate",
+        }
+    }
+
+    pub fn all() -> Vec<Metric> {
+        vec![
+            Self::HeapSize,
+            Self::MemoryOverhead,
+            Self::MutatorUtilization,
+            Self::MaxGcPause,
+            Self::MMU,
+            Self::TotalInstructions,
+            Self::TotalMutator,
+            Self::SurvivalRate,
+        ]
+    }
+}
+
 const GC_RELEVANCE_THRESHOLD: u64 = 1000;
 
 impl Measurement {
-    fn new(name: &str) -> Measurement {
+    fn new(file_name: &str) -> Measurement {
         Measurement {
-            name: String::from(name),
+            test_case: TestCase::new(file_name),
             labels: Vec::new(),
             memory: Vec::new(),
             heap: Vec::new(),
@@ -28,11 +70,11 @@ impl Measurement {
         }
     }
 
-    pub fn parse(name: &str, content: &str) -> Measurement {
+    pub fn parse(file_name: &str, content: &str) -> Measurement {
         fn pick(row: &[u64], index: usize) -> u64 {
             *row.get(index).unwrap()
         }
-        let mut measurement = Measurement::new(name);
+        let mut measurement = Measurement::new(file_name);
         for line in content.split('\n').skip(1).filter(|x| !x.is_empty()) {
             let row: Vec<u64> = line
                 .split(',')
@@ -67,7 +109,12 @@ impl Measurement {
     }
 
     pub fn max_gc_pause(&self) -> u64 {
-        *(self.collector.iter().max()).unwrap_or(&0)
+        let value = *(self.collector.iter().max()).unwrap_or(&0);
+        if value > GC_RELEVANCE_THRESHOLD {
+            value
+        } else {
+            0
+        }
     }
 
     pub fn minimum_mutator_utilization(&self) -> f64 {
@@ -85,8 +132,12 @@ impl Measurement {
             .fold(f64::INFINITY, |x, y| x.min(y))
     }
 
-    pub fn instruction_total(&self) -> u64 {
+    pub fn total_instructions(&self) -> u64 {
         self.mutator.iter().sum::<u64>() + self.collector.iter().sum::<u64>()
+    }
+
+    pub fn total_mutator(&self) -> u64 {
+        self.mutator.iter().sum::<u64>()
     }
 
     pub fn survival_rate(&self) -> f64 {
@@ -105,5 +156,58 @@ impl Measurement {
             }
         }
         survival_rates.iter().sum::<f64>() / survival_rates.len() as f64
+    }
+
+    pub fn get_value(&self, metric: &Metric) -> String {
+        match metric {
+            Metric::HeapSize => {
+                let value = common::to_mb(self.heap_size());
+                let mut result = String::new();
+                write!(&mut result, "{value} MB").unwrap();
+                result
+            }
+            Metric::MemoryOverhead => {
+                let value = self.memory_overhead() * 100.0;
+                let mut result = String::new();
+                write!(&mut result, "{value:.1} %").unwrap();
+                result
+            }
+            Metric::MutatorUtilization => {
+                let value = self.mutator_utilization() * 100.0;
+                let mut result = String::new();
+                write!(&mut result, "{value:.1} %").unwrap();
+                result
+            }
+            Metric::MaxGcPause => {
+                let value = self.max_gc_pause() as f64;
+                let mut result = String::new();
+                write!(&mut result, "{value:.1e}").unwrap();
+                result
+            }
+            Metric::MMU => {
+                let value = self.minimum_mutator_utilization() * 100.0;
+                let mut result = String::new();
+                write!(&mut result, "{value:.1} %").unwrap();
+                result
+            }
+            Metric::TotalInstructions => {
+                let value = self.total_instructions() as f64;
+                let mut result = String::new();
+                write!(&mut result, "{value:.1e}").unwrap();
+                result
+            }
+            Metric::TotalMutator => {
+                let value = self.total_mutator() as f64;
+                let mut result = String::new();
+                write!(&mut result, "{value:.1e}").unwrap();
+                result
+            }
+            Metric::SurvivalRate => {
+                let value = self.survival_rate() * 100.0;
+                let mut result = String::new();
+                write!(&mut result, "{value:.1} %").unwrap();
+                result
+            }
+        }
     }
 }

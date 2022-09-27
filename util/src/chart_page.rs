@@ -1,10 +1,11 @@
 use crate::chart::Chart;
 use crate::chart::Series;
 use crate::measurement::Measurement;
+use crate::test_case::TestCase;
 use std::fmt::Write;
 
 pub struct ChartPage {
-    name: String,
+    test_case: TestCase,
     labels: Vec<u64>,
     charts: Vec<Chart>,
 }
@@ -17,7 +18,7 @@ impl ChartPage {
             Chart::runtime_chart(measurement),
         ];
         ChartPage {
-            name: measurement.name.clone(),
+            test_case: measurement.test_case.clone(),
             labels: measurement.labels.clone(),
             charts,
         }
@@ -67,15 +68,16 @@ impl ChartPage {
             output.push_str("], }, ");
         }
 
-        let name = &self.name;
+        let name = &self.test_case.scenario_name;
+        let gc_type = &self.test_case.gc_type;
         let mut output = String::new();
         write!(
             output,
-            "<html><head><title>GC Measurement {name}</title></head>"
+            "<html><head><title>GC Measurement {name} ({gc_type})</title></head>"
         )
         .unwrap();
         output += "<body><script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>";
-        write!(output, "<h1>{name}</h1>").unwrap();
+        write!(output, "<h1>{name} ({gc_type})</h1>").unwrap();
         output += "<script>const labels = [";
         append_numbers(&mut output, &self.labels);
         output += "]</script>";
