@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
 
-# Usage: run.sh <compacting|copying|none> <benchmark|limit-test> <scenario_name>
+# Usage: run.sh <compacting|copying|no> <performance|limit> <scenario_name>
 
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
 then
-    echo "Usage: run.sh <compacting|copying|nogc> <benchmark|limit> <scenario_name>"
+    echo "Usage: run.sh <compacting|copying|no> <performance|limit> <scenario_name>"
     exit 1
 fi
-if [ "$1" != "compacting" ] && [ "$1" != "copying" ] && [ "$1" != "none" ]
+if [ "$1" != "compacting" ] && [ "$1" != "copying" ] && [ "$1" != "no" ]
 then
-    echo "First argument must be 'compacting', 'copying', or 'none'"
+    echo "First argument must be 'compacting', 'copying', or 'no'"
     exit 1
 fi
-if [ "$2" != "benchmark" ] && [ "$2" != "limit" ]
+if [ "$2" != "performance" ] && [ "$2" != "limit" ]
 then
-    echo "Second argument must be 'benchmark' or 'limit'"
+    echo "Second argument must be 'performance' or 'limit'"
     exit 1
 fi
-if [ "$1" == "none" ]
+if [ "$1" == "no" ]
 then
     if [ -z "$MOC_NO_GC_PATH" ]
     then
-        echo "Need to specify MOC_NO_GC_PATH for GC 'none'"
+        echo "Need to specify MOC_NO_GC_PATH for GC 'no'"
         exit 1
     fi
     DFX_MOC_PATH=$MOC_NO_GC_PATH
@@ -29,12 +29,12 @@ then
 else
     GC_FLAG=--$1-gc
 fi
-if [ "$2" == "benchmark" ]
+if [ "$2" == "performance" ]
 then
-    DFXTEMPLATE=benchmark-dfx.json
+    DFXTEMPLATE=performance-dfx.json
     CANISTER=benchmark
 else 
-    DFXTEMPLATE=limit-test-dfx.json
+    DFXTEMPLATE=limit-dfx.json
     CANISTER=limit-tester
 fi
 awk '// {gsub("#SCENARIO#", "'$3'"); gsub("#GCFLAG#", "'$GC_FLAG'"); print }' $DFXTEMPLATE > dfx.json

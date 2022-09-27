@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 
-MEASUREMENT_CASES="linked-list buffer rb-tree trie-map blobs graph random-maze extendable-token asset-storage qr-code reversi sha256 cancan"
-for name in $MEASUREMENT_CASES
+PERFORMANCE_CASES="linked-list buffer rb-tree trie-map blobs graph random-maze extendable-token asset-storage qr-code reversi sha256 cancan"
+for name in $PERFORMANCE_CASES
 do
     if [ "$MOC_NO_GC_PATH" ]
     then
-        ./measure.sh none $name    
+        ./performance.sh no $name    
     fi
-    ./measure.sh compacting $name
-    ./measure.sh copying $name
+    ./performance.sh compacting $name
+    ./performance.sh copying $name
 done
 LIMIT_CASES="linked-list buffer rb-tree trie-map blobs"
 for name in $LIMIT_CASES
 do
     if [ "$MOC_NO_GC_PATH" ]
     then
-       ./limit-test.sh none $name    
+       ./limit.sh no $name    
     fi
-    ./limit-test.sh compacting $name
-    ./limit-test.sh copying $name
+    ./limit.sh compacting $name
+    ./limit.sh copying $name
 done
 util/target/release/report summary reports/

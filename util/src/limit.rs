@@ -16,8 +16,8 @@ pub enum LimitMetric {
 impl LimitMetric {
     pub fn name(&self) -> &str {
         match &self {
-            Self::AllocationLimit => "AllocationLimit",
-            Self::HeapMaximum => "HeapMaximum",
+            Self::AllocationLimit => "Allocation Limit",
+            Self::HeapMaximum => "Heap Maximum",
         }
     }
 

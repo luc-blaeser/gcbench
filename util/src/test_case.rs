@@ -29,7 +29,7 @@ impl TestCase {
         if name.starts_with("limit-") {
             name = common::remove_prefix(name, "limit-");
         } else {
-            name = common::remove_prefix(name, "measurement-");
+            name = common::remove_prefix(name, "performance-");
         }
         match common::find_last(name, '-') {
             Some(index) => &name[0..index],

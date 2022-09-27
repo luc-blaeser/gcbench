@@ -40,7 +40,7 @@ impl SummaryPage {
         for performance in &self.benchmark.performance {
             let scenario_name = &performance.test_case.scenario_name;
             let gc_type = &performance.test_case.gc_type;
-            write!(output, "<tr><td><a href=\"chart-{scenario_name}-{gc_type}.html\">{scenario_name} ({gc_type})</a></td>").unwrap();
+            write!(output, "<tr><td><a href=\"chart-{scenario_name}-{gc_type}.html\">{scenario_name} ({gc_type} GC)</a></td>").unwrap();
             for metric in PerformanceMetric::all() {
                 let value = performance.get_value(&metric);
                 write!(output, "<td>{value}</td>").unwrap()
@@ -55,7 +55,7 @@ impl SummaryPage {
         write!(output, "<h3>{metric_name}</h3>").unwrap();
         output.push_str("<table><thead><th>Scenario</th>");
         for gc_type in &self.benchmark.gc_types {
-            write!(output, "<th>{gc_type}</th>").unwrap();
+            write!(output, "<th>{gc_type} GC</th>").unwrap();
         }
         output.push_str("</thead>");
         for scenario_name in &self.benchmark.performance_scenarios {
@@ -80,19 +80,21 @@ impl SummaryPage {
 
     fn render_limit_summary(&self, output: &mut String) {
         output.push_str("<h2>Limits</h2>");
-        output.push_str(
-            "<table><thead><th>Scenario</th><th>Allocations</th><th>Heap Maximum</th></thead>",
-        );
-        for limit in &self.benchmark.limits {
-            let allocations = limit.allocations;
-            let heap_size = limit.heap / (1024 * 1024);
-            let name = &limit.test_case.scenario_name;
-            let gc_type = &limit.test_case.gc_type;
-            write!(
-                output,
-                "<tr><td>{name} ({gc_type})</td><td>{allocations}</td><td>{heap_size} MB</td></tr>"
-            )
-            .unwrap();
+        output.push_str("<table><thead><th>Scenario</th>");
+        for metric in LimitMetric::all() {
+            let metric_name = metric.name();
+            write!(output, "<th>{metric_name}</th>").unwrap()
+        }
+        output.push_str("</thead>");
+        for limits in &self.benchmark.limits {
+            let scenario_name = &limits.test_case.scenario_name;
+            let gc_type = &limits.test_case.gc_type;
+            write!(output, "<tr><td>{scenario_name} ({gc_type} GC)</td>").unwrap();
+            for metric in LimitMetric::all() {
+                let value = limits.get_value(&metric);
+                write!(output, "<td>{value}</td>").unwrap()
+            }
+            output.push_str("</tr>")
         }
         output.push_str("</table>");
     }
@@ -102,7 +104,7 @@ impl SummaryPage {
         write!(output, "<h3>{metric_name}</h3>").unwrap();
         output.push_str("<table><thead><th>Scenario</th>");
         for gc_type in &self.benchmark.gc_types {
-            write!(output, "<th>{gc_type}</th>").unwrap();
+            write!(output, "<th>{gc_type} GC</th>").unwrap();
         }
         output.push_str("</thead>");
         for scenario_name in &self.benchmark.limits_scenarios {

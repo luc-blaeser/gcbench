@@ -73,11 +73,11 @@ impl ChartPage {
         let mut output = String::new();
         write!(
             output,
-            "<html><head><title>GC Performance {name} ({gc_type})</title></head>"
+            "<html><head><title>GC Performance {name} ({gc_type} GC)</title></head>"
         )
         .unwrap();
         output += "<body><script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>";
-        write!(output, "<h1>{name} ({gc_type})</h1>").unwrap();
+        write!(output, "<h1>{name} ({gc_type} GC)</h1>").unwrap();
         output += "<script>const labels = [";
         append_numbers(&mut output, &self.labels);
         output += "]</script>";

@@ -54,7 +54,7 @@ fn generate_chart(input_file: &str, output_file: &str) {
 }
 
 fn generate_summary(directory: &str) {
-    let performance_files = common::collect_csv_files(directory, "measurement-");
+    let performance_files = common::collect_csv_files(directory, "performance-");
     let performance: Vec<Performance> = performance_files
         .iter()
         .map(|f| read_performance(f))

@@ -47,16 +47,16 @@ Initial benchmarking of GC performance of Motoko, to be extended and refined...
 
 ## Selective Measurements
 
-Test cases can also be selectively measured, by choosing the GC and the scenario:
+Performance test cases can also be selectively run, by choosing the GC and the scenario:
 
 ```
-./measure.sh <compacting|copying> <scenario_name>
+./performance.sh <compacting|copying> <scenario_name>
 ```
 
-For example, to run the linked list test with the compacting GC:
+For example, to run the linked list performance test with the compacting GC:
 
 ```
-./measure.sh compacting linked-list
+./performance.sh compacting linked-list
 ```
 
 The scenario names are lised below.
@@ -64,22 +64,27 @@ The scenario names are lised below.
 Moreover, GC limit tests can be selectively run (see also below):
 
 ```
-./limit-test.sh <compacting|copying> <scenario_name>
+./limit.sh <compacting|copying> <scenario_name>
 ```
 
 ## Reports and Charts
 
 The `reports` folder contains the measurement results:
 
-* CSV file per test case: Each line lists the statistics values at measurement point, i.e. a scenario step where the GC got a chance to run.
-* Chart file per test case: Different HTML5 charts, showing memory, allocation, and runtime behavior over the series of execution steps.
-* One summary HTML page: Aggregation of different metrics for all test cases, with links to the corresponding chart pages. Additionally, it shows the maximimum number allocations and heap space that can be performed in the scenario.
+* Performance CSV file per test case: Each line lists the statistics values at measurement point, i.e. a scenario step where the GC got a chance to run.
+* Limit CSV file per test case: This summarizes the memory limits that each scenario can allocate per GC.
+* Chart file per test case: Different HTML5 performance charts, showing memory, allocation, and runtime behavior over the series of execution steps.
+* One summary HTML page: Aggregation of different performance and limit metrics for all test cases, with links to the corresponding chart pages.
 
 # Cases
 
 Different test scenarios are run with the available GC implementations, each such combination called a test case. 
 
-All scenarios are configured to run successully in all cases, without hitting any limits (instruction limit, heap size limit). This is necessary for the comparability of the performance results.
+Two different measurements are performed:
+* Performance measurements: Determining various runtime and memory metrics per test case
+* Limit tests (for specific scenarios only): Determining the maximum number of memory that can be used 
+
+**Note**: In contrast to limit tests, the performance measurement are configured to run successully for all test cases, without hitting any limits (instruction limit, heap size limit). This is necessary for the comparability of the performance results.
 
 ## Linked List (Small Items)
 
@@ -301,9 +306,9 @@ All scenarios are run with the following GCs of the Motoko implementation:
 | ------------- | ------------------------------------- |
 | `compacting`  | Compacting GC                         |
 | `copying`     | Copying GC                            |
-| `none`        | No GC (defined by `$MOC_NO_GC_PATH`)  |
+| `no`          | No GC (defined by `$MOC_NO_GC_PATH`)  |
 
-For option `none`, the environment variable needs to be specified `$MOC_NO_GC_PATH` that denotes the Motoko compiler build that has deactivated GC.
+For option `no`, the environment variable needs to be specified `$MOC_NO_GC_PATH` that denotes the Motoko compiler build that has deactivated GC.
 
 ### Preparing "No GC"
 
@@ -333,7 +338,9 @@ Alternatively, you can store the environment variable in the shell config, e.g. 
 
 # Metrics
 
-The following metrics are computed by the benchmark:
+## Performance Metrics
+
+The following performance metrics are computed by the benchmark:
 
 | Name                  | Description                                   | Better    | Calculation
 | --------------------- | --------------------------------------------- | --------- | ------------
@@ -350,7 +357,22 @@ Minimum mutator utilization is the smallest value of mutator utilization, calcul
 
 Survival rate makes more sense for generational garbage collection, where the metric specifies the fraction of young live objects that get promoted to the older generation. Here, it denotes the fraction of alive objects per GC run.
 
-Moreover, the benchmark performs a separate measurement for determining the maximum number of allocations and heap size that can be used (see below).
+## Limit Metrics
+
+For data-structure-like scenarios, the maximum amoung of allocations are also examined until the program hits the message instruction limit or the heap size limit. The tests run as part of the `measure-all.sh`, and continuoulsy allocate and add new elements (populate-steps) until program failure.
+
+The summary page `summary.html` includes the results of these measurements:
+
+| Name                  | Description                                   | Better    |
+| --------------------- | --------------------------------------------- | --------- |
+| Allocation Limit      | Maximum number of elements addded             | higher    |
+| Heap Maximum          | Heap size before when the limit               | higher    |
+
+**Note**: Graph scenario is deliberately not tested for limit, as it is not designed to scale.
+
+Limit test can also be selectively run (see above).
+
+## Possible Future Metrics
 
 Additonal metrics that would be interesting, but currently not available:
 * Throughput of instructions per time unit
@@ -372,21 +394,6 @@ The generated charts show the following properties over the time axis of the ste
     - Allocated objects, reclaimed objects
 * Runtime chart
     - Mutator instructions, garbage collector instructions
-
-# Limit Tests
-
-For data-structure-like scenarios, the maximum amoung of allocations are also examined until the program hits the message instruction limit or the heap size limit. The tests run as part of the `measure-all.sh`, and continuoulsy allocate and add new elements (populate-steps) until program failure.
-
-The second table in the summary page `summary.html` shows the results of these measurements:
-
-| Name                  | Description                                   | Better    |
-| --------------------- | --------------------------------------------- | --------- |
-| Allocations           | Maximum number of elements addded             | higher    |
-| Heap Maximum          | Heap size before when the limit               | higher    |
-
-**Note**: Graph scenario is deliberately not tested for limit, as it is not designed to scale.
-
-Limit test can also be selectively run (see above).
 
 # Observations
 
