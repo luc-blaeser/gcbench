@@ -7,6 +7,8 @@ then
     echo "Usage: limit.sh <compacting|copying|no> <scenario_name>"
     exit 1
 fi
+mkdir -p log
+mkdir -p reports
 OUT_FILE=log/limit-$2-$1.txt
 CSV_FILE=reports/limit-$2-$1.csv
 ./run.sh $1 limit $2 | tee $OUT_FILE

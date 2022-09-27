@@ -3,17 +3,12 @@
     "recorder": {
       "main": "src/recorder.mo",
       "type": "motoko",
-      "args" : "--copying-gc"
+      "args" : "--compacting-gc"
     },
     "benchmark": {
-      "main": "src/buffer/buffer-benchmark.mo",
+      "main": "src/random-maze/random-maze-benchmark.mo",
       "type": "motoko",
-      "args" : "--copying-gc"
-    },
-    "limit-tester": {
-      "main": "src/limit-tester.mo",
-      "type": "motoko",
-      "args" : "--copying-gc"
+      "args" : "--compacting-gc"
     }
   },
   "networks": {

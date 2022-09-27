@@ -20,4 +20,5 @@ do
     ./limit.sh compacting $name
     ./limit.sh copying $name
 done
+cp style.css reports/
 util/target/release/report summary reports/

@@ -73,7 +73,7 @@ impl ChartPage {
         let mut output = String::new();
         write!(
             output,
-            "<html><head><title>GC Performance {name} ({gc_type} GC)</title></head>"
+            "<html><head><title>GC Performance {name} ({gc_type} GC)</title><link rel=\"stylesheet\" href=\"style.css\"/></head>"
         )
         .unwrap();
         output += "<body><script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>";

@@ -12,8 +12,8 @@ impl SummaryPage {
 
     pub fn render(&self) -> String {
         let mut output = String::new();
-        output
-            .push_str("<html><head><title>GC Benchmark</title></head><body><h1>GC Benchmark</h1>");
+        output.push_str("<html><head><title>GC Benchmark</title><link rel=\"stylesheet\" href=\"style.css\"/></head>");
+        output.push_str("<body><h1>GC Benchmark</h1>");
         output.push_str("<h2>Performance</h2>");
         for metric in PerformanceMetric::all() {
             self.render_performance_metric(&mut output, metric);
@@ -30,7 +30,7 @@ impl SummaryPage {
     }
 
     fn render_performance_summary(&self, output: &mut String) {
-        output.push_str("<h2>Performance</h2>");
+        output.push_str("<h3>Performance</h3>");
         output.push_str("<table><thead><th>Scenario</th>");
         for metric in PerformanceMetric::all() {
             let metric_name = metric.name();
@@ -79,7 +79,7 @@ impl SummaryPage {
     }
 
     fn render_limit_summary(&self, output: &mut String) {
-        output.push_str("<h2>Limits</h2>");
+        output.push_str("<h3>Limits</h3>");
         output.push_str("<table><thead><th>Scenario</th>");
         for metric in LimitMetric::all() {
             let metric_name = metric.name();
