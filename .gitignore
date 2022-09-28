@@ -1,3 +1,4 @@
+/.vessel
 /util/target/
 Cargo.lock
 **/*.rs.bk
