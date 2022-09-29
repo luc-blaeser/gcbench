@@ -100,7 +100,6 @@ module RBTree {
     var node = nodeStart;
     var parent = parentStart; 
     label l loop {
-      assert(node.red);
       if (not parent.red) { // adjusted
         break l;
       };
@@ -124,7 +123,6 @@ module RBTree {
             parent.red := false;
             gp.red := true;
             leftRotate(root, gp);
-            break l; // adjusted
           };
           case (?uncle) {
             if (uncle.red == true) {
@@ -143,7 +141,6 @@ module RBTree {
               parent.red := false;
               gp.red := true;
               leftRotate(root, gp);
-              break l; // adjusted
             } 
           }
         }
@@ -160,7 +157,6 @@ module RBTree {
             parent.red := false;
             gp.red := true;
             rightRotate(root, gp);
-            break l; // adjusted
           };
           case (?uncle) {
             if (uncle.red == true) {
@@ -179,7 +175,6 @@ module RBTree {
               parent.red := false;
               gp.red := true;
               rightRotate(root, gp);
-              break l; // adjusted
             }
           }
         }
