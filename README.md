@@ -303,13 +303,17 @@ A current difficulty is that benchmarked programs need to be split into measurem
 
 All scenarios are run with the following GCs of the Motoko implementation:
 
-| Name          | Description                           |
-| ------------- | ------------------------------------- |
-| `compacting`  | Compacting GC                         |
-| `copying`     | Copying GC                            |
-| `no`          | No GC (defined by `$MOC_NO_GC_PATH`)  |
+| Name              | Description                                               |
+| ----------------- | --------------------------------------------------------- |
+| `compacting`      | Compacting GC                                             |
+| `copying`         | Copying GC                                                |
+| `no`              | No GC (defined by `$MOC_NO_GC_PATH`)                      |
+| `experimental`    | Experimental GC (defined by `$MOC_EXPERIMENTAL_GC_PATH`)  |
+
 
 For option `no`, the environment variable needs to be specified `$MOC_NO_GC_PATH` that denotes the Motoko compiler build that has deactivated GC.
+
+The `experimental` GC option may serve to examine an extra GC version, e.g. a prototype of a generational GC. For this purpose, the environment variable `$MOC_EXPERIMENTAL_GC_PATH` needs to refer to the corresponding compiler binary.
 
 ### Preparing "No GC"
 
