@@ -1,7 +1,7 @@
 import Prim "mo:prim";
+import Iter "mo:base/Iter";
 import RBBase "mo:base/RBTree";
 import NatBase "mo:base/Nat";
-
 import Benchmark "../benchmark";
 import Runtime "../runtime";
 
@@ -12,38 +12,32 @@ actor {
 
     func populate(amount: Nat) {
         Prim.debugPrint("RB tree populate " # debug_show(amount));
-        var count = 0;
-        while (count < amount) {
+        for (count in Iter.range(0, amount - 1)) {
             tree.put(total, total);
-            count += 1;
             total += 1
         }
     };
 
     func retrieve() {
         Prim.debugPrint("RB tree retrieve " # debug_show(total));
-        var count = 0;
-        while (count < total) {
+        for (count in Iter.range(0, total - 1)) {
             let result = tree.get(count);
-            assert(result == ?count);
-            count += 1
+            assert(result == ?count)
         }
     };
 
     func discard(amount: Nat) {
         Prim.debugPrint("RB tree discard " # debug_show(amount));
-        var count = 0;
-        while (count < amount) {
+        for (count in Iter.range(0, amount - 1)) {
             total -= 1;
-            ignore tree.remove(total);
-            count += 1
+            ignore tree.remove(total)
         }
     };
 
     func deleteAll() {
         Prim.debugPrint("RB tree delete all");
         for ((key, value) in tree.entries()) {
-            tree.delete(key);
+            tree.delete(key)
         };
         total := 0
     };

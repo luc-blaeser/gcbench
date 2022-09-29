@@ -1,4 +1,5 @@
 import Prim "mo:prim";
+import Iter "mo:base/Iter";
 import Buffer "mo:base/Buffer";
 import Benchmark "../benchmark";
 
@@ -30,10 +31,8 @@ actor {
     
     func populate(amount: Nat) {
         Prim.debugPrint("Graph populate " # debug_show(amount));
-        var count = 0;
-        while (count < amount) {
-            graph.append(amount);
-            count += 1
+        for (count in Iter.range(0, amount - 1)) {
+            graph.append(amount)
         }
     };
 

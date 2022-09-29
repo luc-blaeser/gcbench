@@ -1,4 +1,5 @@
 import Prim "mo:prim";
+import Iter "mo:base/Iter";
 import CanCan "dfinity/service/CanCan";
 import Trace "../trace";
 
@@ -28,12 +29,10 @@ actor {
             chunkCount;
         });
         checkNonNull(videoInfo);
-        var chunkNumber = 0;
-        while (chunkNumber < chunkCount) {
+        for (chunkNumber in Iter.range(0, chunkCount - 1)) {
             Prim.debugPrint("Upload chunk " # debug_show(chunkNumber) # " for video " # debug_show(number));
             let result = await service.putVideoChunk(videoName, chunkNumber, chunk);
-            checkNonNull(result);
-            chunkNumber += 1
+            checkNonNull(result)
         };
     };
 
@@ -48,10 +47,8 @@ actor {
         Prim.debugPrint("CanCan benchmark");
         Prim.cyclesAdd(2_000_000_000_000); 
         let service = await CanCan.CanCan();
-        var userNumber = 0;
-        while (userNumber < userCount) {
-            await uploadVideo(service, userNumber);
-            userNumber += 1
+        for (userNumber in Iter.range(0, userCount - 1)) {
+            await uploadVideo(service, userNumber)
         };
         await Trace.result()
     };

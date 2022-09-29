@@ -1,9 +1,8 @@
 import Prim "mo:prim";
+import Iter "mo:base/Iter";
 
 module {
-    public type Iter<T> = {next : () -> ?T};
-
-    public func iterate<T>(array: [T]): Iter<T> {
+    public func iterate<T>(array: [T]): Iter.Iter<T> {
         object {
             var index = 0;
 
@@ -54,7 +53,7 @@ module {
             }
         };
 
-        public func elements(): Iter<T> {
+        public func elements(): Iter.Iter<T> {
             object {
                 var current = head;
 

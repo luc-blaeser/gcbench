@@ -1,4 +1,5 @@
 import Prim "mo:prim";
+import Iter "mo:base/Iter";
 import Collections "../collections";
 import Benchmark "../benchmark";
 import Runtime "../runtime";
@@ -8,10 +9,8 @@ actor {
 
     func populate(amount: Nat) {
         Prim.debugPrint("Linked list populate " # debug_show(amount));
-        var count = 0;
-        while (count < amount) {
-            list.append(amount);
-            count += 1
+        for (count in Iter.range(0, amount - 1)) {
+            list.append(amount)
         }
     };
 
@@ -24,10 +23,8 @@ actor {
 
     func discard(amount: Nat) {
         Prim.debugPrint("Linked list discard " # debug_show(list.size()));
-        var count = 0;
-        while (count < amount) {
-            ignore list.remove();
-            count += 1
+        for (count in Iter.range(0, amount - 1)) {
+            ignore list.remove()
         }
     };
 

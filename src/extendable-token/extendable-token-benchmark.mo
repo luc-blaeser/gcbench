@@ -1,5 +1,6 @@
 import Prim "mo:prim";
 import Principal "mo:base/Principal";
+import Iter "mo:base/Iter";
 import ExtStandard "toniq-labs-code/examples/standard";
 import Trace "../trace";
 
@@ -59,10 +60,9 @@ actor {
 
     public shared(msg) func run(): async Text {
         await initialize();
-        var count = 0;
-        while (count < 200) {
-            await transfer();
-            count += 1
+        let transactions = 200;
+        for (count in Iter.range(0, transactions - 1)) {
+            await transfer()
         };
         await Trace.result()
     }

@@ -1,6 +1,7 @@
 import Prim "mo:prim";
 import Runtime "runtime";
 import Collections "collections";
+import Iter "mo:base/Iter";
 import Trace "trace";
 
 module {
@@ -10,12 +11,10 @@ module {
 
     public func measure(script: Script): async Text {
         for (line in Collections.iterate(script)) {
-            var repetition = 0;
-            while (repetition < line.0) {
+            for (repetition in Iter.range(0, line.0 - 1)) {
                 let operation = line.1;
                 operation();
-                await Trace.point();
-                repetition += 1
+                await Trace.point()
             }
         };
         await Trace.result()
@@ -27,12 +26,10 @@ module {
 
     public func measureAsync(script: AsyncScript): async Text {
         for (line in Collections.iterate(script)) {
-            var repetition = 0;
-            while (repetition < line.0) {
+            for (repetition in Iter.range(0, line.0 - 1)) {
                 let operation = line.1;
                 await operation();
-                await Trace.point();
-                repetition += 1
+                await Trace.point()
             }
         };
         await Trace.result()

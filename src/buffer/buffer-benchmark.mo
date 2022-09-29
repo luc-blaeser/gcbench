@@ -1,4 +1,5 @@
 import Prim "mo:prim";
+import Iter "mo:base/Iter";
 import Buffer "mo:base/Buffer";
 import Benchmark "../benchmark";
 import Runtime "../runtime";
@@ -8,10 +9,8 @@ actor {
 
     func populate(amount: Nat) {
         Prim.debugPrint("Buffer populate " # debug_show(amount));
-        var count = 0;
-        while (count < amount) {
-            buffer.add(count);
-            count += 1
+        for (count in Iter.range(0, amount - 1)) {
+            buffer.add(count)
         }
     };
 
@@ -24,10 +23,8 @@ actor {
 
     func discard(amount: Nat) {
         Prim.debugPrint("Buffer discard " # debug_show(amount));
-        var count = 0;
-        while (count < amount) {
-            ignore buffer.removeLast();
-            count += 1
+        for (count in Iter.range(0, amount - 1)) {
+            ignore buffer.removeLast()
         }
     };
 

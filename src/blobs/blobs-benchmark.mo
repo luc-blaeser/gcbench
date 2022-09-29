@@ -1,4 +1,5 @@
 import Prim "mo:prim";
+import Iter "mo:base/Iter";
 import Buffer "mo:base/Buffer";
 import Benchmark "../benchmark";
 import Runtime "../runtime";
@@ -13,11 +14,9 @@ actor {
 
     func allocate(amount: Nat) {
         Prim.debugPrint("Blobs allocate " # debug_show(amount));
-        var count = 0;
-        while (count < amount) {
+        for (count in Iter.range(0, amount - 1)) {
             let item = Prim.stableMemoryLoadBlob(0, blockSize - headerSize);
-            buffer.add(item);
-            count += 1
+            buffer.add(item)
         }
     };
 
