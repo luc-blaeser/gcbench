@@ -50,7 +50,7 @@ Initial benchmarking of GC performance of Motoko, to be extended and refined...
 Performance test cases can also be selectively run, by choosing the GC and the scenario:
 
 ```
-./performance.sh <compacting|copying> <scenario_name>
+./performance.sh <compacting|copying|no|experimental> <scenario_name>
 ```
 
 For example, to run the linked list performance test with the compacting GC:
@@ -64,7 +64,7 @@ The scenario names are lised below.
 Moreover, GC limit tests can be selectively run (see also below):
 
 ```
-./limit.sh <compacting|copying> <scenario_name>
+./limit.sh <compacting|copying|no|experimental> <scenario_name>
 ```
 
 ## Reports and Charts
@@ -429,5 +429,5 @@ Shortcomings:
 Specific:
 - For compute-intense cases, utilization is relatively high (`extendable-token` and `random-maze`).
 - Compacting GC allows many more allocations of larger objects (limit test case `blobs`).
-- Copying GC scales higherr and is more efficient for smaller objects (limit cases `rb-tree` and `trie-map` and instruction total for all cases except `blobs`).
+- Copying GC scales higher and is more efficient for smaller objects (limit cases `rb-tree` and `trie-map` and instruction total for all cases except `blobs`).
 - A lot of temporary function-bound objects produce a high garbage load (e.g. cases `rb-tree`, `trie-map`).
