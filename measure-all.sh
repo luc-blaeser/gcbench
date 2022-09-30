@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PERFORMANCE_CASES="linked-list buffer rb-tree trie-map blobs graph random-maze game-of-life extendable-token asset-storage qr-code reversi sha256 cancan"
+PERFORMANCE_CASES="linked-list buffer rb-tree trie-map blobs imperative-rb-tree graph random-maze game-of-life extendable-token asset-storage qr-code reversi sha256 cancan"
 for name in $PERFORMANCE_CASES
 do
     if [ "$MOC_NO_GC_PATH" ]
@@ -10,7 +10,7 @@ do
     ./performance.sh compacting $name
     ./performance.sh copying $name
 done
-LIMIT_CASES="linked-list buffer rb-tree trie-map blobs"
+LIMIT_CASES="linked-list buffer rb-tree trie-map blobs imperative-rb-tree"
 for name in $LIMIT_CASES
 do
     if [ "$MOC_NO_GC_PATH" ]

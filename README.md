@@ -167,6 +167,20 @@ The current Motoko base library implementation of a red-black tree, storing Nat 
 
 **Motivation**: Having a real implementation and more complex data structure implementation, with more temporary object allocations.
 
+## Imperative Red-Black Tree (Small Items)
+
+Imperative implementation of red-black trees obtained by user community member Byron Becker. The data structure implementation has been somewhat adjusted. Scenario of storing Nat to Nat entries:
+
+```
+( 30, func() { populate(10_000) } ),
+( 10, func() { retrieve() } ),
+( 1, func() { clear() } ),
+( 40, func() { populate(10_000) } ),
+( 10, func() { retrieve() } )
+```
+
+**Motivation**: Real example reported as a scalability challenge by a community member.
+
 ## Trie Map (Small Items)
 
 The current Motoko base library implementation of trie map storing Nat to Nat entries. Scenario:
@@ -284,6 +298,7 @@ Scenario:
 | `blobs`               | Large blobs buffer                |
 | `graph`               | Fully connected graph             |
 | `rb-tree`             | Red-black tree                    |
+| `imperative-rb-tree`  | Imperative red-black tree         |
 | `trie-map`            | Trie map                          |
 | `random-maze`         | Random Maze (playground)          |
 | `game-of-life`        | Game of Life (playground)         |
@@ -297,7 +312,7 @@ Scenario:
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into measurement steps, to give the GC a possibility to run in between.
 
-**Note**: This is NOT intended to compare data structures' efficiency, as most scenarios are deliberately different in their configuration (different allocation sizes and different access patterns).
+**Note**: This is NOT intended to compare data structures' efficiency, as the performance scenarios are often deliberately different in their configuration (different allocation sizes and different access patterns) in order to remain below the execution limits (instruction limit, heap limit) for all GC test cases.
 
 # GCs
 
