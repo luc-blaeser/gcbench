@@ -322,39 +322,25 @@ All scenarios are run with the following GCs of the Motoko implementation:
 | ----------------- | --------------------------------------------------------- |
 | `compacting`      | Compacting GC                                             |
 | `copying`         | Copying GC                                                |
-| `no`              | No GC (defined by `$MOC_NO_GC_PATH`)                      |
-| `experimental`    | Experimental GC (defined by `$MOC_EXPERIMENTAL_GC_PATH`)  |
+| `no`              | No GC (special build, see below)                          |
+| `experimental`    | Experimental GC (special build, see below)                |
 
 
-For option `no`, the environment variable needs to be specified `$MOC_NO_GC_PATH` that denotes the Motoko compiler build that has deactivated GC.
+For running `no` GC or `experimental` GC, use the compiler and runtime system from branch `https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc`. Please see the instructions below.
 
-The `experimental` GC option may serve to examine an extra GC version, e.g. a prototype of a generational GC. For this purpose, the environment variable `$MOC_EXPERIMENTAL_GC_PATH` needs to refer to the corresponding compiler binary.
+### Experimental GC
 
-### Preparing "No GC"
-
-1. Copy a working and build Motoko repo to a separate folder, e.g. `nogc`.
-2. Edit `rts/motoko-rts/src/gc/mark_compact.rs` to deactivate the GC:
-
-```
-if super::should_do_gc(max_live) {
-    println!(100, "INFO: GC DISABLED!") // INSERTED
-    //compacting_gc(mem);               // <-- COMMENT
-}
-```
-
-3. Rebuild the runtime system. In directory `rts`:
+1. Clone the motoko repo and switch to branch `luc/generational_gc`. The source is located at [https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc](https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc)
+2. Under `src`, build with `make`
+3. Set the environment variable `DFX_MOC_PATH` to refer to this experimental compiler build.
 
 ```
-make
-```
-
-4. Set the environment variable `MOC_NO_GC_PATH` to the separate Motoko repo:
-
-```
-export MOC_NO_GC_PATH="<PATH TO nogc FOLDER>/bin/moc"
+export DFX_MOC_LOC=<PATH_TO_REPO_FOLDER>/bin/moc
 ```
 
 Alternatively, you can store the environment variable in the shell config, e.g. `~/.zshrc`.
+
+**Note**: The experimental build also includes the classical compacting and copying GCs, such that they can also be run and measured by the benchmark.
 
 # Metrics
 
