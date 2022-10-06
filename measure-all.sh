@@ -9,33 +9,23 @@ then
     exit 1
 fi
 cd ..
+GC_MODES="compacting copying no experimental"
 PERFORMANCE_CASES="linked-list buffer rb-tree trie-map blobs imperative-rb-tree graph random-maze game-of-life extendable-token asset-storage qr-code reversi sha256 cancan"
 for name in $PERFORMANCE_CASES
 do
-    if [ "$MOC_NO_GC_PATH" ]
-    then
-        ./performance.sh no $name    
-    fi
-    if [ "$MOC_EXPERIMENTAL_GC_PATH" ]
-    then
-        ./performance.sh experimental $name    
-    fi
-    ./performance.sh compacting $name
-    ./performance.sh copying $name
+    for gc in $GC_MODES
+    do
+        ./performance.sh $gc $name
+    done    
 done
 LIMIT_CASES="linked-list buffer rb-tree trie-map blobs imperative-rb-tree"
 for name in $LIMIT_CASES
 do
-    if [ "$MOC_NO_GC_PATH" ]
-    then
-       ./limit.sh no $name    
-    fi
-    if [ "$MOC_EXPERIMENTAL_GC_PATH" ]
-    then
-        ./limit.sh experimental $name    
-    fi
-    ./limit.sh compacting $name
-    ./limit.sh copying $name
+    for gc in $GC_MODES
+    do
+        ./limit.sh $gc $name    
+    ./limit.sh experimental $name    
+    done
 done
 cp style.css reports/
 util/target/release/report summary reports/
