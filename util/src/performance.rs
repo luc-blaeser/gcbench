@@ -15,8 +15,8 @@ pub struct Performance {
 }
 
 pub enum PerformanceMetric {
-    HeapSize,
-    MemoryOverhead,
+    FinalHeapSize,
+    MemorySize,
     MutatorUtilization,
     MaxGcPause,
     MMU,
@@ -28,8 +28,8 @@ pub enum PerformanceMetric {
 impl PerformanceMetric {
     pub fn name(&self) -> &str {
         match &self {
-            Self::HeapSize => "Heap Size",
-            Self::MemoryOverhead => "Memory Overhead",
+            Self::FinalHeapSize => "Final Heap Size",
+            Self::MemorySize => "Memory Size",
             Self::MutatorUtilization => "Mutator Utilization",
             Self::MaxGcPause => "Max GC Pause",
             Self::MMU => "Minimum Mutator Utilization (MMU)",
@@ -41,8 +41,8 @@ impl PerformanceMetric {
 
     pub fn all() -> Vec<PerformanceMetric> {
         vec![
-            Self::HeapSize,
-            Self::MemoryOverhead,
+            Self::FinalHeapSize,
+            Self::MemorySize,
             Self::MutatorUtilization,
             Self::MaxGcPause,
             Self::MMU,
@@ -92,14 +92,12 @@ impl Performance {
         performance
     }
 
-    pub fn heap_size(&self) -> u64 {
+    pub fn final_heap_size(&self) -> u64 {
         *(self.heap.last()).unwrap_or(&0)
     }
 
-    pub fn memory_overhead(&self) -> f64 {
-        let heap_max = *(self.heap.iter().max()).unwrap_or(&0);
-        let mem_max = *(self.memory.iter().max()).unwrap_or(&0);
-        (mem_max as f64 - heap_max as f64) / heap_max as f64
+    pub fn memory_size(&self) -> u64 {
+        *(self.memory.iter().max()).unwrap_or(&0)
     }
 
     pub fn mutator_utilization(&self) -> f64 {
@@ -164,16 +162,16 @@ impl Performance {
 
     pub fn get_value(&self, metric: &PerformanceMetric) -> String {
         match metric {
-            PerformanceMetric::HeapSize => {
-                let value = common::to_mb(self.heap_size());
+            PerformanceMetric::FinalHeapSize => {
+                let value = common::to_mb(self.final_heap_size());
                 let mut result = String::new();
                 write!(&mut result, "{value} MB").unwrap();
                 result
             }
-            PerformanceMetric::MemoryOverhead => {
-                let value = self.memory_overhead() * 100.0;
+            PerformanceMetric::MemorySize => {
+                let value = common::to_mb(self.memory_size());
                 let mut result = String::new();
-                write!(&mut result, "{value:.1} %").unwrap();
+                write!(&mut result, "{value} MB").unwrap();
                 result
             }
             PerformanceMetric::MutatorUtilization => {

@@ -350,12 +350,13 @@ The following performance metrics are computed by the benchmark:
 
 | Name                  | Description                                   | Better    | Calculation
 | --------------------- | --------------------------------------------- | --------- | ------------
-| Heap Size             | Heap occupation at program end                | lower     | `LAST(heap)`
-| Memory Overhead       | Memory demand on top of max heap size         | lower     | `(MAX(memory) - MAX(heap)) / MAX(heap)`
+| Final Heap Size       | Heap occupation at program end                | lower     | `LAST(heap)`
+| Memory Size           | Maximum allocated memory size                 | lower     | `MAX(memory)`
 | Mutator Utilization   | Fraction of mutator of total program time     | higher    | `SUM(mutator) / (SUM(mutator) + SUM(collector))`
 | Max GC Pause          | Longest GC run blocking mutator (instructions)| lower     | `MAX(collector)`
 | MMU                   | Minimum mutator utilzation per call           | higher    | `MIN(mutator / (mutator + collector))`
-| Instruction Total     | Number of instructions executed               | lower     | `SUM(mutator) + SUM(collector)`
+| Total Instructions    | Total number of instructions executed         | lower     | `SUM(mutator) + SUM(collector)`
+| Total Mutator         | Number of instructions executed by mutator    | lower     | `SUM(mutator)`
 | Survival Rate         | Fraction of retained objects per GC run       | neutral   | `1-AVG(reclaimed[i] / SUM(allocated[0..i]) - SUM(reclaimed[0..i-1])`
 
 `rts_collector_instructions()` always returns some small values (below 1000) even if GC has not run. Therefore, for these performance metric computations, collector values under 1000 instructions per measurement points (message call) are neglected (considered as 0).
