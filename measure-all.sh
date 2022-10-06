@@ -23,8 +23,7 @@ for name in $LIMIT_CASES
 do
     for gc in $GC_MODES
     do
-        ./limit.sh $gc $name    
-    ./limit.sh experimental $name    
+        ./limit.sh $gc $name 
     done
 done
 cp style.css reports/
