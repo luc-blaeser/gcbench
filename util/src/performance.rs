@@ -53,7 +53,7 @@ impl PerformanceMetric {
     }
 }
 
-const GC_RELEVANCE_THRESHOLD: u64 = 1000;
+const GC_RELEVANCE_THRESHOLD: u64 = 10_000;
 
 impl Performance {
     fn new(file_name: &str) -> Performance {

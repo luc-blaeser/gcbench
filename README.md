@@ -359,7 +359,7 @@ The following performance metrics are computed by the benchmark:
 | Total Mutator         | Number of instructions executed by mutator    | lower     | `SUM(mutator)`
 | Survival Rate         | Fraction of retained objects per GC run       | neutral   | `1-AVG(reclaimed[i] / SUM(allocated[0..i]) - SUM(reclaimed[0..i-1])`
 
-`rts_collector_instructions()` always returns some small values (below 1000) even if GC has not run. Therefore, for these performance metric computations, collector values under 1000 instructions per measurement points (message call) are neglected (considered as 0).
+`rts_collector_instructions()` always returns some small values (below 1000) even if GC has not run. Therefore, for these performance metric computations, collector values under 10_000 instructions per measurement points (message call) are neglected (considered as 0).
 
 Minimum mutator utilization is the smallest value of mutator utilization, calculated for every time slice, here for every scenario step. This is an indicator for real-time feasability, related to max GC pause.
 
