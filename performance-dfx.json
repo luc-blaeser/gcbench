@@ -8,7 +8,16 @@
     "benchmark": {
       "main": "src/#SCENARIO#/#SCENARIO#-benchmark.mo",
       "type": "motoko",
-      "args" : "#GCFLAG#"
+      "args" : "#GCFLAG# --show-gc"
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": "",
+      "args": ""
+    },
+    "replica": {
+      "subnet_type" : "system"
     }
   },
   "networks": {

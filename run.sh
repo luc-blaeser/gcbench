@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-# Usage: run.sh <compacting|copying|no|experimental> <performance|limit> <scenario_name>
+# Usage: run.sh <compacting|copying|no|generational> <performance|limit> <scenario_name>
 
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
 then
-    echo "Usage: run.sh <compacting|copying|no|experimental> <performance|limit> <scenario_name>"
+    echo "Usage: run.sh <compacting|copying|no|generational> <performance|limit> <scenario_name>"
     exit 1
 fi
-if [ "$1" != "compacting" ] && [ "$1" != "copying" ] && [ "$1" != "no" ] && [ "$1" != "experimental" ] 
+if [ "$1" != "compacting" ] && [ "$1" != "copying" ] && [ "$1" != "no" ] && [ "$1" != "generational" ] 
 then
-    echo "First argument must be 'compacting', 'copying', 'no', or 'experimental'"
+    echo "First argument must be 'compacting', 'copying', 'no', or 'generational'"
     exit 1
 fi
 if [ "$2" != "performance" ] && [ "$2" != "limit" ]

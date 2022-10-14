@@ -9,7 +9,7 @@ then
     exit 1
 fi
 cd ..
-GC_MODES="compacting copying no experimental"
+GC_MODES="compacting copying no generational"
 PERFORMANCE_CASES="linked-list buffer rb-tree trie-map blobs imperative-rb-tree graph random-maze game-of-life extendable-token asset-storage qr-code reversi sha256 cancan"
 for name in $PERFORMANCE_CASES
 do

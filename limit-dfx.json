@@ -8,7 +8,7 @@
     "benchmark": {
       "main": "src/#SCENARIO#/#SCENARIO#-benchmark.mo",
       "type": "motoko",
-      "args" : "#GCFLAG#"
+      "args" : "#GCFLAG# --show-gc"
     },
     "limit-tester": {
       "main": "src/limit-tester.mo",

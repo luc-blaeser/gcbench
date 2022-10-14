@@ -50,7 +50,7 @@ Initial benchmarking of GC performance of Motoko, to be extended and refined...
 Performance test cases can also be selectively run, by choosing the GC and the scenario:
 
 ```
-./performance.sh <compacting|copying|no|experimental> <scenario_name>
+./performance.sh <compacting|copying|no|generational> <scenario_name>
 ```
 
 For example, to run the linked list performance test with the compacting GC:
@@ -64,7 +64,7 @@ The scenario names are lised below.
 Moreover, GC limit tests can be selectively run (see also below):
 
 ```
-./limit.sh <compacting|copying|no|experimental> <scenario_name>
+./limit.sh <compacting|copying|no|generational> <scenario_name>
 ```
 
 ## Reports and Charts
@@ -323,16 +323,16 @@ All scenarios are run with the following GCs of the Motoko implementation:
 | `compacting`      | Compacting GC                                             |
 | `copying`         | Copying GC                                                |
 | `no`              | No GC (special build, see below)                          |
-| `experimental`    | Experimental GC (special build, see below)                |
+| `generational`    | Generational GC (special build, see below)                |
 
 
-For running `no` GC or `experimental` GC, use the compiler and runtime system from branch `https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc`. Please see the instructions below.
+For running `no` GC or `generational` GC, use the compiler and runtime system from branch `https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc`. Please see the instructions below.
 
-### Experimental GC
+### Generational GC
 
 1. Clone the motoko repo and switch to branch `luc/generational_gc`. The source is located at [https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc](https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc)
 2. Under `src`, build with `make`
-3. Set the environment variable `DFX_MOC_PATH` to refer to this experimental compiler build.
+3. Set the environment variable `DFX_MOC_PATH` to refer to this special GC compiler build.
 
 ```
 export DFX_MOC_LOC=<PATH_TO_REPO_FOLDER>/bin/moc
@@ -340,7 +340,7 @@ export DFX_MOC_LOC=<PATH_TO_REPO_FOLDER>/bin/moc
 
 Alternatively, you can store the environment variable in the shell config, e.g. `~/.zshrc`.
 
-**Note**: The experimental build also includes the classical compacting and copying GCs, such that they can also be run and measured by the benchmark.
+**Note**: The special GC build also includes the classical compacting and copying GCs, such that they can also be run and measured by the benchmark.
 
 # Metrics
 

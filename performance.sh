@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Usage: performance.sh <compacting|copying|no|experimental> <scenario_name>
+# Usage: performance.sh <compacting|copying|no|generational> <scenario_name>
 
 if [ -z "$1" ] || [ -z "$2" ]
 then
-    echo "Usage: performance.sh <compacting|copying|no|experimental> <scenario_name>"
+    echo "Usage: performance.sh <compacting|copying|no|generational> <scenario_name>"
     exit 1
 fi
 mkdir -p log
