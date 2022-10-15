@@ -354,14 +354,14 @@ The following performance metrics are computed by the benchmark:
 | Memory Size           | Maximum allocated memory size                 | lower     | `MAX(memory)`
 | Mutator Utilization   | Fraction of mutator of total program time     | higher    | `SUM(mutator) / (SUM(mutator) + SUM(collector))`
 | Max GC Pause          | Longest GC run blocking mutator (instructions)| lower     | `MAX(collector)`
-| MMU                   | Minimum mutator utilzation per call           | higher    | `MIN(mutator / (mutator + collector))`
+| MMU                   | Minimum mutator utilzation per call           | higher    | `MIN(mutator / (mutator + collector)) for mutator > threshold`
 | Total Instructions    | Total number of instructions executed         | lower     | `SUM(mutator) + SUM(collector)`
 | Total Mutator         | Number of instructions executed by mutator    | lower     | `SUM(mutator)`
 | Survival Rate         | Fraction of retained objects per GC run       | neutral   | `1-AVG(reclaimed[i] / SUM(allocated[0..i]) - SUM(reclaimed[0..i-1])`
 
-`rts_collector_instructions()` always returns some small values (below 1000) even if GC has not run. Therefore, for these performance metric computations, collector values under 10_000 instructions per measurement points (message call) are neglected (considered as 0).
+`rts_collector_instructions()` always returns some small values (below 1000) even if GC has not run. Therefore, for these performance metric computations, collector values less or equal 10_000 instructions per measurement points (message call) are neglected (considered as 0).
 
-Minimum mutator utilization is the smallest value of mutator utilization, calculated for every time slice, here for every scenario step. This is an indicator for real-time feasability, related to max GC pause.
+Minimum mutator utilization is the smallest value of mutator utilization, calculated for every time slice where the mutator performed a relevant work (above 10_000 instructions), here for every scenario step. This is an indicator for real-time feasability, related to max GC pause.
 
 Survival rate makes more sense for generational garbage collection, where the metric specifies the fraction of young live objects that get promoted to the older generation. Here, it denotes the fraction of alive objects per GC run.
 

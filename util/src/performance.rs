@@ -54,6 +54,7 @@ impl PerformanceMetric {
 }
 
 const GC_RELEVANCE_THRESHOLD: u64 = 10_000;
+const MUTATOR_RELEVANCE_THRESHOLD: u64 = 10_000;
 
 impl Performance {
     fn new(file_name: &str) -> Performance {
@@ -130,6 +131,7 @@ impl Performance {
                     (m, &0)
                 }
             })
+            .filter(|(m, _)| **m > MUTATOR_RELEVANCE_THRESHOLD)
             .map(|(m, c)| *m as f64 / (*m as f64 + *c as f64))
             .fold(f64::INFINITY, |x, y| x.min(y))
     }
