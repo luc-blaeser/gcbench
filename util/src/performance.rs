@@ -160,52 +160,62 @@ impl Performance {
         survival_rates.iter().sum::<f64>() / survival_rates.len() as f64
     }
 
-    pub fn get_value(&self, metric: &PerformanceMetric) -> String {
+    pub fn get_value(&self, metric: &PerformanceMetric) -> f64 {
+        match metric {
+            PerformanceMetric::FinalHeapSize => self.final_heap_size() as f64,
+            PerformanceMetric::MemorySize => self.memory_size() as f64,
+            PerformanceMetric::MutatorUtilization => self.mutator_utilization(),
+            PerformanceMetric::MaxGcPause => self.max_gc_pause() as f64,
+            PerformanceMetric::MMU => self.minimum_mutator_utilization(),
+            PerformanceMetric::TotalInstructions => self.total_instructions() as f64,
+            PerformanceMetric::TotalMutator => self.total_mutator() as f64,
+            PerformanceMetric::SurvivalRate => self.survival_rate(),
+        }
+    }
+
+    pub fn display(metric: &PerformanceMetric, value: f64) -> String {
         match metric {
             PerformanceMetric::FinalHeapSize => {
-                let value = common::to_mb(self.final_heap_size());
+                let value = common::to_mb(value as u64);
                 let mut result = String::new();
                 write!(&mut result, "{value} MB").unwrap();
                 result
             }
             PerformanceMetric::MemorySize => {
-                let value = common::to_mb(self.memory_size());
+                let value = common::to_mb(value as u64);
                 let mut result = String::new();
                 write!(&mut result, "{value} MB").unwrap();
                 result
             }
             PerformanceMetric::MutatorUtilization => {
-                let value = self.mutator_utilization() * 100.0;
+                let value = value * 100.0;
                 let mut result = String::new();
                 write!(&mut result, "{value:.1} %").unwrap();
                 result
             }
             PerformanceMetric::MaxGcPause => {
-                let value = self.max_gc_pause() as f64;
                 let mut result = String::new();
                 write!(&mut result, "{value:.1e}").unwrap();
                 result
             }
             PerformanceMetric::MMU => {
-                let value = self.minimum_mutator_utilization() * 100.0;
+                let value = value * 100.0;
                 let mut result = String::new();
                 write!(&mut result, "{value:.1} %").unwrap();
                 result
             }
             PerformanceMetric::TotalInstructions => {
-                let value = self.total_instructions() as f64;
                 let mut result = String::new();
                 write!(&mut result, "{value:.1e}").unwrap();
                 result
             }
             PerformanceMetric::TotalMutator => {
-                let value = self.total_mutator() as f64;
                 let mut result = String::new();
                 write!(&mut result, "{value:.1e}").unwrap();
                 result
             }
             PerformanceMetric::SurvivalRate => {
-                let value = self.survival_rate() * 100.0;
+                let value = value * 100.0;
                 let mut result = String::new();
                 write!(&mut result, "{value:.1} %").unwrap();
                 result

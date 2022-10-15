@@ -55,3 +55,13 @@ pub fn to_mb(value: u64) -> u64 {
     const MB: u64 = 1024 * 1024;
     (value + MB - 1) / MB
 }
+
+pub fn average(iterator: Vec<f64>) -> f64 {
+    let mut sum = 0.;
+    let mut count = 0;
+    for value in iterator {
+        sum += value;
+        count += 1
+    }
+    sum / count as f64
+}

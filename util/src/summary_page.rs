@@ -1,4 +1,9 @@
-use crate::{benchmark::Benchmark, limit::LimitMetric, performance::PerformanceMetric};
+use crate::{
+    benchmark::Benchmark,
+    common::average,
+    limit::LimitMetric,
+    performance::{Performance, PerformanceMetric},
+};
 use std::fmt::Write;
 
 pub struct SummaryPage {
@@ -42,7 +47,7 @@ impl SummaryPage {
             let gc_type = &performance.test_case.gc_type;
             write!(output, "<tr><td><a href=\"chart-{scenario_name}-{gc_type}.html\">{scenario_name} ({gc_type} GC)</a></td>").unwrap();
             for metric in PerformanceMetric::all() {
-                let value = performance.get_value(&metric);
+                let value = Performance::display(&metric, performance.get_value(&metric));
                 write!(output, "<td>{value}</td>").unwrap()
             }
             output.push_str("</tr>")
@@ -53,17 +58,17 @@ impl SummaryPage {
     fn render_performance_metric(&self, output: &mut String, metric: PerformanceMetric) {
         let metric_name = metric.name();
         write!(output, "<h3>{metric_name}</h3>").unwrap();
-        output.push_str("<table><thead><th>Scenario</th>");
+        output.push_str("<table><thead><tr><th>Scenario</th>");
         for gc_type in &self.benchmark.gc_types {
             write!(output, "<th>{gc_type} GC</th>").unwrap();
         }
-        output.push_str("</thead>");
+        output.push_str("</tr></thead>");
         for scenario_name in &self.benchmark.performance_scenarios {
             write!(output, "<tr><td>{scenario_name}</td>").unwrap();
             for gc_type in &self.benchmark.gc_types {
                 match self.benchmark.get_performance(scenario_name, gc_type) {
                     Some(performance) => {
-                        let value = performance.get_value(&metric);
+                        let value = Performance::display(&metric, performance.get_value(&metric));
                         write!(
                             output,
                             "<td><a href=\"chart-{scenario_name}-{gc_type}.html\">{value}</a></td>"
@@ -75,17 +80,31 @@ impl SummaryPage {
             }
             output.push_str("</tr>");
         }
+        output.push_str("<tr><tfoot><tr><td>Average</td>");
+        for gc_type in &self.benchmark.gc_types {
+            let values: Vec<f64> = self
+                .benchmark
+                .performance_scenarios
+                .iter()
+                .map(|scenario_name| self.benchmark.get_performance(scenario_name, gc_type))
+                .filter(|option| option.is_some())
+                .map(|performance| performance.unwrap().get_value(&metric))
+                .collect();
+            let average = Performance::display(&metric, average(values));
+            write!(output, "<td>{average}</td>").unwrap();
+        }
+        output.push_str("</tr></tfoot>");
         output.push_str("</table>");
     }
 
     fn render_limit_summary(&self, output: &mut String) {
         output.push_str("<h3>Limits</h3>");
-        output.push_str("<table><thead><th>Scenario</th>");
+        output.push_str("<table><thead><tr><th>Scenario</th>");
         for metric in LimitMetric::all() {
             let metric_name = metric.name();
             write!(output, "<th>{metric_name}</th>").unwrap()
         }
-        output.push_str("</thead>");
+        output.push_str("</tr></thead>");
         for limits in &self.benchmark.limits {
             let scenario_name = &limits.test_case.scenario_name;
             let gc_type = &limits.test_case.gc_type;
@@ -102,11 +121,11 @@ impl SummaryPage {
     fn render_limit_metric(&self, output: &mut String, metric: LimitMetric) {
         let metric_name = metric.name();
         write!(output, "<h3>{metric_name}</h3>").unwrap();
-        output.push_str("<table><thead><th>Scenario</th>");
+        output.push_str("<table><thead><tr><th>Scenario</th>");
         for gc_type in &self.benchmark.gc_types {
             write!(output, "<th>{gc_type} GC</th>").unwrap();
         }
-        output.push_str("</thead>");
+        output.push_str("</tr></thead>");
         for scenario_name in &self.benchmark.limits_scenarios {
             write!(output, "<tr><td>{scenario_name}</td>").unwrap();
             for gc_type in &self.benchmark.gc_types {
