@@ -7,16 +7,22 @@ import Blob "mo:base/Blob";
 import Nat "mo:base/Nat";
 import Debug "mo:base/Debug";
 import Trace "../trace";
+import Prim "mo:prim";
 
 /// Generate a random maze using cryptographic randomness.
 ///
 /// Illustrates library `Random.mo` for cryptographic randomness. In particlar:
 ///
-/// * asynchronous requests for initial and additional entropy using
-///   shared function `Random.blob()`; and
 /// * generating bounded, discrete random numbers using class `Random.Finite()`.
+/// * Uses fix random seed for reproducibility and benchmark comparability
 
 module {
+  func randomSeed(): Blob {
+    let blockSize = 65536;
+    let headerSize = 8;
+    ignore Prim.stableMemoryGrow(1);
+    Prim.stableMemoryLoadBlob(0, blockSize - headerSize)
+  };
 
   type Maze = [[var Nat8]];
 
@@ -96,7 +102,7 @@ module {
     // Use iterative depth-first search on odd numbered entries
     // to turn walls into cells connected by random halls
     let s = Stack.Stack<(Nat,Nat)>();
-    let entropy = await Random.blob(); // get initial entropy
+    let entropy = randomSeed(); // deterministic seed
     await Trace.point();
     var f = Random.Finite(entropy);
 
@@ -126,7 +132,7 @@ module {
               };
               case null { // not enough entropy
                 Debug.print("need more entropy...");
-                let entropy = await Random.blob(); // get more entropy
+                let entropy = randomSeed(); // deterministic seed
                 await Trace.point();
                 f := Random.Finite(entropy);
                 s.push((i,j)); // continue from (i,j)
@@ -137,5 +143,4 @@ module {
       }
     }
   };
-
 };

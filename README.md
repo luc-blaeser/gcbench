@@ -208,6 +208,8 @@ Random Maze sample from the Motoko playground, with the following scenario. Addi
 ( 5, func(): async () { await generate(200) } )
 ```
 
+**Note**: Adjusted to fix random seed to ensure deterministic runtime behavior and allow benchmark comparability.
+
 (Compiler warning originates from the embedded sample code.)
 
 **Motivation**: Include a more representative example taken from the Motoko playground. The scenario is also relatively compute-intense.
