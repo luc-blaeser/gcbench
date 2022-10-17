@@ -1,7 +1,7 @@
 use crate::{
     benchmark::Benchmark,
-    common::average,
-    limit::LimitMetric,
+    common::{average_f64, average_u64},
+    limit::{Limit, LimitMetric},
     performance::{Performance, PerformanceMetric},
 };
 use std::fmt::Write;
@@ -90,7 +90,7 @@ impl SummaryPage {
                 .filter(|option| option.is_some())
                 .map(|performance| performance.unwrap().get_value(&metric))
                 .collect();
-            let average = Performance::display(&metric, average(values));
+            let average = Performance::display(&metric, average_f64(values));
             write!(output, "<td>{average}</td>").unwrap();
         }
         output.push_str("</tr></tfoot>");
@@ -110,7 +110,7 @@ impl SummaryPage {
             let gc_type = &limits.test_case.gc_type;
             write!(output, "<tr><td>{scenario_name} ({gc_type} GC)</td>").unwrap();
             for metric in LimitMetric::all() {
-                let value = limits.get_value(&metric);
+                let value = Limit::display(&metric, limits.get_value(&metric));
                 write!(output, "<td>{value}</td>").unwrap()
             }
             output.push_str("</tr>")
@@ -131,18 +131,28 @@ impl SummaryPage {
             for gc_type in &self.benchmark.gc_types {
                 match self.benchmark.get_limits(scenario_name, gc_type) {
                     Some(limits) => {
-                        let value = limits.get_value(&metric);
-                        write!(
-                            output,
-                            "<td><a href=\"chart-{scenario_name}-{gc_type}.html\">{value}</a></td>"
-                        )
-                        .unwrap()
+                        let value = Limit::display(&metric, limits.get_value(&metric));
+                        write!(output, "<td>{value}</td>").unwrap()
                     }
                     None => output.push_str("<td>--</td>"),
                 }
             }
             output.push_str("</tr>");
         }
+        output.push_str("<tr><tfoot><tr><td>Average</td>");
+        for gc_type in &self.benchmark.gc_types {
+            let values: Vec<u64> = self
+                .benchmark
+                .limits_scenarios
+                .iter()
+                .map(|scenario_name| self.benchmark.get_limits(scenario_name, gc_type))
+                .filter(|option| option.is_some())
+                .map(|limits| limits.unwrap().get_value(&metric))
+                .collect();
+            let average = Limit::display(&metric, average_u64(values));
+            write!(output, "<td>{average}</td>").unwrap();
+        }
+        output.push_str("</tr></tfoot>");
         output.push_str("</table>");
     }
 }

@@ -197,7 +197,7 @@ impl Performance {
             }
             PerformanceMetric::MaxGcPause => {
                 let mut result = String::new();
-                write!(&mut result, "{value:.1e}").unwrap();
+                write!(&mut result, "{value:.2e}").unwrap();
                 result
             }
             PerformanceMetric::MMU => {
@@ -208,12 +208,12 @@ impl Performance {
             }
             PerformanceMetric::TotalInstructions => {
                 let mut result = String::new();
-                write!(&mut result, "{value:.1e}").unwrap();
+                write!(&mut result, "{value:.2e}").unwrap();
                 result
             }
             PerformanceMetric::TotalMutator => {
                 let mut result = String::new();
-                write!(&mut result, "{value:.1e}").unwrap();
+                write!(&mut result, "{value:.2e}").unwrap();
                 result
             }
             PerformanceMetric::SurvivalRate => {

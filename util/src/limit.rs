@@ -50,16 +50,22 @@ impl Limit {
         }
     }
 
-    pub fn get_value(&self, metric: &LimitMetric) -> String {
+    pub fn get_value(&self, metric: &LimitMetric) -> u64 {
+        match metric {
+            LimitMetric::AllocationLimit => self.allocations,
+            LimitMetric::HeapMaximum => self.heap,
+        }
+    }
+
+    pub fn display(metric: &LimitMetric, value: u64) -> String {
         match metric {
             LimitMetric::AllocationLimit => {
-                let value = self.allocations;
                 let mut result = String::new();
                 write!(&mut result, "{value}").unwrap();
                 result
             }
             LimitMetric::HeapMaximum => {
-                let value = common::to_mb(self.heap);
+                let value = common::to_mb(value);
                 let mut result = String::new();
                 write!(&mut result, "{value} MB").unwrap();
                 result

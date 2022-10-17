@@ -56,7 +56,7 @@ pub fn to_mb(value: u64) -> u64 {
     (value + MB - 1) / MB
 }
 
-pub fn average(iterator: Vec<f64>) -> f64 {
+pub fn average_f64(iterator: Vec<f64>) -> f64 {
     let mut sum = 0.;
     let mut count = 0;
     for value in iterator {
@@ -64,4 +64,14 @@ pub fn average(iterator: Vec<f64>) -> f64 {
         count += 1
     }
     sum / count as f64
+}
+
+pub fn average_u64(iterator: Vec<u64>) -> u64 {
+    let mut sum = 0;
+    let mut count = 0;
+    for value in iterator {
+        sum += value;
+        count += 1
+    }
+    sum / count as u64
 }
