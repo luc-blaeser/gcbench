@@ -6,7 +6,7 @@ import Benchmark "../benchmark";
 import Runtime "../runtime";
 
 actor {
-    let Order = 4;
+    let Order = 256;
 
     var tree = do {
         BTree.init<Nat, Nat>(Order)

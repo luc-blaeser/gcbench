@@ -167,7 +167,7 @@ The current Motoko base library implementation of a red-black tree, storing Nat 
 
 **Motivation**: Having a real implementation and more complex data structure implementation, with more temporary object allocations.
 
-## Imperative Red-Black Tree (Small Items)
+## Imperative Red-Black Tree (Byron Becker)
 
 Imperative implementation of red-black trees obtained by user community member Byron Becker. The data structure implementation has been somewhat adjusted. Scenario of storing Nat to Nat entries:
 
@@ -180,6 +180,20 @@ Imperative implementation of red-black trees obtained by user community member B
 ```
 
 **Motivation**: Real example reported as a scalability challenge by a community member.
+
+## BTree (Byron Becker/Canscale)
+
+BTree map implementation by Byron Becker, Canscale, Apache 2.0 license. Tree order of 256, storing Nat to Nat entries:
+
+```
+( 30, func() { populate(10_000) } ),
+( 10, func() { retrieve() } ),
+( 1, func() { clear() } ),
+( 40, func() { populate(10_000) } ),
+( 10, func() { retrieve() } )
+```
+
+**Motivation**: Real use case from the community.
 
 ## Trie Map (Small Items)
 
@@ -310,6 +324,7 @@ Scenario:
 | `reversi`             | Reversi (perf test)               |
 | `sha256`              | SHA256 (perf test)                |
 | `cancan`              | CanCan video sharing (DFINITY)    |
+| `btree-map`           | BTree Map (Byron Becker)          |
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into measurement steps, to give the GC a possibility to run in between.
