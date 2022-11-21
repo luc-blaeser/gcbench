@@ -341,13 +341,30 @@ All scenarios are run with the following GCs of the Motoko implementation:
 | `copying`         | Copying GC                                                |
 | `no`              | No GC (special build, see below)                          |
 | `generational`    | Generational GC (special build, see below)                |
+| `incremental`     | Incremental GC (special build, see below)                |
 
 
 For running `no` GC or `generational` GC, use the compiler and runtime system from branch `https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc`. Please see the instructions below.
 
+For running `incremental` GC, use the compiler and runtime system from branch `https://github.com/dfinity/motoko/tree/luc%2Fincremental-gc`. Please see the instructions below.
+
 ### Generational GC
 
 1. Clone the motoko repo and switch to branch `luc/generational_gc`. The source is located at [https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc](https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc)
+2. Under `src`, build with `make`
+3. Set the environment variable `DFX_MOC_PATH` to refer to this special GC compiler build.
+
+```
+export DFX_MOC_LOC=<PATH_TO_REPO_FOLDER>/bin/moc
+```
+
+Alternatively, you can store the environment variable in the shell config, e.g. `~/.zshrc`.
+
+**Note**: The special GC build also includes the classical compacting and copying GCs, such that they can also be run and measured by the benchmark.
+
+### Incremental GC
+
+1. Clone the motoko repo and switch to branch `luc/incremental_gc`. The source is located at [https://github.com/dfinity/motoko/tree/luc%2Fincremental-gc](https://github.com/dfinity/motoko/tree/luc%2Fincremental-gc)
 2. Under `src`, build with `make`
 3. Set the environment variable `DFX_MOC_PATH` to refer to this special GC compiler build.
 
