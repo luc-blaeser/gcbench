@@ -50,7 +50,7 @@ Initial benchmarking of GC performance of Motoko, to be extended and refined...
 Performance test cases can also be selectively run, by choosing the GC and the scenario:
 
 ```
-./performance.sh <compacting|copying|no|generational> <scenario_name>
+./performance.sh <compacting|copying|no|generational|incremental> <scenario_name>
 ```
 
 For example, to run the linked list performance test with the compacting GC:
@@ -64,7 +64,7 @@ The scenario names are lised below.
 Moreover, GC limit tests can be selectively run (see also below):
 
 ```
-./limit.sh <compacting|copying|no|generational> <scenario_name>
+./limit.sh <compacting|copying|no|generational|incremental> <scenario_name>
 ```
 
 ## Reports and Charts
@@ -352,7 +352,8 @@ For running `incremental` GC, use the compiler and runtime system from branch `h
 
 1. Clone the motoko repo and switch to branch `luc/generational_gc`. The source is located at [https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc](https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc)
 2. Under `src`, build with `make`
-3. Set the environment variable `DFX_MOC_PATH` to refer to this special GC compiler build.
+3. Under `rts`, build with `make`
+4. Set the environment variable `DFX_MOC_PATH` to refer to this special GC compiler build.
 
 ```
 export DFX_MOC_LOC=<PATH_TO_REPO_FOLDER>/bin/moc
@@ -366,7 +367,8 @@ Alternatively, you can store the environment variable in the shell config, e.g. 
 
 1. Clone the motoko repo and switch to branch `luc/incremental_gc`. The source is located at [https://github.com/dfinity/motoko/tree/luc%2Fincremental-gc](https://github.com/dfinity/motoko/tree/luc%2Fincremental-gc)
 2. Under `src`, build with `make`
-3. Set the environment variable `DFX_MOC_PATH` to refer to this special GC compiler build.
+3. Under `rts`, build with `make`
+4. Set the environment variable `DFX_MOC_PATH` to refer to this special GC compiler build.
 
 ```
 export DFX_MOC_LOC=<PATH_TO_REPO_FOLDER>/bin/moc
