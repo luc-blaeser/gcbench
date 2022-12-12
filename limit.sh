@@ -18,3 +18,4 @@ then
     exit 1
 fi
 awk '/"Limit, Heap/ { gsub("_", ""); gsub("\\(\"", ""); gsub("\")", ""); gsub("\\\\n", "\n"); print }' $OUT_FILE > $CSV_FILE
+util/target/release/report summary reports/

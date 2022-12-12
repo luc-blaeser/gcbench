@@ -43,14 +43,14 @@ actor {
     };
 
     let script = [
-        ( 30, func() { populate(10_000) } ),
-        ( 10, func() { retrieve() } ),
-        ( 20, func() { discard(10_000) } ),
-        ( 10, func() { retrieve() } ),
         ( 20, func() { populate(10_000) } ),
+        ( 5, func() { retrieve() } ),
+        ( 10, func() { discard(10_000) } ),
+        ( 5, func() { retrieve() } ),
+        ( 10, func() { populate(10_000) } ),
         ( 1, func() { deleteAll() } ),
-        ( 40, func() { populate(10_000) } ),
-        ( 10, func() { retrieve() } )
+        ( 20, func() { populate(10_000) } ),
+        ( 5, func() { retrieve() } )
     ];
 
     public shared func run(): async Text {

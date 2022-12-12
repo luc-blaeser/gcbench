@@ -73,5 +73,9 @@ pub fn average_u64(iterator: Vec<u64>) -> u64 {
         sum += value;
         count += 1
     }
-    sum / count as u64
+    if count != 0 {
+        sum / count as u64
+    } else {
+        0
+    }
 }

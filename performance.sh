@@ -21,3 +21,4 @@ then
 fi
 awk '/"Step, Memory/ { gsub("_", ""); gsub("\",", ""); gsub("  \"", ""); gsub("\\\\n", "\n"); print }' $OUT_FILE > $CSV_FILE
 util/target/release/report chart $CSV_FILE $CHART_FILE
+util/target/release/report summary reports/
