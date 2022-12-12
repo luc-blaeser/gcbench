@@ -19,7 +19,7 @@ pub enum PerformanceMetric {
     MemorySize,
     MutatorUtilization,
     MaxGcPause,
-    MMU,
+    AverageGcPause,
     TotalInstructions,
     TotalMutator,
     SurvivalRate,
@@ -32,7 +32,7 @@ impl PerformanceMetric {
             Self::MemorySize => "Memory Size",
             Self::MutatorUtilization => "Mutator Utilization",
             Self::MaxGcPause => "Max GC Pause",
-            Self::MMU => "Minimum Mutator Utilization (MMU)",
+            Self::AverageGcPause => "Average GC Pause",
             Self::TotalInstructions => "Total Instructions",
             Self::TotalMutator => "Total Mutator",
             Self::SurvivalRate => "Survival Rate",
@@ -45,7 +45,7 @@ impl PerformanceMetric {
             Self::MemorySize,
             Self::MutatorUtilization,
             Self::MaxGcPause,
-            Self::MMU,
+            Self::AverageGcPause,
             Self::TotalInstructions,
             Self::TotalMutator,
             Self::SurvivalRate,
@@ -54,7 +54,6 @@ impl PerformanceMetric {
 }
 
 const GC_RELEVANCE_THRESHOLD: u64 = 10_000;
-const MUTATOR_RELEVANCE_THRESHOLD: u64 = 10_000;
 
 impl Performance {
     fn new(file_name: &str) -> Performance {
@@ -120,20 +119,19 @@ impl Performance {
         }
     }
 
-    pub fn minimum_mutator_utilization(&self) -> f64 {
-        self.mutator
+    pub fn average_gc_pause(&self) -> f64 {
+        let collector_total: u64 = self
+            .collector
             .iter()
-            .zip(self.collector.iter())
-            .map(|(m, c)| {
-                if *c > GC_RELEVANCE_THRESHOLD {
-                    (m, c)
+            .map(|value| {
+                if *value > GC_RELEVANCE_THRESHOLD {
+                    value
                 } else {
-                    (m, &0)
+                    &0
                 }
             })
-            .filter(|(m, _)| **m > MUTATOR_RELEVANCE_THRESHOLD)
-            .map(|(m, c)| *m as f64 / (*m as f64 + *c as f64))
-            .fold(f64::INFINITY, |x, y| x.min(y))
+            .sum();
+        collector_total as f64 / self.collector.len() as f64
     }
 
     pub fn total_instructions(&self) -> u64 {
@@ -168,7 +166,7 @@ impl Performance {
             PerformanceMetric::MemorySize => self.memory_size() as f64,
             PerformanceMetric::MutatorUtilization => self.mutator_utilization(),
             PerformanceMetric::MaxGcPause => self.max_gc_pause() as f64,
-            PerformanceMetric::MMU => self.minimum_mutator_utilization(),
+            PerformanceMetric::AverageGcPause => self.average_gc_pause(),
             PerformanceMetric::TotalInstructions => self.total_instructions() as f64,
             PerformanceMetric::TotalMutator => self.total_mutator() as f64,
             PerformanceMetric::SurvivalRate => self.survival_rate(),
@@ -200,10 +198,9 @@ impl Performance {
                 write!(&mut result, "{value:.2e}").unwrap();
                 result
             }
-            PerformanceMetric::MMU => {
-                let value = value * 100.0;
+            PerformanceMetric::AverageGcPause => {
                 let mut result = String::new();
-                write!(&mut result, "{value:.1} %").unwrap();
+                write!(&mut result, "{value:.2e}").unwrap();
                 result
             }
             PerformanceMetric::TotalInstructions => {
