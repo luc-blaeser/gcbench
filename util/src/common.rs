@@ -51,6 +51,24 @@ pub fn get_file_name(path: &str) -> &str {
     Path::new(path).file_name().unwrap().to_str().unwrap()
 }
 
+pub fn with_thousand_separators(value: u64) -> String {
+    let mut output = String::new();
+    let mut dividend = value;
+    let mut count = 0;
+    loop {
+        let digit = (dividend % 10) as u32;
+        dividend /= 10;
+        output.insert(0, char::from_digit(digit, 10).unwrap());
+        count += 1;
+        if dividend == 0 {
+            return output;
+        }
+        if count % 3 == 0 {
+            output.insert(0, '_');
+        }
+    }
+}
+
 pub fn to_mb(value: u64) -> u64 {
     const MB: u64 = 1024 * 1024;
     (value + MB - 1) / MB
