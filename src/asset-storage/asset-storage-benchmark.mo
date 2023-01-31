@@ -20,7 +20,8 @@ actor {
             ignore test.list();
             await test.store(path, Prim.stableMemoryLoadBlob(0, blockSize - headerSize));
             ignore test.list();
-            ignore await test.retrieve(path)
+            ignore await test.retrieve(path);
+            await Trace.point();
         };
         await Trace.result()
     };

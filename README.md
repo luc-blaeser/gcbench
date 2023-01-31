@@ -299,7 +299,7 @@ Source: [https://github.com/dfinity/cancan-archived](https://github.com/dfinity/
 CanCan video-sharing service project by DFINITY (Apache 2.0 license). Measurement trace point inserted in `CanCan.mo`.
 
 Scenario:
-- 8 user created, each uploading a video of 16 chunks of 1 MB data (16MB video)
+- 10 user created, each uploading a video of 16 chunks of 1 MB data (16MB video)
 
 (Compiler warnings originate from the included CanCan project.)
 
