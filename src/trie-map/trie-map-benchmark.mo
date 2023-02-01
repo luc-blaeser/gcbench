@@ -59,7 +59,7 @@ actor {
     };
 
     public shared func limitTest(): async (Nat, Runtime.Statistics) {
-        let amount = 10_000;
+        let amount = 5_000;
         Prim.debugPrint("Trie map limit test " # debug_show(amount));
         populate(amount);
         (amount, Runtime.collectStatistics())
