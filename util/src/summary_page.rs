@@ -1,6 +1,6 @@
 use crate::{
     benchmark::Benchmark,
-    common::{average_f64, average_u64},
+    common::{average_u64},
     limit::{Limit, LimitMetric},
     performance::{Performance, PerformanceMetric},
 };
@@ -80,7 +80,8 @@ impl SummaryPage {
             }
             output.push_str("</tr>");
         }
-        output.push_str("<tr><tfoot><tr><td>Average</td>");
+        let summary_label = metric.summary_label();
+        write!(output, "<tr><tfoot><tr><td>{summary_label}</td>").unwrap();
         for gc_type in &self.benchmark.gc_types {
             let values: Vec<f64> = self
                 .benchmark
@@ -90,8 +91,8 @@ impl SummaryPage {
                 .filter(|option| option.is_some())
                 .map(|performance| performance.unwrap().get_value(&metric))
                 .collect();
-            let average = Performance::display(&metric, average_f64(values));
-            write!(output, "<td>{average}</td>").unwrap();
+            let summary_value = Performance::display(&metric, metric.summary_value(values));
+            write!(output, "<td>{summary_value}</td>").unwrap();
         }
         output.push_str("</tr></tfoot>");
         output.push_str("</table>");

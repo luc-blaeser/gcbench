@@ -1,4 +1,4 @@
-use crate::{common, test_case::TestCase};
+use crate::{common::{self, average_f64, max_f64}, test_case::TestCase};
 use std::fmt::Write;
 
 #[derive(Clone)]
@@ -36,6 +36,20 @@ impl PerformanceMetric {
             Self::TotalInstructions => "Total Instructions",
             Self::TotalMutator => "Total Mutator",
             Self::SurvivalRate => "Survival Rate",
+        }
+    }
+
+    pub fn summary_label(&self) -> &str {
+        match &self {
+            Self::MaxGcPause => "Maximum",
+            _ => "Average",
+        }
+    }
+
+    pub fn summary_value(&self, values: Vec<f64>) -> f64 {
+        match &self {
+            Self::MaxGcPause => max_f64(values),
+            _ => average_f64(values)
         }
     }
 

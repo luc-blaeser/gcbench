@@ -84,6 +84,16 @@ pub fn average_f64(iterator: Vec<f64>) -> f64 {
     sum / count as f64
 }
 
+pub fn max_f64(iterator: Vec<f64>) -> f64 {
+    let mut max = f64::NEG_INFINITY;
+    for value in iterator {
+        if value > max {
+            max = value;
+        }
+    }
+    max
+}
+
 pub fn average_u64(iterator: Vec<u64>) -> u64 {
     let mut sum = 0;
     let mut count = 0;
