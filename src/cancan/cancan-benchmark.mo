@@ -4,7 +4,7 @@ import CanCan "dfinity/service/CanCan";
 import Trace "../trace";
 
 actor {
-    let userCount = 8;
+    let userCount = 10;
     let chunkCount = 16;
 
     let pages = 16;

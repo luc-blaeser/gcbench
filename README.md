@@ -120,6 +120,23 @@ Buffer of the Motoko base library containing Nat numbers. The buffer's implement
 
 **Rationale**: Measuring the heap with a memory-compact data structure that is part of the Motoko base library. The scenario creates large-growing list-internal arrays on the heap. Few pointers are used.
 
+## Scalable Buffer (Small Items)
+
+Two-level buffer that scales for larger sizes because of limited array list grow size. The first level is bounded to 1024 * 1024 elements.
+
+```
+( 50, func() { populate(100_000) } ),
+( 10, func() { traverse() } ),
+( 25, func() { discard(100_000) } ),
+( 10, func() { traverse() } ),
+( 25, func() { populate(100_000) } ),
+( 1, func() { clear() } ),
+( 45, func() { populate(100_000) } ),
+( 10, func() { traverse() } )
+```
+
+**Rationale**: Measuring the heap with a memory-compact but scalable array list structure. Avoids too large arrays in the heap.
+
 ## Blobs (Large Items)
 
 A `Buffer` containing 64KB BLOBS as element items. Scenario of several steps:
@@ -299,7 +316,7 @@ Source: [https://github.com/dfinity/cancan-archived](https://github.com/dfinity/
 CanCan video-sharing service project by DFINITY (Apache 2.0 license). Measurement trace point inserted in `CanCan.mo`.
 
 Scenario:
-- 8 user created, each uploading a video of 16 chunks of 1 MB data (16MB video)
+- 10 user created, each uploading a video of 16 chunks of 1 MB data (16MB video)
 
 (Compiler warnings originate from the included CanCan project.)
 
@@ -325,6 +342,7 @@ Scenario:
 | `sha256`              | SHA256 (perf test)                |
 | `cancan`              | CanCan video sharing (DFINITY)    |
 | `btree-map`           | BTree Map (Byron Becker)          |
+| `scalable-buffer`     | Scalable buffer                   |
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into measurement steps, to give the GC a possibility to run in between.
@@ -437,18 +455,3 @@ The generated charts show the following properties over the time axis of the ste
 * Runtime chart
     - Mutator instructions, garbage collector instructions
 
-# Observations
-
-Strength:
-- **Space efficiency**: Due to compaction, heap size space is quite efficiently used and external fragmentation avoided. The compacting GC minimizes space usage, while copying GC requires extra copying space (two space copy technique).
-
-Shortcomings:
-- **Long GC pauses**: High GC spikes can be observed in the runtime chart with growing and allocation-intense scenarios (due to the stop-the-world GC design). This soon exceeds the message instruction limit, meaning that the program can only scale to relatively small heap size (e.g. linked list with small blocks can only use up to 160 MB heap space with both compacting and copying GC). An incremental GC would alleviate this limitation.
-- **High runtime costs**: Mutator utlization is relatively low for allocation-intense scenarios, meaning that the GC consumes a substantial amount of runtime (e.g. for blobs with the copying GC, the mutator only runs 15% of the programs instructions, while GC accounts for the remaining 85% of the total number of instructions). Reducing GC costs, e.g. with generational or partitioned collection, or simply by more sophistcated GC scheduling heurtistics, would be beneficial.
-- **Stack root set**: The current GC implementations do not yet scan the call stack for the root set, such that the GC can only run on very specific moments when the stack is empty, such as before or after message calls, including continuation points (await). If memory grows too fast during a message call, the GC cannot reclaim memory in meantime, such that the programs runs out of heap space.
-
-Specific:
-- For compute-intense cases, utilization is relatively high (`extendable-token` and `random-maze`).
-- Compacting GC allows many more allocations of larger objects (limit test case `blobs`).
-- Copying GC scales higher and is more efficient for smaller objects (limit cases `rb-tree` and `trie-map` and instruction total for all cases except `blobs`).
-- A lot of temporary function-bound objects produce a high garbage load (e.g. cases `rb-tree`, `trie-map`).

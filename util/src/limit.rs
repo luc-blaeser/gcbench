@@ -59,11 +59,7 @@ impl Limit {
 
     pub fn display(metric: &LimitMetric, value: u64) -> String {
         match metric {
-            LimitMetric::AllocationLimit => {
-                let mut result = String::new();
-                write!(&mut result, "{value}").unwrap();
-                result
-            }
+            LimitMetric::AllocationLimit => common::with_thousand_separators(value),
             LimitMetric::HeapMaximum => {
                 let value = common::to_mb(value);
                 let mut result = String::new();

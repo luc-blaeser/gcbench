@@ -2,7 +2,6 @@ import Error "assetstorage/Error";
 import Tree "assetstorage/RBTree";
 import Text "assetstorage/Text";
 import Iter "assetstorage/Iter";
-import Trace "../trace";
 
 shared({caller = creator}) actor class AssetStorage () {
 
@@ -19,11 +18,9 @@ shared({caller = creator}) actor class AssetStorage () {
         } else {
             db.put(path, contents);
         };
-        await Trace.point()
     };
 
     public /*query*/ func retrieve(path : Path) : async Contents {
-        await Trace.point();
         switch (db.get(path)) {
         case null throw Error.reject("not found");
         case (?contents) contents;
@@ -32,7 +29,6 @@ shared({caller = creator}) actor class AssetStorage () {
 
     public /*query*/ func list() : async [Path] {
         let iter = Iter.map<(Path, Contents), Path>(db.entries(), func (path, _) = path);
-        await Trace.point();
         Iter.toArray(iter);
     };
 };
