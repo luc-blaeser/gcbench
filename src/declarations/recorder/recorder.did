@@ -9,7 +9,7 @@ type Statistics =
    reclaimed: nat;
  };
 service : {
-  get: (nat) -> (opt Statistics);
   "record": (Statistics) -> ();
   result: () -> (text);
+  state: () -> (vec Statistics);
 }

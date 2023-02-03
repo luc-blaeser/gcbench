@@ -11,7 +11,7 @@ export interface Statistics {
   'memorySize' : bigint,
 }
 export interface _SERVICE {
-  'get' : ActorMethod<[bigint], [] | [Statistics]>,
   'record' : ActorMethod<[Statistics], undefined>,
   'result' : ActorMethod<[], string>,
+  'state' : ActorMethod<[], Array<Statistics>>,
 }

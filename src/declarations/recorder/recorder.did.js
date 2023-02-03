@@ -9,9 +9,9 @@ export const idlFactory = ({ IDL }) => {
     'memorySize' : IDL.Nat,
   });
   return IDL.Service({
-    'get' : IDL.Func([IDL.Nat], [IDL.Opt(Statistics)], []),
     'record' : IDL.Func([Statistics], [], []),
     'result' : IDL.Func([], [IDL.Text], []),
+    'state' : IDL.Func([], [IDL.Vec(Statistics)], []),
   });
 };
 export const init = ({ IDL }) => { return []; };

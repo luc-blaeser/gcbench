@@ -3,30 +3,28 @@ import Runtime "runtime";
 import Buffer "mo:base/Buffer";
 
 actor {
-    let initalCapacity = 100;
+    let initalCapacity = 250;
     var buffer = Buffer.Buffer<Runtime.Statistics>(initalCapacity);
 
-    var log = "Step, " # Runtime.statisticsLegend # "\n";
-    var step = 0;
-
     public func record(statistics: Runtime.Statistics): async () {
-        buffer.add(statistics);
-        Prim.debugPrint("Step " # debug_show(step));
+        Prim.debugPrint("Step " # debug_show(buffer.size()));
         let values = Runtime.dumpStatistics(statistics);
         Prim.debugPrint(values);
-        log #= debug_show(step) # ", " # values # "\n";
-        step += 1
+        buffer.add(statistics);
     };
 
-    public func get(index: Nat): async ?Runtime.Statistics {
-        if (index < buffer.size()) {
-            ?buffer.get(index)
-        } else {
-            null
-        }
+    public func state(): async [Runtime.Statistics] {
+        Buffer.toArray(buffer)
     };
 
     public func result(): async Text {
-        log
+        var text = "Step, " # Runtime.statisticsLegend # "\n";
+        var step = 0;
+        for (statistics in buffer.vals()) {
+            let values = Runtime.dumpStatistics(statistics);
+            text #= debug_show(step) # ", " # values # "\n";
+            step += 1
+        };
+        text
     }
 }
