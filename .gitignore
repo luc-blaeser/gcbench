@@ -7,3 +7,4 @@ Cargo.lock
 /log/
 /dfx.json
 /temporary.sh
+/node_modules

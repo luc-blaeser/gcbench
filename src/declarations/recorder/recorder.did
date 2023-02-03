@@ -1,0 +1,15 @@
+type Statistics = 
+ record {
+   allocated: nat;
+   collectorInstructions: nat;
+   heapSize: nat;
+   maxLiveSize: nat;
+   memorySize: nat;
+   mutatorInstructions: nat;
+   reclaimed: nat;
+ };
+service : {
+  get: (nat) -> (opt Statistics);
+  "record": (Statistics) -> ();
+  result: () -> (text);
+}
