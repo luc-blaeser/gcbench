@@ -189,6 +189,6 @@ function showFullChart(chart, values) {
   chart.update();
 }
 
-var timer = setInterval(updateChart, 250);
+setInterval(updateChart, 250);
 setTimeout(10000);
 setInterval(downloadData, 2500);
