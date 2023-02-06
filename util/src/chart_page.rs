@@ -9,6 +9,12 @@ pub struct ChartPage {
     charts: Vec<Chart>,
 }
 
+impl Chart {
+    fn get_identifier(&self) -> String {
+        self.name.to_lowercase() // TODO: check that identifier is valid
+    }
+}
+
 impl ChartPage {
     pub fn new(performance: &Performance) -> ChartPage {
         let charts = vec![
@@ -31,20 +37,16 @@ impl ChartPage {
                 .unwrap()
         }
 
-        fn get_identifier(name: &str) -> String {
-            name.to_lowercase() // TODO: check that identifier is valid
-        }
-
-        fn append_chart(output: &mut String, name: &str, data_set: &[Series]) {
-            let identifier = &get_identifier(name);
+        fn append_chart(output: &mut String, chart: &Chart) {
+            let identifier = &chart.get_identifier();
             output.push_str("<div style=\"float: left; width: 1500px;\"><h1>");
-            output.push_str(name);
+            output.push_str(&chart.name);
             output.push_str("</h1><canvas id=\"");
             output.push_str(identifier);
             output.push_str("Chart\"></canvas></div><script>const ");
             output.push_str(identifier);
             output.push_str("Data = {labels: [], datasets: [");
-            for series in data_set {
+            for series in &chart.data_set {
                 append_series(output, &series.name, &series.color);
             }
             output.push_str("] }; const ");
@@ -52,7 +54,7 @@ impl ChartPage {
             output.push_str("Config = {type: 'line', data: ");
             output.push_str(identifier);
             output.push_str("Data, options: { scales: { yAxis: { suggestedMin: 0, suggestedMax: ");
-            write!(output, "{}", suggested_max(data_set)).unwrap();
+            write!(output, "{}", suggested_max(&chart.data_set)).unwrap();
             output.push_str(" }  }  } }; const ");
             output.push_str(identifier);
             output.push_str("Chart = new Chart(document.getElementById('");
@@ -63,8 +65,8 @@ impl ChartPage {
             output.push_str("const ");
             output.push_str(identifier);
             output.push_str("Values = [");
-            append_values(output, data_set);
-            output.push_str("];");
+            append_values(output, &chart.data_set);
+            output.push_str("];"); 
             output.push_str("</script>");
         }
 
@@ -102,18 +104,13 @@ impl ChartPage {
             "<!DOCTYPE html><html><head><title>GC Performance {name} ({gc_type} GC)</title><link rel=\"stylesheet\" href=\"style.css\"/></head>"
         )
         .unwrap();
-        output += "<body><script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>";
+        output += "<body><script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script><script src=\"display.js\"></script>";
         write!(output, "<h1>{name} ({gc_type} GC)</h1>").unwrap();
         output += "<form action=\"#\"><button type=\"submit\">Animate</button></form>";
         output += "<script>";
-        output += "var position = 0; const FrameSize = 50; var timer = null;";
-        output += "function addLabel(series, label) { series.splice(position, series.length - position); series.push(label); while (series.length < FrameSize) { series.push('-'); }}";
-        output += "function shiftSeries(series) { if (series.length > FrameSize) { series.splice(0, series.length - FrameSize); } }";
-        output += "function shiftChart(chart) { shiftSeries(chart.data.labels); for (let index = 0; index < chart.data.datasets.length; index++) { shiftSeries(chart.data.datasets[index].data); } }";
-        output += "function addData(chart, label, values) { shiftChart(chart); addLabel(chart.data.labels, label); for (let index = 0; index < values.length; index++) { let value = Number(values[index]); chart.data.datasets[index].data.push(value); } chart.update('none'); }";
         output += "function updateChart() {";
         for chart in &self.charts {
-            let identifier = &get_identifier(&chart.name);
+            let identifier = &chart.get_identifier();
             let length = chart
                 .data_set
                 .iter()
@@ -134,22 +131,19 @@ impl ChartPage {
 
         output += "</script>";
         for chart in &self.charts {
-            append_chart(&mut output, &chart.name, &chart.data_set);
+            append_chart(&mut output, chart);
         }
         output += "<script>";
-        output += "function clearSeries(series) { series.splice(0, series.length); }";
-        output += "function clearChart(chart) { clearSeries(chart.data.labels); for (let index = 0; index < chart.data.datasets.length; index++) { clearSeries(chart.data.datasets[index].data); } }";
         output += "function clearAll() { ";
-        output += "if (timer != null) { clearInterval(timer); timer = null; position = 0; } ";
+        output += "clearTimer();";
         for chart in &self.charts {
-            let identifier = &get_identifier(&chart.name);
+            let identifier = &chart.get_identifier();
             write!(output, "clearChart({}Chart);", identifier).unwrap();
         }
         output += "}";
-        output += "function showFullChart(chart, values) { for (let step = 0; step < values.length; step++) { chart.data.labels.push(step); for (let index = 0; index < chart.data.datasets.length; index++) { chart.data.datasets[index].data.push(values[step][index]); } } chart.update('none'); chart.update(); }";
-        output += "function staticDisplay() { clearAll(); ";
+        output += "function showOverview() { clearAll(); ";
         for chart in &self.charts {
-            let identifier = &get_identifier(&chart.name);
+            let identifier = &chart.get_identifier();
             write!(
                 output,
                 "showFullChart({}Chart, {}Values);",
@@ -158,10 +152,11 @@ impl ChartPage {
             .unwrap();
         }
         output += "}";
-        output +=
-            "function dynamicDisplay() { clearAll(); timer = setInterval(updateChart, 250); }";
-        output += "staticDisplay(); ";
-        output += "document.querySelector(\"form\").addEventListener(\"submit\", async (e) => { const button = e.target.querySelector(\"button\"); if (timer == null) { button.innerText = \"Overview\"; dynamicDisplay(); } else { button.innerText = \"Animtate\"; staticDisplay(); } return false; });";
+        output += "showOverview(); ";
+        output += "document.querySelector(\"form\").addEventListener(\"submit\", ";
+        output += "async (e) => { const button = e.target.querySelector(\"button\"); ";
+        output += "if (timer == null) { button.innerText = \"Overview\"; showAnimation(); } else { button.innerText = \"Animate\"; showOverview(); }";
+        output += "return false; });";
         output += "</script>";
         output += "</body></html>";
         output

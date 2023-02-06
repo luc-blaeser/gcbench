@@ -27,4 +27,5 @@ do
     done
 done
 cp style.css reports/
+cp display.css reports/
 util/target/release/report summary reports/
