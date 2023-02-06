@@ -45,7 +45,7 @@ impl SummaryPage {
         for performance in &self.benchmark.performance {
             let scenario_name = &performance.test_case.scenario_name;
             let gc_type = &performance.test_case.gc_type;
-            write!(output, "<tr><td><a href=\"chart-{scenario_name}-{gc_type}.html\">{scenario_name} ({gc_type} GC)</a></td>").unwrap();
+            write!(output, "<tr><td><a href=\"chart-{scenario_name}-{gc_type}.html?#\">{scenario_name} ({gc_type} GC)</a></td>").unwrap();
             for metric in PerformanceMetric::all() {
                 let value = Performance::display(&metric, performance.get_value(&metric));
                 write!(output, "<td>{value}</td>").unwrap()
@@ -71,7 +71,7 @@ impl SummaryPage {
                         let value = Performance::display(&metric, performance.get_value(&metric));
                         write!(
                             output,
-                            "<td><a href=\"chart-{scenario_name}-{gc_type}.html\">{value}</a></td>"
+                            "<td><a href=\"chart-{scenario_name}-{gc_type}.html?#\">{value}</a></td>"
                         )
                         .unwrap()
                     }

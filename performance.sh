@@ -10,7 +10,7 @@ fi
 mkdir -p log
 mkdir -p reports
 cp style.css reports/
-cp display.css reports/
+cp display.js reports/
 OUT_FILE=log/out-$2-$1.txt
 CSV_FILE=reports/performance-$2-$1.csv
 CHART_FILE=reports/chart-$2-$1.html

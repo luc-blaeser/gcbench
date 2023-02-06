@@ -157,9 +157,9 @@ impl ChartPage {
             .unwrap();
         }
         output += "}";
-        output += "showOverview(); ";
         output += "document.getElementById(\"animation\").addEventListener(\"submit\", async (e) => { showAnimation(); return false; });";
         output += "document.getElementById(\"overview\").addEventListener(\"submit\", async (e) => { showOverview(); return false; });";
+        output += "showOverview(); ";
         output += "</script>";
         output += "</body></html>";
         output
