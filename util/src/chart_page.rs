@@ -47,7 +47,7 @@ impl ChartPage {
             output.push_str(identifier);
             output.push_str("Data = {labels: [], datasets: [");
             for series in &chart.data_set {
-                append_series(output, &series.name, &series.color);
+                append_series(output, &series.name, series.fill, &series.color);
             }
             output.push_str("] }; const ");
             output.push_str(identifier);
@@ -86,14 +86,18 @@ impl ChartPage {
             }
         }
 
-        fn append_series(output: &mut String, name: &str, color: &str) {
+        fn append_series(output: &mut String, name: &str, fill: bool, color: &str) {
             output.push_str("{ label: '");
             output.push_str(name);
-            output.push_str("', yAxisID: 'yAxis', backgroundColor: 'rgb(");
+            output.push_str("', yAxisID: 'yAxis', backgroundColor: 'rgba(");
             output.push_str(color);
-            output.push_str(")', borderColor: 'rgb(");
+            output.push_str(", 0.1)', borderColor: 'rgb(");
             output.push_str(color);
-            output.push_str(")', data: [], }, ");
+            output.push_str(")', ");
+            if fill {
+                output.push_str("fill: true, ");
+            }
+            output.push_str("data: [], }, ");
         }
 
         let name = &self.test_case.scenario_name;
