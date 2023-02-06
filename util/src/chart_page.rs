@@ -66,7 +66,7 @@ impl ChartPage {
             output.push_str(identifier);
             output.push_str("Values = [");
             append_values(output, &chart.data_set);
-            output.push_str("];"); 
+            output.push_str("];");
             output.push_str("</script>");
         }
 
@@ -106,7 +106,12 @@ impl ChartPage {
         .unwrap();
         output += "<body><script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script><script src=\"display.js\"></script>";
         write!(output, "<h1>{name} ({gc_type} GC)</h1>").unwrap();
-        output += "<form action=\"#\"><button type=\"submit\">Animate</button></form>";
+        output += "<div id=\"menu\">";
+        output +=
+            "<form id=\"animation\" action=\"#\"><button type=\"submit\">Animate</button></form>";
+        output +=
+            "<form id=\"overview\" action=\"#\"><button type=\"submit\">Overview</button></form>";
+        output += "</div>";
         output += "<script>";
         output += "function updateChart() {";
         for chart in &self.charts {
@@ -153,10 +158,8 @@ impl ChartPage {
         }
         output += "}";
         output += "showOverview(); ";
-        output += "document.querySelector(\"form\").addEventListener(\"submit\", ";
-        output += "async (e) => { const button = e.target.querySelector(\"button\"); ";
-        output += "if (timer == null) { button.innerText = \"Overview\"; showAnimation(); } else { button.innerText = \"Animate\"; showOverview(); }";
-        output += "return false; });";
+        output += "document.getElementById(\"animation\").addEventListener(\"submit\", async (e) => { showAnimation(); return false; });";
+        output += "document.getElementById(\"overview\").addEventListener(\"submit\", async (e) => { showOverview(); return false; });";
         output += "</script>";
         output += "</body></html>";
         output
