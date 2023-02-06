@@ -1,6 +1,6 @@
 use crate::{
     benchmark::Benchmark,
-    common::{average_u64},
+    common::average_u64,
     limit::{Limit, LimitMetric},
     performance::{Performance, PerformanceMetric},
 };

@@ -20,3 +20,7 @@ tfoot {
 a {
     color: black;
 }
+button[type="submit"] {
+    padding: 5px 20px;
+    margin: 10px auto;
+}

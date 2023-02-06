@@ -1,8 +1,7 @@
 import { recorder } from "../../src/declarations/recorder";
 
-const labels = [];
 const memoryData = {
-  labels: labels,
+  labels: [],
   datasets: [
     {
       label: 'Memory',
@@ -43,7 +42,7 @@ const memoryConfig = {
 const memoryChart = new Chart(document.getElementById('memoryChart'), memoryConfig);
 
 const allocationData = {
-  labels: labels,
+  labels: [],
   datasets: [
     {
       label: 'Allocated',
@@ -77,7 +76,7 @@ const allocationConfig = {
 const allocationChart = new Chart(document.getElementById('allocationChart'), allocationConfig);
 
 const runtimeData = {
-  labels: labels,
+  labels: [],
   datasets: [
     {
       label: 'Mutator',
@@ -168,7 +167,30 @@ function updateChart() {
   }
 }
 
-setInterval(updateChart, 250);
+function clearSeries(series) {
+  series.splice(0, series.length);
+}
+
+function clearChart(chart) {
+  clearSeries(chart.data.labels);
+  for (dataset in chart.data.datasets) {
+    clearSeries(dataset.data);
+  }
+}
+
+function showFullChart(chart, values) {
+  clearChart(chart);
+  for (let step = 0; step < values.length; step++) {
+    chart.data.labels.push(step);
+    for (let index = 0; index < chart.data.datasets.length; index++) {
+      chart.data.datasets[index].data.push(values[step][index]);
+    }
+  }
+  chart.update();
+}
+
+var timer = setInterval(updateChart, 250);
+setTimeout(10000);
 setInterval(downloadData, 2500);
 
 

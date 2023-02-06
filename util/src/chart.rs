@@ -13,6 +13,16 @@ pub struct Series {
     pub values: Vec<u64>,
 }
 
+impl Series {
+    pub fn length(&self) -> usize {
+        self.values.len()
+    }
+
+    pub fn suggested_max(&self) -> u64 {
+        *(self.values.iter().max().unwrap_or(&0u64))
+    }
+}
+
 impl Chart {
     pub fn memory_chart(performance: &Performance) -> Chart {
         let series = vec![
