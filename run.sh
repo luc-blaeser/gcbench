@@ -22,7 +22,7 @@ if [ "$2" == "performance" ]
 then
     DFXTEMPLATE=performance-dfx.json
     CANISTER=benchmark
-else
+else 
     DFXTEMPLATE=limit-dfx.json
     CANISTER=limit-tester
 fi
