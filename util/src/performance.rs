@@ -1,10 +1,12 @@
-use crate::{common::{self, average_f64, max_f64}, test_case::TestCase};
+use crate::{
+    common::{self, average_f64, max_f64},
+    test_case::TestCase,
+};
 use std::fmt::Write;
 
 #[derive(Clone)]
 pub struct Performance {
     pub test_case: TestCase,
-    pub labels: Vec<u64>,
     pub memory: Vec<u64>,
     pub heap: Vec<u64>,
     pub allocated: Vec<u64>,
@@ -49,7 +51,7 @@ impl PerformanceMetric {
     pub fn summary_value(&self, values: Vec<f64>) -> f64 {
         match &self {
             Self::MaxGcPause => max_f64(values),
-            _ => average_f64(values)
+            _ => average_f64(values),
         }
     }
 
@@ -73,7 +75,6 @@ impl Performance {
     fn new(file_name: &str) -> Performance {
         Performance {
             test_case: TestCase::new(file_name),
-            labels: Vec::new(),
             memory: Vec::new(),
             heap: Vec::new(),
             allocated: Vec::new(),
@@ -94,7 +95,6 @@ impl Performance {
                 .split(',')
                 .map(|x| x.trim().parse::<u64>().expect("invalid number"))
                 .collect();
-            performance.labels.push(pick(&row, 0));
             performance.memory.push(pick(&row, 1));
             performance.heap.push(pick(&row, 2));
             performance.allocated.push(pick(&row, 3));

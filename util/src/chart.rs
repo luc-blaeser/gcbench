@@ -10,7 +10,18 @@ pub struct Chart {
 pub struct Series {
     pub name: String,
     pub color: String,
+    pub fill: bool,
     pub values: Vec<u64>,
+}
+
+impl Series {
+    pub fn length(&self) -> usize {
+        self.values.len()
+    }
+
+    pub fn suggested_max(&self) -> u64 {
+        *(self.values.iter().max().unwrap_or(&0u64))
+    }
 }
 
 impl Chart {
@@ -19,16 +30,19 @@ impl Chart {
             Series {
                 name: String::from("Memory"),
                 color: String::from("255, 99, 132"),
+                fill: false,
                 values: performance.memory.clone(),
             },
             Series {
                 name: String::from("Heap"),
                 color: String::from("54, 162, 235"),
+                fill: true,
                 values: performance.heap.clone(),
             },
             Series {
                 name: String::from("Live"),
                 color: String::from("255, 159, 64"),
+                fill: false,
                 values: performance.live.clone(),
             },
         ];
@@ -43,11 +57,13 @@ impl Chart {
             Series {
                 name: String::from("Allocated"),
                 color: String::from("255, 206, 86"),
+                fill: false,
                 values: performance.allocated.clone(),
             },
             Series {
                 name: String::from("Reclaimed"),
                 color: String::from("153, 102, 255"),
+                fill: true,
                 values: performance.reclaimed.clone(),
             },
         ];
@@ -62,11 +78,13 @@ impl Chart {
             Series {
                 name: String::from("Mutator"),
                 color: String::from("75, 192, 192"),
+                fill: false,
                 values: performance.mutator.clone(),
             },
             Series {
                 name: String::from("Collector"),
                 color: String::from("255, 99, 132"),
+                fill: false,
                 values: performance.collector.clone(),
             },
         ];

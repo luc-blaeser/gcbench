@@ -6,8 +6,13 @@ use std::fmt::Write;
 
 pub struct ChartPage {
     test_case: TestCase,
-    labels: Vec<u64>,
     charts: Vec<Chart>,
+}
+
+impl Chart {
+    fn get_identifier(&self) -> String {
+        self.name.to_lowercase() // TODO: check that identifier is valid
+    }
 }
 
 impl ChartPage {
@@ -19,53 +24,80 @@ impl ChartPage {
         ];
         ChartPage {
             test_case: performance.test_case.clone(),
-            labels: performance.labels.clone(),
             charts,
         }
     }
 
     pub fn render(&self) -> String {
-        fn append_numbers(output: &mut String, numbers: &Vec<u64>) {
-            for value in numbers {
-                write!(output, "'{value}', ").unwrap();
-            }
+        fn suggested_max(data_set: &[Series]) -> u64 {
+            data_set
+                .iter()
+                .map(|series| series.suggested_max())
+                .max()
+                .unwrap()
         }
 
-        fn append_chart(output: &mut String, name: &str, data_set: &[Series]) {
-            let identifier = &name.to_lowercase(); // TODO: check that identifier is valid
+        fn append_chart(output: &mut String, chart: &Chart) {
+            let identifier = &chart.get_identifier();
             output.push_str("<div style=\"float: left; width: 1500px;\"><h1>");
-            output.push_str(name);
+            output.push_str(&chart.name);
             output.push_str("</h1><canvas id=\"");
             output.push_str(identifier);
             output.push_str("Chart\"></canvas></div><script>const ");
             output.push_str(identifier);
-            output.push_str("Data = {labels: labels, datasets: [");
-            for series in data_set {
-                append_series(output, &series.name, &series.color, &series.values);
+            output.push_str("Data = {labels: [], datasets: [");
+            for series in &chart.data_set {
+                append_series(output, &series.name, series.fill, &series.color);
             }
             output.push_str("] }; const ");
             output.push_str(identifier);
             output.push_str("Config = {type: 'line', data: ");
             output.push_str(identifier);
-            output.push_str("Data, options: {} }; const ");
+            output.push_str("Data, options: { scales: { yAxis: { suggestedMin: 0, suggestedMax: ");
+            write!(output, "{}", suggested_max(&chart.data_set)).unwrap();
+            output.push_str(" }  }  } }; const ");
             output.push_str(identifier);
             output.push_str("Chart = new Chart(document.getElementById('");
             output.push_str(identifier);
             output.push_str("Chart'), ");
             output.push_str(identifier);
-            output.push_str("Config);</script>");
+            output.push_str("Config);");
+            output.push_str("const ");
+            output.push_str(identifier);
+            output.push_str("Values = [");
+            append_values(output, &chart.data_set);
+            output.push_str("];");
+            output.push_str("</script>");
         }
 
-        fn append_series(output: &mut String, name: &str, color: &str, series: &Vec<u64>) {
+        fn append_values(output: &mut String, data_set: &[Series]) {
+            let length = data_set.iter().map(|series| series.length()).max().unwrap();
+            for index in 0..length {
+                output.push('[');
+                for series in data_set.iter() {
+                    let value = if index < series.length() {
+                        series.values[index]
+                    } else {
+                        0
+                    };
+                    write!(output, "{value}, ").unwrap();
+                }
+                output.push_str("], ");
+            }
+        }
+
+        fn append_series(output: &mut String, name: &str, fill: bool, color: &str) {
             output.push_str("{ label: '");
             output.push_str(name);
-            output.push_str("', backgroundColor: 'rgb(");
+            output.push_str("', yAxisID: 'yAxis', backgroundColor: 'rgba(");
             output.push_str(color);
-            output.push_str(")', borderColor: 'rgb(");
+            output.push_str(", 0.1)', borderColor: 'rgb(");
             output.push_str(color);
-            output.push_str(")', data: [");
-            append_numbers(output, series);
-            output.push_str("], }, ");
+            output.push_str(")', ");
+            if fill {
+                output.push_str("fill: true, ");
+            }
+            output.push_str("data: [], }, ");
         }
 
         let name = &self.test_case.scenario_name;
@@ -76,14 +108,63 @@ impl ChartPage {
             "<!DOCTYPE html><html><head><title>GC Performance {name} ({gc_type} GC)</title><link rel=\"stylesheet\" href=\"style.css\"/></head>"
         )
         .unwrap();
-        output += "<body><script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>";
+        output += "<body><script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script><script src=\"display.js\"></script>";
         write!(output, "<h1>{name} ({gc_type} GC)</h1>").unwrap();
-        output += "<script>const labels = [";
-        append_numbers(&mut output, &self.labels);
-        output += "]</script>";
+        output += "<div id=\"menu\">";
+        output +=
+            "<form id=\"animation\" action=\"#\"><button type=\"submit\">Animate</button></form>";
+        output +=
+            "<form id=\"overview\" action=\"#\"><button type=\"submit\">Overview</button></form>";
+        output += "</div>";
+        output += "<script>";
+        output += "function updateChart() {";
         for chart in &self.charts {
-            append_chart(&mut output, &chart.name, &chart.data_set);
+            let identifier = &chart.get_identifier();
+            let length = chart
+                .data_set
+                .iter()
+                .map(|series| series.length())
+                .max()
+                .unwrap();
+            write!(output, "if (position < {length})").unwrap();
+            output += "{";
+            write!(
+                output,
+                "addData({}Chart, position, {}Values[position]);",
+                identifier, identifier
+            )
+            .unwrap();
+            output += "}";
         }
+        output += "position++; }";
+
+        output += "</script>";
+        for chart in &self.charts {
+            append_chart(&mut output, chart);
+        }
+        output += "<script>";
+        output += "function clearAll() { ";
+        output += "clearTimer();";
+        for chart in &self.charts {
+            let identifier = &chart.get_identifier();
+            write!(output, "clearChart({}Chart);", identifier).unwrap();
+        }
+        output += "}";
+        output += "function showOverview() { clearAll(); ";
+        for chart in &self.charts {
+            let identifier = &chart.get_identifier();
+            write!(
+                output,
+                "showFullChart({}Chart, {}Values);",
+                identifier, identifier
+            )
+            .unwrap();
+        }
+        output += "}";
+        output += "document.getElementById(\"animation\").addEventListener(\"submit\", async (e) => { showAnimation(); return false; });";
+        output += "document.getElementById(\"overview\").addEventListener(\"submit\", async (e) => { showOverview(); return false; });";
+        output += "showOverview(); ";
+        output += "</script>";
         output += "</body></html>";
         output
     }
