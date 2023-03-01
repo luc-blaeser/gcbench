@@ -22,13 +22,18 @@ if [ "$2" == "performance" ]
 then
     DFXTEMPLATE=performance-dfx.json
     CANISTER=benchmark
-else 
+else
     DFXTEMPLATE=limit-dfx.json
     CANISTER=limit-tester
 fi
 awk '// {gsub("#SCENARIO#", "'$3'"); gsub("#GCFLAG#", "'$GC_FLAG'"); print }' $DFXTEMPLATE > dfx.json
 dfx start --clean --background
 dfx deploy
+
+echo "Optimize with wasm-opt level 4"
+wasm-opt -O4 -o $CANISTER.wasm .dfx/local/canisters/$CANISTER/$CANISTER.wasm
+dfx canister install --wasm $CANISTER.wasm --mode reinstall --yes $CANISTER
+
 dfx canister call $CANISTER run "()"
 if [ $? != 0 ]
 then
