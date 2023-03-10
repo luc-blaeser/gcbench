@@ -31,7 +31,7 @@ Initial benchmarking of GC performance of Motoko, to be extended and refined...
     export DFX_MOC_PATH=<motoko_repo_path>/bin/moc
     ``` 
 
-    Yout can add this configuration also as environment variable to your shell config, e.g. `~/.zshrc`.
+    You can add this configuration also as environment variable to your shell config, e.g. `~/.zshrc`.
 
 3. Run all benchmark cases:
  
