@@ -18,14 +18,6 @@ do
         ./performance.sh $gc $name
     done
 done
-LIMIT_CASES="linked-list buffer scalable-buffer rb-tree trie-map blobs imperative-rb-tree btree-map"
-for name in $LIMIT_CASES
-do
-    for gc in $GC_MODES
-    do
-        ./limit.sh $gc $name
-    done
-done
 cp style.css reports/
 cp display.js reports/
 util/target/release/report summary reports/
