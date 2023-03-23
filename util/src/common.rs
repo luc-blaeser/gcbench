@@ -6,7 +6,7 @@ pub fn collect_csv_files(directory: &str, prefix: &str) -> Vec<String> {
     let mut csv_files: Vec<String> = fs::read_dir(directory)
         .expect("invalid directory")
         .map(|f| f.unwrap().path().display().to_string())
-        .filter(|n| get_file_name(n).starts_with(&prefix) && n.ends_with(&suffix))
+        .filter(|n| get_file_name(n).starts_with(prefix) && n.ends_with(&suffix))
         .collect();
     csv_files.sort();
     csv_files
