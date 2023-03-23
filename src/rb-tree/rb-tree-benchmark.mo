@@ -6,7 +6,7 @@ import Benchmark "../benchmark";
 import Runtime "../runtime";
 
 actor {
-    let tree = RBBase.RBTree<Nat, Nat>(NatBase.compare);
+    var tree = RBBase.RBTree<Nat, Nat>(NatBase.compare);
 
     var total = 0;
 
@@ -34,11 +34,9 @@ actor {
         }
     };
 
-    func deleteAll() {
-        Prim.debugPrint("RB tree delete all");
-        for ((key, value) in tree.entries()) {
-            tree.delete(key)
-        };
+    func clear() {
+        Prim.debugPrint("RB tree clear");
+        tree := RBBase.RBTree<Nat, Nat>(NatBase.compare);
         total := 0
     };
 
@@ -48,7 +46,7 @@ actor {
         ( 10, func() { discard(10_000) } ),
         ( 5, func() { retrieve() } ),
         ( 10, func() { populate(10_000) } ),
-        ( 1, func() { deleteAll() } ),
+        ( 1, func() { clear() } ),
         ( 20, func() { populate(10_000) } ),
         ( 5, func() { retrieve() } )
     ];

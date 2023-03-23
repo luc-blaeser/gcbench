@@ -177,7 +177,7 @@ The current Motoko base library implementation of a red-black tree, storing Nat 
 ( 20, func() { discard(10_000) } ),
 ( 10, func() { retrieve() } ),
 ( 20, func() { populate(10_000) } ),
-( 1, func() { deleteAll() } ),
+( 1, func() { clear() } ),
 ( 40, func() { populate(10_000) } ),
 ( 10, func() { retrieve() } )
 ```
