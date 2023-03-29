@@ -19,6 +19,7 @@ pub struct Performance {
 pub enum PerformanceMetric {
     FinalHeapSize,
     MemorySize,
+    TotalAllocation,
     MutatorUtilization,
     MaxGcPause,
     AverageGcPause,
@@ -32,6 +33,7 @@ impl PerformanceMetric {
         match &self {
             Self::FinalHeapSize => "Final Heap Size",
             Self::MemorySize => "Memory Size",
+            Self::TotalAllocation => "Total Allocation",
             Self::MutatorUtilization => "Mutator Utilization",
             Self::MaxGcPause => "Max GC Pause",
             Self::AverageGcPause => "Average GC Pause",
@@ -59,6 +61,7 @@ impl PerformanceMetric {
         vec![
             Self::FinalHeapSize,
             Self::MemorySize,
+            Self::TotalAllocation,
             Self::MutatorUtilization,
             Self::MaxGcPause,
             Self::AverageGcPause,
@@ -112,6 +115,10 @@ impl Performance {
 
     pub fn memory_size(&self) -> u64 {
         *(self.memory.iter().max()).unwrap_or(&0)
+    }
+
+    pub fn total_allocation(&self) -> u64 {
+        *(self.allocated.iter().max()).unwrap_or(&0)
     }
 
     pub fn mutator_utilization(&self) -> f64 {
@@ -178,6 +185,7 @@ impl Performance {
         match metric {
             PerformanceMetric::FinalHeapSize => self.final_heap_size() as f64,
             PerformanceMetric::MemorySize => self.memory_size() as f64,
+            PerformanceMetric::TotalAllocation => self.total_allocation() as f64,
             PerformanceMetric::MutatorUtilization => self.mutator_utilization(),
             PerformanceMetric::MaxGcPause => self.max_gc_pause() as f64,
             PerformanceMetric::AverageGcPause => self.average_gc_pause(),
@@ -189,48 +197,26 @@ impl Performance {
 
     pub fn display(metric: &PerformanceMetric, value: f64) -> String {
         match metric {
-            PerformanceMetric::FinalHeapSize => {
+            PerformanceMetric::FinalHeapSize | PerformanceMetric::MemorySize | PerformanceMetric::TotalAllocation => {
                 let value = common::to_mb(value as u64);
                 let mut result = String::new();
                 write!(&mut result, "{value} MB").unwrap();
                 result
             }
-            PerformanceMetric::MemorySize => {
-                let value = common::to_mb(value as u64);
-                let mut result = String::new();
-                write!(&mut result, "{value} MB").unwrap();
-                result
-            }
-            PerformanceMetric::MutatorUtilization => {
+            PerformanceMetric::MutatorUtilization | PerformanceMetric::SurvivalRate => {
                 let value = value * 100.0;
                 let mut result = String::new();
                 write!(&mut result, "{value:.1} %").unwrap();
                 result
             }
-            PerformanceMetric::MaxGcPause => {
+            PerformanceMetric::MaxGcPause | PerformanceMetric::AverageGcPause => {
                 let mut result = String::new();
                 write!(&mut result, "{value:.2e}").unwrap();
                 result
             }
-            PerformanceMetric::AverageGcPause => {
+            PerformanceMetric::TotalInstructions | PerformanceMetric::TotalMutator => {
                 let mut result = String::new();
                 write!(&mut result, "{value:.2e}").unwrap();
-                result
-            }
-            PerformanceMetric::TotalInstructions => {
-                let mut result = String::new();
-                write!(&mut result, "{value:.2e}").unwrap();
-                result
-            }
-            PerformanceMetric::TotalMutator => {
-                let mut result = String::new();
-                write!(&mut result, "{value:.2e}").unwrap();
-                result
-            }
-            PerformanceMetric::SurvivalRate => {
-                let value = value * 100.0;
-                let mut result = String::new();
-                write!(&mut result, "{value:.1} %").unwrap();
                 result
             }
         }
