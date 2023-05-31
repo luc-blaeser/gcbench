@@ -274,6 +274,7 @@ Taken from the Motoko performance tests, simulating an asset storage:
 - Store a new 1MB content blob (16 pages of 64KB).
 - List the storage.
 - Retrieving last stored content. 
+- Clearing the storage
 
 (Note: For more iterations, the test case without GC (`no` GC) fails with the error message "IC0503: Canister ... trapped explicitly: could not perform remote call" although the heap is not full.)
 
@@ -294,8 +295,6 @@ Minor code adjustment for benchmark integration.
 ## Reversi (Motoko Perf Test)
 
 Taken from the Motoko performance tests, 30 iterations.
-
-- Compute 3 QR codes and show them
 
 **Motivation**: Very simple existing performance test.
 
