@@ -162,7 +162,7 @@ impl SummaryPage {
         write!(output, " + \"{unit_suffix}\";}} }} }} }},").unwrap();
         write!(
             output,
-            "responsive: true, plugins: {{ legend: {{ position: 'right', }},"
+            "responsive: true, plugins: {{ legend: {{ position: 'bottom', }},"
         )
         .unwrap();
         write!(output, "}} }} }});").unwrap();
@@ -294,7 +294,7 @@ impl SummaryPage {
         write!(output, "callback: function (value, index, ticks) {{return value + \"{unit_suffix}\";}} }} }} }},").unwrap();
         write!(
             output,
-            "responsive: true, plugins: {{ legend: {{ position: 'right', }},"
+            "responsive: true, plugins: {{ legend: {{ position: 'bottom', }},"
         )
         .unwrap();
         write!(output, "}} }} }});").unwrap();
