@@ -16,8 +16,7 @@ impl Benchmark {
             .map(|m| m.test_case.gc_type.clone())
             .chain(gc_types)
             .collect();
-        gc_types.sort();
-        gc_types.dedup();
+        gc_types = Self::arrange_gc_types(&mut gc_types);
         let mut performance_scenarios: Vec<String> = performance
             .iter()
             .map(|m| String::from(&m.test_case.scenario_name))
@@ -37,6 +36,24 @@ impl Benchmark {
             performance_scenarios,
             limits_scenarios,
         }
+    }
+
+    fn arrange_gc_types(gc_types: &mut Vec<String>) -> Vec<String> {
+        gc_types.sort();
+        gc_types.dedup();
+        let expected = vec!["incremental", "generational", "compacting", "copying", "no"];
+        let mut result: Vec<String> = vec![];
+        for gc_name in expected.iter().map(|str| String::from(*str)) {
+            if gc_types.contains(&gc_name) {
+                result.push(gc_name);
+            }
+        }
+        for gc_name in gc_types {
+            if !expected.contains(&gc_name.as_str()) {
+                result.push(gc_name.clone());
+            }
+        }
+        result
     }
 
     pub fn get_performance(&self, scenario_name: &str, gc_type: &str) -> Option<&Performance> {

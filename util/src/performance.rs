@@ -29,6 +29,20 @@ pub enum PerformanceMetric {
 }
 
 impl PerformanceMetric {
+    pub fn identifier(&self) -> &str {
+        match &self {
+            Self::FinalHeapSize => "finalHeapSize",
+            Self::MemorySize => "memorySize",
+            Self::TotalAllocation => "totalAllocation",
+            Self::MutatorUtilization => "mutatorUtilization",
+            Self::MaxGcPause => "maxGCPause",
+            Self::AverageGcPause => "averageGCPause",
+            Self::TotalInstructions => "totalInstructions",
+            Self::TotalMutator => "totalMutator",
+            Self::SurvivalRate => "survivalRate",
+        }
+    }
+
     pub fn name(&self) -> &str {
         match &self {
             Self::FinalHeapSize => "Final Heap Size",
@@ -195,18 +209,20 @@ impl Performance {
         }
     }
 
-    pub fn display(metric: &PerformanceMetric, value: f64) -> String {
+    pub fn display_value(metric: &PerformanceMetric, value: f64) -> String {
         match metric {
-            PerformanceMetric::FinalHeapSize | PerformanceMetric::MemorySize | PerformanceMetric::TotalAllocation => {
+            PerformanceMetric::FinalHeapSize
+            | PerformanceMetric::MemorySize
+            | PerformanceMetric::TotalAllocation => {
                 let value = common::to_mb(value as u64);
                 let mut result = String::new();
-                write!(&mut result, "{value} MB").unwrap();
+                write!(&mut result, "{value}").unwrap();
                 result
             }
             PerformanceMetric::MutatorUtilization | PerformanceMetric::SurvivalRate => {
                 let value = value * 100.0;
                 let mut result = String::new();
-                write!(&mut result, "{value:.1} %").unwrap();
+                write!(&mut result, "{value:.1}").unwrap();
                 result
             }
             PerformanceMetric::MaxGcPause | PerformanceMetric::AverageGcPause => {
@@ -219,6 +235,62 @@ impl Performance {
                 write!(&mut result, "{value:.2e}").unwrap();
                 result
             }
+        }
+    }
+
+    pub fn unit_suffix(metric: &PerformanceMetric) -> &str {
+        match metric {
+            PerformanceMetric::FinalHeapSize
+            | PerformanceMetric::MemorySize
+            | PerformanceMetric::TotalAllocation => " MB",
+            PerformanceMetric::MutatorUtilization | PerformanceMetric::SurvivalRate => " %",
+            PerformanceMetric::MaxGcPause
+            | PerformanceMetric::AverageGcPause
+            | PerformanceMetric::TotalInstructions
+            | PerformanceMetric::TotalMutator => "",
+        }
+    }
+
+    pub fn display_with_unit(metric: &PerformanceMetric, value: f64) -> String {
+        Self::display_value(metric, value) + Self::unit_suffix(metric)
+    }
+
+    pub fn logarithmic_scale(metric: &PerformanceMetric) -> bool {
+        match metric {
+            PerformanceMetric::FinalHeapSize
+            | PerformanceMetric::MemorySize
+            | PerformanceMetric::TotalAllocation => true,
+            PerformanceMetric::MutatorUtilization | PerformanceMetric::SurvivalRate => false,
+            PerformanceMetric::MaxGcPause
+            | PerformanceMetric::AverageGcPause
+            | PerformanceMetric::TotalInstructions
+            | PerformanceMetric::TotalMutator => false,
+        }
+    }
+
+    pub fn scientific_representation(metric: &PerformanceMetric) -> bool {
+        match metric {
+            PerformanceMetric::FinalHeapSize
+            | PerformanceMetric::MemorySize
+            | PerformanceMetric::TotalAllocation => false,
+            PerformanceMetric::MutatorUtilization | PerformanceMetric::SurvivalRate => false,
+            PerformanceMetric::MaxGcPause
+            | PerformanceMetric::AverageGcPause
+            | PerformanceMetric::TotalInstructions
+            | PerformanceMetric::TotalMutator => true,
+        }
+    }
+
+    pub fn show_no_gc(metric: &PerformanceMetric) -> bool {
+        match metric {
+            PerformanceMetric::FinalHeapSize
+            | PerformanceMetric::MemorySize
+            | PerformanceMetric::TotalAllocation => true,
+            PerformanceMetric::MutatorUtilization | PerformanceMetric::SurvivalRate => false,
+            PerformanceMetric::MaxGcPause
+            | PerformanceMetric::AverageGcPause
+            | PerformanceMetric::TotalInstructions
+            | PerformanceMetric::TotalMutator => false,
         }
     }
 }
