@@ -194,7 +194,7 @@ impl SummaryPage {
             let gc_type = &limits.test_case.gc_type;
             write!(output, "<tr><td>{scenario_name} ({gc_type} GC)</td>").unwrap();
             for metric in LimitMetric::all() {
-                let value = Limit::display(&metric, limits.get_value(&metric));
+                let value = Limit::display_with_unit(&metric, limits.get_value(&metric));
                 write!(output, "<td>{value}</td>").unwrap()
             }
             output.push_str("</tr>")
@@ -205,6 +205,7 @@ impl SummaryPage {
     fn render_limit_metric(&self, output: &mut String, metric: LimitMetric) {
         let metric_name = metric.name();
         write!(output, "<h3>{metric_name}</h3>").unwrap();
+        self.render_limit_summary_chart(output, &metric);
         output.push_str("<table><thead><tr><th>Scenario</th>");
         for gc_type in &self.benchmark.gc_types {
             write!(output, "<th>{gc_type} GC</th>").unwrap();
@@ -215,7 +216,7 @@ impl SummaryPage {
             for gc_type in &self.benchmark.gc_types {
                 match self.benchmark.get_limits(scenario_name, gc_type) {
                     Some(limits) => {
-                        let value = Limit::display(&metric, limits.get_value(&metric));
+                        let value = Limit::display_with_unit(&metric, limits.get_value(&metric));
                         write!(output, "<td>{value}</td>").unwrap()
                     }
                     None => output.push_str("<td>--</td>"),
@@ -233,10 +234,70 @@ impl SummaryPage {
                 .filter(|option| option.is_some())
                 .map(|limits| limits.unwrap().get_value(&metric))
                 .collect();
-            let average = Limit::display(&metric, average_u64(values));
+            let average = Limit::display_with_unit(&metric, average_u64(values));
             write!(output, "<td>{average}</td>").unwrap();
         }
         output.push_str("</tr></tfoot>");
         output.push_str("</table>");
+    }
+
+    fn render_limit_summary_chart(&self, output: &mut String, metric: &LimitMetric) {
+        let chart_id = metric.identifier().to_owned() + "Id";
+        let chart_variable = metric.identifier().to_owned() + "Chart";
+        let chart_data = metric.identifier().to_owned() + "Data";
+        let unit_suffix = Limit::unit_suffix(metric);
+        write!(
+            output,
+            "<div class=\"summary-chart\"><canvas id=\"{chart_id}\"></canvas></div>"
+        )
+        .unwrap();
+        write!(
+            output,
+            "<script>const {chart_variable} = document.getElementById('{chart_id}');"
+        )
+        .unwrap();
+        write!(output, "const {chart_data} = {{labels: [").unwrap();
+        for scenario_name in &self.benchmark.limits_scenarios {
+            write!(output, "'{scenario_name}', ").unwrap();
+        }
+        output.push_str("], datasets: [");
+        for gc_type in &self.benchmark.gc_types {
+            if gc_type != "no" || Limit::show_no_gc(metric) {
+                write!(output, "{{ label: '{gc_type} GC', data: [").unwrap();
+                for scenario_name in &self.benchmark.limits_scenarios {
+                    let value = match self.benchmark.get_limits(scenario_name, gc_type) {
+                        Some(performance) => performance.get_value(metric),
+                        None => 0,
+                    };
+                    let display_value = Limit::display_value(metric, value);
+                    write!(output, "{display_value}, ").unwrap();
+                }
+                let bar_color = self.get_bar_color(gc_type);
+                write!(
+                    output,
+                    "], borderColor: 'rgb(0, 0, 0)', backgroundColor: '{bar_color}', }},"
+                )
+                .unwrap();
+            }
+        }
+        write!(output, "]}};").unwrap();
+        write!(
+            output,
+            "new Chart({chart_variable}, {{ type: 'bar', data: {chart_data}, "
+        )
+        .unwrap();
+        write!(output, "options: {{scales: {{y: {{").unwrap();
+        if Limit::logarithmic_scale(metric) {
+            write!(output, "type: 'logarithmic',").unwrap();
+        }
+        write!(output, "beginAtZero: true,ticks: {{maxTicksLimit: 10,").unwrap();
+        write!(output, "callback: function (value, index, ticks) {{return value + \"{unit_suffix}\";}} }} }} }},").unwrap();
+        write!(
+            output,
+            "responsive: true, plugins: {{ legend: {{ position: 'right', }},"
+        )
+        .unwrap();
+        write!(output, "}} }} }});").unwrap();
+        write!(output, "</script>").unwrap();
     }
 }
