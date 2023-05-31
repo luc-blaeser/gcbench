@@ -1,4 +1,7 @@
-use crate::{limit::Limit, performance::Performance};
+use crate::{
+    limit::Limit,
+    performance::{Performance, PerformanceMetric},
+};
 
 pub struct Benchmark {
     pub performance: Vec<Performance>,
@@ -63,6 +66,19 @@ impl Benchmark {
                 m.test_case.scenario_name == scenario_name && m.test_case.gc_type == gc_type
             })
             .last()
+    }
+
+    pub fn get_performance_base(&self, scenario_name: &str, metric: &PerformanceMetric) -> u64 {
+        match metric {
+            PerformanceMetric::MutatorUtilization => self
+                .performance
+                .iter()
+                .filter(|m| m.test_case.scenario_name == scenario_name)
+                .map(|p| p.total_mutator())
+                .min()
+                .unwrap_or(0),
+            _ => 0,
+        }
     }
 
     pub fn get_limits(&self, scenario_name: &str, gc_type: &str) -> Option<&Limit> {

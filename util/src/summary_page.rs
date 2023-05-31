@@ -49,7 +49,11 @@ impl SummaryPage {
             let gc_type = &performance.test_case.gc_type;
             write!(output, "<tr><td><a href=\"chart-{scenario_name}-{gc_type}.html?#\">{scenario_name} ({gc_type} GC)</a></td>").unwrap();
             for metric in PerformanceMetric::all() {
-                let value = Performance::display_with_unit(&metric, performance.get_value(&metric));
+                let performance_base = self.benchmark.get_performance_base(scenario_name, &metric);
+                let value = Performance::display_with_unit(
+                    &metric,
+                    performance.get_value(&metric, performance_base),
+                );
                 write!(output, "<td>{value}</td>").unwrap()
             }
             output.push_str("</tr>")
@@ -67,12 +71,15 @@ impl SummaryPage {
         }
         output.push_str("</tr></thead>");
         for scenario_name in &self.benchmark.performance_scenarios {
+            let performance_base = self.benchmark.get_performance_base(scenario_name, &metric);
             write!(output, "<tr><td>{scenario_name}</td>").unwrap();
             for gc_type in &self.benchmark.gc_types {
                 match self.benchmark.get_performance(scenario_name, gc_type) {
                     Some(performance) => {
-                        let value =
-                            Performance::display_with_unit(&metric, performance.get_value(&metric));
+                        let value = Performance::display_with_unit(
+                            &metric,
+                            performance.get_value(&metric, performance_base),
+                        );
                         write!(
                             output,
                             "<td><a href=\"chart-{scenario_name}-{gc_type}.html?#\">{value}</a></td>"
@@ -91,9 +98,14 @@ impl SummaryPage {
                 .benchmark
                 .performance_scenarios
                 .iter()
-                .map(|scenario_name| self.benchmark.get_performance(scenario_name, gc_type))
-                .filter(|option| option.is_some())
-                .map(|performance| performance.unwrap().get_value(&metric))
+                .map(|scenario_name| {
+                    (
+                        self.benchmark.get_performance(scenario_name, gc_type),
+                        self.benchmark.get_performance_base(scenario_name, &metric),
+                    )
+                })
+                .filter(|pair| pair.0.is_some())
+                .map(|pair| pair.0.unwrap().get_value(&metric, pair.1))
                 .collect();
             let summary_value =
                 Performance::display_with_unit(&metric, metric.summary_value(values));
@@ -127,8 +139,10 @@ impl SummaryPage {
             if gc_type != "no" || Performance::show_no_gc(metric) {
                 write!(output, "{{ label: '{gc_type} GC', data: [").unwrap();
                 for scenario_name in &self.benchmark.performance_scenarios {
+                    let performance_base =
+                        self.benchmark.get_performance_base(scenario_name, metric);
                     let value = match self.benchmark.get_performance(scenario_name, gc_type) {
-                        Some(performance) => performance.get_value(metric),
+                        Some(performance) => performance.get_value(metric, performance_base),
                         None => 0.0,
                     };
                     let display_value = Performance::display_value(metric, value);

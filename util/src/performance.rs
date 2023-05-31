@@ -135,14 +135,8 @@ impl Performance {
         *(self.allocated.iter().max()).unwrap_or(&0)
     }
 
-    pub fn mutator_utilization(&self) -> f64 {
-        let mutator_total: u64 = self.mutator.iter().sum();
-        let collector_total: u64 = self
-            .collector
-            .iter()
-            .map(|c| if *c > GC_RELEVANCE_THRESHOLD { c } else { &0 })
-            .sum();
-        mutator_total as f64 / (mutator_total as f64 + collector_total as f64)
+    pub fn mutator_utilization(&self, minimum_mutator: u64) -> f64 {
+        minimum_mutator as f64 / self.total_instructions() as f64
     }
 
     pub fn max_gc_pause(&self) -> u64 {
@@ -195,12 +189,12 @@ impl Performance {
         survival_rates.iter().sum::<f64>() / survival_rates.len() as f64
     }
 
-    pub fn get_value(&self, metric: &PerformanceMetric) -> f64 {
+    pub fn get_value(&self, metric: &PerformanceMetric, performance_base: u64) -> f64 {
         match metric {
             PerformanceMetric::FinalHeapSize => self.final_heap_size() as f64,
             PerformanceMetric::MemorySize => self.memory_size() as f64,
             PerformanceMetric::TotalAllocation => self.total_allocation() as f64,
-            PerformanceMetric::MutatorUtilization => self.mutator_utilization(),
+            PerformanceMetric::MutatorUtilization => self.mutator_utilization(performance_base),
             PerformanceMetric::MaxGcPause => self.max_gc_pause() as f64,
             PerformanceMetric::AverageGcPause => self.average_gc_pause(),
             PerformanceMetric::TotalInstructions => self.total_instructions() as f64,
