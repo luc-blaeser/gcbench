@@ -32,8 +32,7 @@ dfx deploy
 dfx canister call $CANISTER run "()"
 if [ $? != 0 ]
 then
-    echo "Canister call failed"
-    dfx stop
+    echo "Canister call failed" $?
     exit 1
 fi
 dfx stop

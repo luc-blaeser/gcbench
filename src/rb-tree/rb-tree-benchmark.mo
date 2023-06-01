@@ -57,7 +57,7 @@ actor {
     };
 
     public shared func limitTest(): async (Nat, Runtime.Statistics) {
-        let amount = 2_500;
+        let amount = 10_000;
         Prim.debugPrint("RB tree limit test " # debug_show(amount));
         populate(amount);
         (amount, Runtime.collectStatistics())
