@@ -20,6 +20,7 @@ impl SummaryPage {
         output.push_str("<!DOCTYPE html><html><head><title>GC Benchmark</title>");
         output.push_str("<link rel=\"stylesheet\" href=\"style.css\"/>");
         output.push_str("<script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>");
+        output.push_str("<script>Chart.defaults.font.size = 20;</script>");
         output.push_str("<body><h1>GC Benchmark</h1>");
         output.push_str("<h2>Performance</h2>");
         for metric in PerformanceMetric::all() {
