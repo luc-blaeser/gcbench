@@ -229,6 +229,19 @@ The current Motoko base library implementation of trie map storing Nat to Nat en
 
 **Motivation**: Same as for red-black tree.
 
+## Splay Tree (Small Items)
+
+Benchmark case from `canister-profiling` (https://github.com/dfinity/canister-profiling) using a splay tree for storing Nat64 to Nat64 entries. Scenario:
+
+```
+(1, func() { generate(700_000) }),
+(10, func() { batch_get(50) }),
+(1, func() { batch_put(50) }),
+(1, func() { batch_remove(50) }),
+```
+
+**Motivation**: Case of a massive allocation in a one  single message followed by a few short low-allocation operations. Using a lot of small boxed objects (`Nat64``). Interesting for testing the latency and memory overhead of the incremental GC. 
+
 ## Random Maze (Motoko Playground)
 
 Random Maze sample from the Motoko playground, with the following scenario. Additional GC measurement points are taken when awaiting results of message calls to the random number canister. 
@@ -342,6 +355,7 @@ Scenario:
 | `cancan`              | CanCan video sharing (DFINITY)    |
 | `btree-map`           | BTree Map (Byron Becker)          |
 | `scalable-buffer`     | Scalable buffer                   |
+| `splay-tree`          | Splay tree (canister profiling)   |
 
 The list is to be extended with more cases in future, e.g. more real and complex examples.
 A current difficulty is that benchmarked programs need to be split into measurement steps, to give the GC a possibility to run in between.
@@ -361,13 +375,11 @@ All scenarios are run with the following GCs of the Motoko implementation:
 | `incremental`     | Incremental GC (special build, see below)                |
 
 
-For running `no` GC or `generational` GC, use the compiler and runtime system from branch `https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc`. Please see the instructions below.
+For running `no` GC, use the compiler and runtime system from branch `https://github.com/dfinity/motoko/tree/luc%2Fno-gc-based-on-incremental`. Please see the instructions below.
 
-For running `incremental` GC, use the compiler and runtime system from branch `https://github.com/dfinity/motoko/tree/luc%2Fincremental-gc`. Please see the instructions below.
+### No GC
 
-### Generational GC
-
-1. Clone the motoko repo and switch to branch `luc/generational_gc`. The source is located at [https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc](https://github.com/dfinity/motoko/tree/luc%2Fgenerational_gc)
+1. Clone the motoko repo and switch to branch `luc/no-gc-based-on-incremental`. The source is located at [https://github.com/dfinity/motoko/tree/luc%2Fno-gc-based-on-incremental](https://github.com/dfinity/motoko/tree/luc%2Fno-gc-based-on-incremental)
 2. Under `src`, build with `make`
 3. Under `rts`, build with `make`
 4. Set the environment variable `DFX_MOC_PATH` to refer to this special GC compiler build.
@@ -378,22 +390,7 @@ export DFX_MOC_LOC=<PATH_TO_REPO_FOLDER>/bin/moc
 
 Alternatively, you can store the environment variable in the shell config, e.g. `~/.zshrc`.
 
-**Note**: The special GC build also includes the classical compacting and copying GCs, such that they can also be run and measured by the benchmark.
-
-### Incremental GC
-
-1. Clone the motoko repo and switch to branch `luc/incremental_gc`. The source is located at [https://github.com/dfinity/motoko/tree/luc%2Fincremental-gc](https://github.com/dfinity/motoko/tree/luc%2Fincremental-gc)
-2. Under `src`, build with `make`
-3. Under `rts`, build with `make`
-4. Set the environment variable `DFX_MOC_PATH` to refer to this special GC compiler build.
-
-```
-export DFX_MOC_LOC=<PATH_TO_REPO_FOLDER>/bin/moc
-```
-
-Alternatively, you can store the environment variable in the shell config, e.g. `~/.zshrc`.
-
-**Note**: The special GC build also includes the classical compacting and copying GCs, such that they can also be run and measured by the benchmark.
+**Note**: The special GC build also includes the all other GCs, such that they can also be run and measured by the benchmark.
 
 # Metrics
 
