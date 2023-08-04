@@ -49,7 +49,7 @@ actor {
     // End of external source
     
     let script = [
-        (1, func() { generate(700_000) }),
+        (1, func() { generate(600_000) }),
         (10, func() { batch_get(50) }),
         (1, func() { batch_put(50) }),
         (1, func() { batch_remove(50) }),
