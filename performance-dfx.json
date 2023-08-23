@@ -11,14 +11,5 @@
       "args" : "#GCFLAG#"
     }
   },
-  "defaults": {
-    "build": {
-      "packtool": "",
-      "args": ""
-    },
-    "replica": {
-      "subnet_type" : "system"
-    }
-  },
   "version": 1
 }
