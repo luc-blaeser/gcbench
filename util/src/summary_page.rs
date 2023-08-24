@@ -1,6 +1,7 @@
 use crate::{
     benchmark::Benchmark,
-    common::average_u64,
+    common::{self, average_u64},
+    dirty_pages::DirtyPages,
     limit::{Limit, LimitMetric},
     performance::{Performance, PerformanceMetric},
 };
@@ -25,6 +26,8 @@ impl SummaryPage {
         for metric in PerformanceMetric::all() {
             self.render_performance_metric(&mut output, metric);
         }
+        self.render_dirty_page_metric(&mut output);
+        self.render_total_costs(&mut output);
         output.push_str("<h2>Limits</h2>");
         for metric in LimitMetric::all() {
             self.render_limit_metric(&mut output, metric);
@@ -313,5 +316,93 @@ impl SummaryPage {
         .unwrap();
         write!(output, "}} }} }});").unwrap();
         write!(output, "</script>").unwrap();
+    }
+
+    fn render_dirty_page_metric(&self, output: &mut String) {
+        write!(output, "<h3>Dirty Page Costs</h3>").unwrap();
+        output.push_str("<table><thead><tr><th>Scenario</th>");
+        for gc_type in &self.benchmark.gc_types {
+            write!(output, "<th>{gc_type} GC</th>").unwrap();
+        }
+        output.push_str("</tr></thead>");
+        for scenario_name in &self.benchmark.dirty_pages_scenarios {
+            write!(output, "<tr><td>{scenario_name}</td>").unwrap();
+            for gc_type in &self.benchmark.gc_types {
+                match self.benchmark.get_dirty_pages(scenario_name, gc_type) {
+                    Some(dirty_pages) => {
+                        let value = DirtyPages::display_with_unit(dirty_pages.total_costs());
+                        write!(output, "<td>{value}</td>").unwrap()
+                    }
+                    None => output.push_str("<td>--</td>"),
+                }
+            }
+            output.push_str("</tr>");
+        }
+        let summary_label = "Average";
+        write!(output, "<tr><tfoot><tr><td>{summary_label}</td>").unwrap();
+        for gc_type in &self.benchmark.gc_types {
+            let values: Vec<u64> = self
+                .benchmark
+                .dirty_pages_scenarios
+                .iter()
+                .map(|scenario_name| self.benchmark.get_dirty_pages(scenario_name, gc_type))
+                .filter(|measurement| measurement.is_some())
+                .map(|measurement| measurement.unwrap().total_costs())
+                .collect();
+            let summary_value = DirtyPages::display_with_unit(common::average_u64(values));
+            write!(output, "<td>{summary_value}</td>").unwrap();
+        }
+        output.push_str("</tr></tfoot>");
+        output.push_str("</table>");
+    }
+
+    fn render_total_costs(&self, output: &mut String) {
+        write!(output, "<h3>Total Costs (Instructions + Dirty Pages)</h3>").unwrap();
+        output.push_str("<table><thead><tr><th>Scenario</th>");
+        for gc_type in &self.benchmark.gc_types {
+            write!(output, "<th>{gc_type} GC</th>").unwrap();
+        }
+        output.push_str("</tr></thead>");
+        for scenario_name in &self.benchmark.dirty_pages_scenarios {
+            write!(output, "<tr><td>{scenario_name}</td>").unwrap();
+            for gc_type in &self.benchmark.gc_types {
+                match (
+                    self.benchmark.get_performance(scenario_name, gc_type),
+                    self.benchmark.get_dirty_pages(scenario_name, gc_type),
+                ) {
+                    (Some(performance), Some(dirty_pages)) => {
+                        let total_costs =
+                            dirty_pages.total_costs() + performance.total_instructions();
+                        let value = DirtyPages::display_with_unit(total_costs);
+                        write!(output, "<td>{value}</td>").unwrap()
+                    }
+                    _ => output.push_str("<td>--</td>"),
+                }
+            }
+            output.push_str("</tr>");
+        }
+        let summary_label = "Average";
+        write!(output, "<tr><tfoot><tr><td>{summary_label}</td>").unwrap();
+        for gc_type in &self.benchmark.gc_types {
+            let values: Vec<u64> = self
+                .benchmark
+                .dirty_pages_scenarios
+                .iter()
+                .map(|scenario_name| {
+                    (
+                        self.benchmark.get_dirty_pages(scenario_name, gc_type),
+                        self.benchmark.get_performance(scenario_name, gc_type),
+                    )
+                })
+                .filter(|pair| pair.0.is_some() && pair.1.is_some())
+                .map(|pair: (Option<&DirtyPages>, Option<&Performance>)| {
+                    pair.0.unwrap().total_costs() + pair.1.unwrap().total_instructions()
+                })
+                .collect();
+            let summary_value = DirtyPages::display_with_unit(common::average_u64(values));
+            write!(output, "<td>{summary_value}</td>").unwrap();
+        }
+        output.push_str("</tr></tfoot>");
+        output.push_str("</table>");
     }
 }

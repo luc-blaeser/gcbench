@@ -7,6 +7,8 @@ pub struct TestCase {
     pub gc_type: String,
 }
 
+const PREFIXES: [&str; 3] = ["limit-", "performance-", "dirty-pages-"];
+
 impl TestCase {
     pub fn new(file_name: &str) -> TestCase {
         TestCase {
@@ -26,10 +28,8 @@ impl TestCase {
 
     fn extract_scenario_name(path: &str) -> &str {
         let mut name = common::remove_file_extension(common::get_file_name(path));
-        if name.starts_with("limit-") {
-            name = common::remove_prefix(name, "limit-");
-        } else {
-            name = common::remove_prefix(name, "performance-");
+        for prefix in PREFIXES {
+            name = common::remove_prefix(name, prefix);
         }
         match common::find_last(name, '-') {
             Some(index) => &name[0..index],

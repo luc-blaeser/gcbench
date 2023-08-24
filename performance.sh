@@ -13,6 +13,7 @@ cp style.css reports/
 cp display.js reports/
 OUT_FILE=log/out-$2-$1.txt
 CSV_FILE=reports/performance-$2-$1.csv
+DIRTY_PAGE_FILE=reports/dirty-pages-$2-$1.csv
 CHART_FILE=reports/chart-$2-$1.html
 ./run.sh $1 performance $2 | tee $OUT_FILE
 if [ $? != 0 ]
@@ -21,5 +22,6 @@ then
     exit 1
 fi
 awk '/"Step, Memory/ { gsub("_", ""); gsub("\",", ""); gsub("  \"", ""); gsub("\\\\n", "\n"); print }' $OUT_FILE > $CSV_FILE
+awk '/DIRTY PAGE CHARGING/ { gsub("DIRTY PAGE CHARGING ", ""); print }' $OUT_FILE > $DIRTY_PAGE_FILE
 util/target/release/report chart $CSV_FILE $CHART_FILE
 util/target/release/report summary reports/

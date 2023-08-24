@@ -1,4 +1,5 @@
 use benchmark::Benchmark;
+use dirty_pages::DirtyPages;
 
 use crate::chart_page::ChartPage;
 use crate::limit::Limit;
@@ -13,6 +14,7 @@ pub mod benchmark;
 pub mod chart;
 pub mod chart_page;
 pub mod common;
+pub mod dirty_pages;
 pub mod limit;
 pub mod performance;
 pub mod summary_page;
@@ -61,7 +63,12 @@ fn generate_summary(directory: &str) {
         .collect();
     let limit_files = common::collect_csv_files(directory, "limit-");
     let limits: Vec<Limit> = limit_files.iter().map(|f| read_limit(f)).collect();
-    let benchmark = Benchmark::new(performance, limits);
+    let dirty_pages_files = common::collect_csv_files(directory, "dirty-pages-");
+    let dirty_pages: Vec<DirtyPages> = dirty_pages_files
+        .iter()
+        .map(|f| read_dirty_pages(f))
+        .collect();
+    let benchmark = Benchmark::new(performance, limits, dirty_pages);
     let page = SummaryPage::new(benchmark);
     let output = page.render();
     let summary_file = Path::new(directory).join("summary.html");
@@ -78,4 +85,10 @@ fn read_limit(input_file: &str) -> Limit {
     let content = fs::read_to_string(input_file).expect("invalid input file");
     let name = common::get_file_name(input_file);
     Limit::parse(name, &content)
+}
+
+fn read_dirty_pages(input_file: &str) -> DirtyPages {
+    let content = fs::read_to_string(input_file).expect("invalid input file");
+    let name = common::get_file_name(input_file);
+    DirtyPages::parse(name, &content)
 }

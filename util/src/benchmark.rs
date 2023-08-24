@@ -1,4 +1,5 @@
 use crate::{
+    dirty_pages::DirtyPages,
     limit::Limit,
     performance::{Performance, PerformanceMetric},
 };
@@ -6,13 +7,19 @@ use crate::{
 pub struct Benchmark {
     pub performance: Vec<Performance>,
     pub limits: Vec<Limit>,
+    pub dirty_pages: Vec<DirtyPages>,
     pub gc_types: Vec<String>,
     pub performance_scenarios: Vec<String>,
     pub limits_scenarios: Vec<String>,
+    pub dirty_pages_scenarios: Vec<String>,
 }
 
 impl Benchmark {
-    pub fn new(performance: Vec<Performance>, limits: Vec<Limit>) -> Benchmark {
+    pub fn new(
+        performance: Vec<Performance>,
+        limits: Vec<Limit>,
+        dirty_pages: Vec<DirtyPages>,
+    ) -> Benchmark {
         let gc_types: Vec<String> = limits.iter().map(|l| l.test_case.gc_type.clone()).collect();
         let mut gc_types: Vec<String> = performance
             .iter()
@@ -32,12 +39,20 @@ impl Benchmark {
             .collect();
         limits_scenarios.sort();
         limits_scenarios.dedup();
+        let mut dirty_pages_scenarios: Vec<String> = dirty_pages
+            .iter()
+            .map(|m| String::from(&m.test_case.scenario_name))
+            .collect();
+        dirty_pages_scenarios.sort();
+        dirty_pages_scenarios.dedup();
         Benchmark {
             performance: performance.to_vec(),
             limits: limits.to_vec(),
+            dirty_pages: dirty_pages.to_vec(),
             gc_types,
             performance_scenarios,
             limits_scenarios,
+            dirty_pages_scenarios,
         }
     }
 
@@ -83,6 +98,15 @@ impl Benchmark {
 
     pub fn get_limits(&self, scenario_name: &str, gc_type: &str) -> Option<&Limit> {
         self.limits
+            .iter()
+            .filter(|m| {
+                m.test_case.scenario_name == scenario_name && m.test_case.gc_type == gc_type
+            })
+            .last()
+    }
+
+    pub fn get_dirty_pages(&self, scenario_name: &str, gc_type: &str) -> Option<&DirtyPages> {
+        self.dirty_pages
             .iter()
             .filter(|m| {
                 m.test_case.scenario_name == scenario_name && m.test_case.gc_type == gc_type

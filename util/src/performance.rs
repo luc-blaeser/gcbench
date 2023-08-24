@@ -51,7 +51,7 @@ impl PerformanceMetric {
             Self::MutatorUtilization => "Mutator Utilization",
             Self::MaxGcPause => "Max GC Pause",
             Self::AverageGcPause => "Average GC Pause",
-            Self::TotalInstructions => "Total Instructions",
+            Self::TotalInstructions => "Total Instructions (Without Dirty Pages)",
             Self::TotalMutator => "Total Mutator",
             Self::SurvivalRate => "Survival Rate",
         }
