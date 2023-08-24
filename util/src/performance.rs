@@ -14,6 +14,7 @@ pub struct Performance {
     pub live: Vec<u64>,
     pub mutator: Vec<u64>,
     pub collector: Vec<u64>,
+    pub cycles: Vec<u64>,
 }
 
 pub enum PerformanceMetric {
@@ -26,6 +27,7 @@ pub enum PerformanceMetric {
     TotalInstructions,
     TotalMutator,
     SurvivalRate,
+    CyclesBurned,
 }
 
 impl PerformanceMetric {
@@ -40,6 +42,7 @@ impl PerformanceMetric {
             Self::TotalInstructions => "totalInstructions",
             Self::TotalMutator => "totalMutator",
             Self::SurvivalRate => "survivalRate",
+            Self::CyclesBurned => "cyclesBurned",
         }
     }
 
@@ -54,6 +57,7 @@ impl PerformanceMetric {
             Self::TotalInstructions => "Total Instructions",
             Self::TotalMutator => "Total Mutator",
             Self::SurvivalRate => "Survival Rate",
+            Self::CyclesBurned => "Cycles Burned",
         }
     }
 
@@ -82,6 +86,7 @@ impl PerformanceMetric {
             Self::TotalInstructions,
             Self::TotalMutator,
             Self::SurvivalRate,
+            Self::CyclesBurned,
         ]
     }
 }
@@ -99,6 +104,7 @@ impl Performance {
             live: Vec::new(),
             mutator: Vec::new(),
             collector: Vec::new(),
+            cycles: Vec::new(),
         }
     }
 
@@ -119,6 +125,7 @@ impl Performance {
             performance.live.push(pick(&row, 5));
             performance.mutator.push(pick(&row, 6));
             performance.collector.push(pick(&row, 7));
+            performance.cycles.push(pick(&row, 8));
         }
         performance
     }
@@ -189,6 +196,10 @@ impl Performance {
         survival_rates.iter().sum::<f64>() / survival_rates.len() as f64
     }
 
+    pub fn cycles_burned(&self) -> u64 {
+        self.cycles.iter().max().unwrap_or(&0) - self.cycles.iter().min().unwrap_or(&0)
+    }
+
     pub fn get_value(&self, metric: &PerformanceMetric, performance_base: u64) -> f64 {
         match metric {
             PerformanceMetric::FinalHeapSize => self.final_heap_size() as f64,
@@ -200,6 +211,7 @@ impl Performance {
             PerformanceMetric::TotalInstructions => self.total_instructions() as f64,
             PerformanceMetric::TotalMutator => self.total_mutator() as f64,
             PerformanceMetric::SurvivalRate => self.survival_rate(),
+            PerformanceMetric::CyclesBurned => self.cycles_burned() as f64,
         }
     }
 
@@ -224,7 +236,9 @@ impl Performance {
                 write!(&mut result, "{value:.2e}").unwrap();
                 result
             }
-            PerformanceMetric::TotalInstructions | PerformanceMetric::TotalMutator => {
+            PerformanceMetric::TotalInstructions
+            | PerformanceMetric::TotalMutator
+            | PerformanceMetric::CyclesBurned => {
                 let mut result = String::new();
                 write!(&mut result, "{value:.2e}").unwrap();
                 result
@@ -241,7 +255,8 @@ impl Performance {
             PerformanceMetric::MaxGcPause
             | PerformanceMetric::AverageGcPause
             | PerformanceMetric::TotalInstructions
-            | PerformanceMetric::TotalMutator => "",
+            | PerformanceMetric::TotalMutator
+            | PerformanceMetric::CyclesBurned => "",
         }
     }
 
@@ -258,7 +273,8 @@ impl Performance {
             PerformanceMetric::MaxGcPause
             | PerformanceMetric::AverageGcPause
             | PerformanceMetric::TotalInstructions
-            | PerformanceMetric::TotalMutator => false,
+            | PerformanceMetric::TotalMutator
+            | PerformanceMetric::CyclesBurned => false,
         }
     }
 
@@ -271,7 +287,8 @@ impl Performance {
             PerformanceMetric::MaxGcPause
             | PerformanceMetric::AverageGcPause
             | PerformanceMetric::TotalInstructions
-            | PerformanceMetric::TotalMutator => true,
+            | PerformanceMetric::TotalMutator
+            | PerformanceMetric::CyclesBurned => true,
         }
     }
 
@@ -284,7 +301,8 @@ impl Performance {
             PerformanceMetric::MaxGcPause
             | PerformanceMetric::AverageGcPause
             | PerformanceMetric::TotalInstructions
-            | PerformanceMetric::TotalMutator => false,
+            | PerformanceMetric::TotalMutator
+            | PerformanceMetric::CyclesBurned => false,
         }
     }
 }
