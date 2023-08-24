@@ -18,8 +18,10 @@ impl DirtyPages {
     pub fn parse(file_name: &str, content: &str) -> DirtyPages {
         let mut dirty_pages = DirtyPages::new(file_name);
         for line in content.split('\n').filter(|x| !x.is_empty()) {
-            let number = line.trim().parse::<u64>().expect("invalid number");
-            dirty_pages.costs.push(number);
+            let parsed_value = line.trim().parse::<u64>();
+            if let Ok(number) = parsed_value {
+                dirty_pages.costs.push(number);
+            }
         }
         dirty_pages
     }
