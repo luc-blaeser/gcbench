@@ -10,8 +10,7 @@ then
 fi
 cd ..
 GC_MODES="incremental"
-#PERFORMANCE_CASES="linked-list buffer scalable-buffer rb-tree trie-map blobs imperative-rb-tree btree-map graph random-maze game-of-life extendable-token asset-storage qr-code reversi sha256 cancan"
-PERFORMANCE_CASES="scalable-buffer trie-map imperative-rb-tree btree-map graph random-maze game-of-life extendable-token qr-code reversi sha256 cancan"
+PERFORMANCE_CASES="linked-list buffer scalable-buffer rb-tree trie-map blobs imperative-rb-tree btree-map graph random-maze game-of-life extendable-token asset-storage qr-code reversi sha256 cancan"
 for name in $PERFORMANCE_CASES
 do
     for gc in $GC_MODES
