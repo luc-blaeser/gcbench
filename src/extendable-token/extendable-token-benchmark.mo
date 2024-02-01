@@ -58,7 +58,7 @@ actor {
         }
     };
 
-    public shared(msg) func run(): async Text {
+    public shared func run(): async Text {
         await initialize();
         let transactions = 200;
         for (count in Iter.range(0, transactions - 1)) {

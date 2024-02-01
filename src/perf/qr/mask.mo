@@ -20,7 +20,7 @@ module {
 
   public func generate(
     version : Version,
-    level : ErrorCorrection,
+    _level : ErrorCorrection,
     data : List<Bool>
   ) : ([var [var Bool]], List<Bool>) {
 

@@ -510,9 +510,8 @@ public func merge<K,V>(tl:Trie<K,V>, tr:Trie<K,V>, k_eq:(K,K)->Bool) : Trie<K,V>
    dynamic error if there are collisions in common keys between the
    left and right inputs.
    */
-public func mergeDisjoint<K,V>(tl:Trie<K,V>, tr:Trie<K,V>, k_eq:(K,K)->Bool): Trie<K,V> =
+public func mergeDisjoint<K,V>(tl:Trie<K,V>, tr:Trie<K,V>, _k_eq:(K,K)->Bool): Trie<K,V> =
     label profile_trie_mergeDisjoint : Trie<K,V> {
-    let key_eq = keyEq<K>(k_eq);
     func br(l:Trie<K,V>, r:Trie<K,V>) : Trie<K,V> = branch<K,V>(l,r);
     func rec(bitpos:Nat, tl:Trie<K,V>, tr:Trie<K,V>) : Trie<K,V> = label profile_trie_mergeDisjoint_rec : Trie<K,V> {
       func lf(kvs:AssocList<Key<K>,V>) : Trie<K,V> = leaf<K,V>(kvs, bitpos);
@@ -890,7 +889,7 @@ public func disj<K,V,W,X>(
       tl    :Trie<K1,V1>,
       tr    :Trie<K2,V2>,
       op    :(K1,V1,K2,V2) -> ?(K3,V3),
-      k3_eq :(K3,K3) -> Bool
+      _k3_eq :(K3,K3) -> Bool
     )
       : TrieBuild<K3,V3>
     {
@@ -1444,7 +1443,7 @@ public func disj<K,V,W,X>(
    trie.
 
    */
-  public func mergeDisjoint2D<K1,K2,V>(t : Trie2D<K1,K2,V>, k1_eq:(K1,K1)->Bool, k2_eq:(K2,K2)->Bool)
+  public func mergeDisjoint2D<K1,K2,V>(t : Trie2D<K1,K2,V>, _k1_eq:(K1,K1)->Bool, k2_eq:(K2,K2)->Bool)
     : Trie<K2,V>
   {
     foldUp<K1,Trie<K2,V>, Trie<K2,V>>

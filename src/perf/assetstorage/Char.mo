@@ -5,10 +5,10 @@ module {
   public let toText : (c : Char) -> Text = Prim.charToText;
 
   // Not exposed pending multi-char implementation.
-  private let toUpper : (c : Char) -> Char = Prim.charToUpper;
+  private let _toUpper : (c : Char) -> Char = Prim.charToUpper;
 
   // Not exposed pending multi-char implementation.
-  private let toLower : (c : Char) -> Char = Prim.charToLower;
+  private let _toLower : (c : Char) -> Char = Prim.charToLower;
 
   /// Returns the Unicode _White_Space_ property of `c`.
   public let isWhitespace : (c : Char) -> Bool = Prim.charIsWhitespace;
