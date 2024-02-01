@@ -14,7 +14,7 @@ module {
   type List<T> = List.List<T>;
   type Version = Version.Version;
 
-  public func encode(version : Version, text : Text) : ?List<Bool> {
+  public func encode(_version : Version, _text : Text) : ?List<Bool> {
     Prelude.printLn("Error: Kanji mode is not yet implemented!");
     Prelude.unreachable()
   };

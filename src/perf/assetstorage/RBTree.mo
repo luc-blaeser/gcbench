@@ -42,12 +42,12 @@ public class RBTree<X, Y>(compareTo:(X, X) -> O.Order) {
   };
   /// Put an entry: A value associated with a given key.
   public func put(x:X, y:Y) {
-    let (res, t) = insertRoot(x, compareTo, y, tree);
+    let (_res, t) = insertRoot(x, compareTo, y, tree);
     tree := t;
   };
   /// Delete the entry associated with a given key.
   public func delete(x:X) {
-    let (res, t) = removeRec(x, compareTo, tree);
+    let (_res, t) = removeRec(x, compareTo, tree);
     tree := t
   };
   /// Remove the entry associated with a given key.

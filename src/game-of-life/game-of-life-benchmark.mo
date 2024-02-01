@@ -1,6 +1,5 @@
 import Prim "mo:prim";
 import Benchmark "../benchmark";
-import Runtime "../runtime";
 
 import State "state";
 import Grid "grid";

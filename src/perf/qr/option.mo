@@ -49,7 +49,7 @@ public let option : <A,B>(?A, f : A -> B, default : B) -> B =
 Applies a function to the wrapped value.
 */
 public let map : <A, B>(f: A->B, x: ?A) -> ?B =
-  func map<A, B>(f: A->B, x: ?A): ?B =
+  func<A, B>(f: A->B, x: ?A): ?B =
     switch x {
       case null null;
       case (?x_) ?f(x_);
