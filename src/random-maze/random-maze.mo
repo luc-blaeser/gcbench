@@ -92,7 +92,7 @@ module {
   ///
   /// https://en.wikipedia.org/wiki/Maze_generation_algorithm
   /// https://en.wikipedia.org/wiki/Maze_generation_algorithm#Iterative_implementation
-  public func generate(size : Nat) : async Text {
+  public func generate(size : Nat) : async* Text {
     let n = Nat.max(1, size / 2);
 
     // Construct a maze of mutable, unvisited walls
@@ -103,7 +103,7 @@ module {
     // to turn walls into cells connected by random halls
     let s = Stack.Stack<(Nat,Nat)>();
     let entropy = randomSeed(); // deterministic seed
-    await Trace.point();
+    await* Trace.point();
     var f = Random.Finite(entropy);
 
     m[0][1] := hall; // Entrance
@@ -114,7 +114,7 @@ module {
     loop {
       switch (s.pop()) {
         case null {
-          await Trace.point();
+          await* Trace.point();
           return toText(m);
         };
         case (?(i, j)) {
@@ -133,7 +133,7 @@ module {
               case null { // not enough entropy
                 Debug.print("need more entropy...");
                 let entropy = randomSeed(); // deterministic seed
-                await Trace.point();
+                await* Trace.point();
                 f := Random.Finite(entropy);
                 s.push((i,j)); // continue from (i,j)
               }

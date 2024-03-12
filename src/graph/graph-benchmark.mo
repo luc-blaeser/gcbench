@@ -51,6 +51,6 @@ actor {
 
     public shared func run(): async Text {
         Prim.debugPrint("Graph benchmark");
-        await Benchmark.measure(script)
+        await* Benchmark.measure(script)
     }
 }

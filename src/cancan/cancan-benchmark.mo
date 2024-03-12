@@ -45,11 +45,11 @@ actor {
 
     public shared func run(): async Text {
         Prim.debugPrint("CanCan benchmark");
-        Prim.cyclesAdd(2_000_000_000_000); 
+        Prim.cyclesAdd<system>(2_000_000_000_000); 
         let service = await CanCan.CanCan();
         for (userNumber in Iter.range(0, userCount - 1)) {
             await uploadVideo(service, userNumber)
         };
-        await Trace.result()
+        await* Trace.result()
     };
 }

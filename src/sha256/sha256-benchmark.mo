@@ -9,6 +9,6 @@ actor {
 
     public shared func run(): async Text {
         Prim.debugPrint("SHA 256 (Motoko perf test) benchmark");
-        await Benchmark.measure(script)
+        await* Benchmark.measure(script)
     };
 }

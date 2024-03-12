@@ -23,17 +23,17 @@ actor {
         cur.toText();
     };
 
-    func step(): async () {
+    func step(): async* () {
         ignore await next();
-        await Trace.point()
+        await* Trace.point()
     };
 
     let script = [
-        ( 10, func(): async () { await step() } )
+        ( 10, func(): async* () { await* step() } )
     ];
 
     public shared func run(): async Text {
         Prim.debugPrint("Game of life benchmark");
-        await Benchmark.measureAsync(script)
+        await* Benchmark.measureAsync(script)
     }
 }

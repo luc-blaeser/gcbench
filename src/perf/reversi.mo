@@ -85,9 +85,9 @@ module {
       };
 
       // External interface to reset the board
-      public func reset(): async() {
+      public func reset(): async*() {
           init();
-          await Trace.point()
+          await* Trace.point()
       };
 
       public func dimension() : async Nat {
@@ -115,8 +115,8 @@ module {
       };
 
       // External interface to render the board
-      public func board() : async Text {
-          await Trace.point();
+      public func board() : async* Text {
+          await* Trace.point();
           render(Board);
       };
 
@@ -229,8 +229,8 @@ module {
 
       // External interface that places a piece of given color at a coordinate.
       // It returns "OK" when the move is valid.
-      public func place(color_: Int, row_: Int, col_: Int) : async Text {
-        await Trace.point();
+      public func place(color_: Int, row_: Int, col_: Int) : async* Text {
+        await* Trace.point();
         // The casting is necessary because dfx has yet to support Nat on commandline
         let color : Color = Prim.abs(color_); 
         let row : Nat = Prim.abs(row_); 
@@ -271,7 +271,7 @@ module {
         } else {
           "Illegal move";
         };
-        await Trace.point();
+        await* Trace.point();
         result
       };
       

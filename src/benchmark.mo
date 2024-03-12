@@ -9,29 +9,29 @@ module {
     public type RepeatedStep = (Nat, Operation);
     public type Script = [RepeatedStep];
 
-    public func measure(script: Script): async Text {
+    public func measure(script: Script): async* Text {
         for (line in Collections.iterate(script)) {
             for (repetition in Iter.range(0, line.0 - 1)) {
                 let operation = line.1;
                 operation();
-                await Trace.point()
+                await* Trace.point()
             }
         };
-        await Trace.result()
+        await* Trace.result()
     };
 
-    public type AsyncOperation = () -> async ();
+    public type AsyncOperation = () -> async* ();
     public type AsyncRepeatedStep = (Nat, AsyncOperation);
     public type AsyncScript = [AsyncRepeatedStep];
 
-    public func measureAsync(script: AsyncScript): async Text {
+    public func measureAsync(script: AsyncScript): async* Text {
         for (line in Collections.iterate(script)) {
             for (repetition in Iter.range(0, line.0 - 1)) {
                 let operation = line.1;
-                await operation();
-                await Trace.point()
+                await* operation();
+                await* Trace.point()
             }
         };
-        await Trace.result()
+        await* Trace.result()
     }
 }

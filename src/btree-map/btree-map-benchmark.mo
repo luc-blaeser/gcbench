@@ -47,7 +47,7 @@ actor {
 
     public shared func run(): async Text {
         Prim.debugPrint("BTree benchmark");
-        await Benchmark.measure(script)
+        await* Benchmark.measure(script)
     };
 
     public shared func limitTest(): async (Nat, Runtime.Statistics) {

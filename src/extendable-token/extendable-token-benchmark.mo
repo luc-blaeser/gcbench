@@ -13,7 +13,7 @@ actor {
         let owner = msg.caller;
         Prim.cyclesAdd(200_000_000_000);    
         standard := ?(await ExtStandard.standard_token("Me Token", "MET", 3, initialAmount, owner));
-        await Trace.point()
+        await* Trace.point()
     };
 
     private let receiver = "012345678901234567890123456789012345678901234567890123456789abcd";
@@ -51,7 +51,7 @@ actor {
                     user = #address receiver;
                     token
                 });
-                await Trace.point();
+                await* Trace.point();
                 assert(#ok receiverBalance == actualReceiverBalance)
             };
             case _ Prim.trap("No platform")
@@ -60,10 +60,12 @@ actor {
 
     public shared func run(): async Text {
         await initialize();
+        await* Trace.point();
         let transactions = 200;
         for (count in Iter.range(0, transactions - 1)) {
-            await transfer()
+            await transfer();
+            await* Trace.point();
         };
-        await Trace.result()
+        await* Trace.result()
     }
 }

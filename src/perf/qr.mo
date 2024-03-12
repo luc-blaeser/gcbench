@@ -65,7 +65,7 @@ actor class QR() {
         )
       }
     );
-    await Trace.point();
+    await* Trace.point();
     result
   };
 
@@ -77,7 +77,7 @@ actor class QR() {
         text # accum2
       }, "\n", array) # accum1
     }, "", arrays);
-    await Trace.point();
+    await* Trace.point();
     result
   };
 
@@ -88,15 +88,13 @@ actor class QR() {
       (#Version 2, #M, #Alphanumeric, "HTTPS://SDK.DFINITY.ORG"),
     ];
     for ((version, level, mode, text) in tests.vals())  {
-      //await Trace.point();
       let result = await encode(version, level, mode, text);
-      await Trace.point();
-      //await Trace.point();
+      await* Trace.point();
       Prelude.printLn(switch result {
         case (?matrix) "\n" # (await show(matrix));
         case _ "Error: Invalid input!";
       });
-      await Trace.point()
+      await* Trace.point()
     };
   };
 }

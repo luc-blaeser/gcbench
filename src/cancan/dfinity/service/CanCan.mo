@@ -101,12 +101,12 @@ shared ({caller = initPrincipal}) actor class CanCan () /* : Types.Service */ {
   };
 
   public shared(msg) func createProfile(userName : Text, pic : ?ProfilePic) : async ?ProfileInfoPlus {
-    await Trace.point();
+    await* Trace.point();
     let result = do ? {
       accessCheck(msg.caller, #create, #user userName)!;
       createProfile_(userName, ?msg.caller, pic)!
     };
-    await Trace.point();
+    await* Trace.point();
     result
   };
 
@@ -666,12 +666,12 @@ shared ({caller = initPrincipal}) actor class CanCan () /* : Types.Service */ {
   };
 
   public shared(msg) func createVideo(i : VideoInit) : async ?VideoId {
-    await Trace.point();
+    await* Trace.point();
     let result = do ? {
       accessCheck(msg.caller, #update, #user(i.userId))!;
       createVideo_(i)!
     };
-    await Trace.point();
+    await* Trace.point();
     result
   };
 
@@ -795,12 +795,12 @@ shared ({caller = initPrincipal}) actor class CanCan () /* : Types.Service */ {
   public shared(msg) func putVideoChunk
     (videoId : VideoId, chunkNum : Nat, chunkData : [Nat8]) : async ?()
   {
-    await Trace.point();
+    await* Trace.point();
     let result = do ? {
       accessCheck(msg.caller, #update, #video videoId)!;
       state.chunks.put(chunkId(videoId, chunkNum), chunkData);
     };
-    await Trace.point();
+    await* Trace.point();
     result
   };
 

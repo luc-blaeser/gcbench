@@ -5,9 +5,10 @@ import Trace "../trace";
 actor {
     public shared func run(): async Text {
         Prim.debugPrint("QR code (Motoko perf test) benchmark");
-        Prim.cyclesAdd(200_000_000_000); 
+        Prim.cyclesAdd<system>(200_000_000_000); 
         let test = await QR.QR();
         await test.go();
-        await Trace.result()
+        await* Trace.point();
+        await* Trace.result()
     };
 }

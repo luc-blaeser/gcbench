@@ -9,17 +9,17 @@ actor {
         let test = Reversi.Reversi();
         let runs = 30;
         for (count in Iter.range(0, runs - 1)) {
-            await test.reset();
-            await Trace.point();
-            ignore await test.place(1, 2, 4);
-            await Trace.point();
-            ignore await test.place(2, 2, 3);
-            await Trace.point();
-            ignore await test.place(1, 4, 2);
-            await Trace.point();
-            ignore await test.board();
-            await Trace.point()
+            await* test.reset();
+            await* Trace.point();
+            ignore await* test.place(1, 2, 4);
+            await* Trace.point();
+            ignore await* test.place(2, 2, 3);
+            await* Trace.point();
+            ignore await* test.place(1, 4, 2);
+            await* Trace.point();
+            ignore await* test.board();
+            await* Trace.point()
         };
-        await Trace.result()
+        await* Trace.result()
     };
 }

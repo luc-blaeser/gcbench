@@ -80,7 +80,7 @@ actor class standard_token(init_name: Text, init_symbol: Text, init_decimals: Na
               case (?canisterId) {
                 let notifier : NotifyService = actor(Principal.toText(canisterId));
                 let notifyResult = await notifier.tokenTransferNotification(request.token, request.from, request.amount, request.memo);
-                await Trace.point();
+                await* Trace.point();
                 switch(notifyResult) {
                   case (?balance) {
                     provisional_amount := balance;

@@ -42,7 +42,7 @@ actor {
 
     public shared func run(): async Text {
         Prim.debugPrint("Blobs benchmark");
-        await Benchmark.measure(script)
+        await* Benchmark.measure(script)
     };
 
     public shared func limitTest(): async (Nat, Runtime.Statistics) {
