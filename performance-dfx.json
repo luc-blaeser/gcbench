@@ -3,12 +3,12 @@
     "recorder": {
       "main": "src/recorder.mo",
       "type": "motoko",
-      "args" : "#GCFLAG#"
+      "args" : "--enhanced-orthogonal-persistence"
     },
     "benchmark": {
       "main": "src/#SCENARIO#/#SCENARIO#-benchmark.mo",
       "type": "motoko",
-      "args" : "#GCFLAG#"
+      "args" : "--enhanced-orthogonal-persistence"
     }
   },
   "version": 1

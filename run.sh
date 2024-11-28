@@ -7,9 +7,9 @@ then
     echo "Usage: run.sh <compacting|copying|no|generational|incremental> <performance|limit> <scenario_name>"
     exit 1
 fi
-if [ "$1" != "compacting" ] && [ "$1" != "copying" ] && [ "$1" != "no" ] && [ "$1" != "generational" ] && [ "$1" != "incremental" ]
+if [ "$1" != "compacting" ] && [ "$1" != "copying" ] && [ "$1" != "no" ] && [ "$1" != "generational" ] && [ "$1" != "incremental" ] && [ "$1" != "eop" ]
 then
-    echo "First argument must be 'compacting', 'copying', 'no', 'generational', or 'incremental'"
+    echo "First argument must be 'compacting', 'copying', 'no', 'generational', 'incremental', or 'eop'"
     exit 1
 fi
 if [ "$2" != "performance" ] && [ "$2" != "limit" ]
