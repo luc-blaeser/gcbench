@@ -1,59 +1,41 @@
-import Prim "mo:prim";
 import Nat "mo:base/Nat";
-import BTree "canscale-btree/BTree";
-import Iter "mo:base/Iter";
-import Benchmark "../benchmark";
-import Runtime "../runtime";
+import MapBenchmark "../map-benchmark";
+import Debug "mo:base/Debug";
+import BTree "mo:stableheapbtreemap/BTree";
 
 actor {
-    let Order = 256;
-
-    var tree = do {
-        BTree.init<Nat, Nat>(Order)
+    let tree = BTree.init<Nat, Nat>(null);
+    
+    func put(key : Nat, value : Nat) {
+        ignore BTree.insert(tree, Nat.compare, key, value);
     };
 
-    var total = 0;
-
-    func populate(amount: Nat) {
-        Prim.debugPrint("BTree populate " # debug_show(amount));
-        for (count in Iter.range(0, amount - 1)) {
-            let result = BTree.insert(tree, Nat.compare, total, total);
-            assert(result == null);
-            total += 1;
-        }
+    func get(key : Nat) : Nat {
+        switch (BTree.get(tree, Nat.compare, key)) {
+            case null Debug.trap("Missing key");
+            case (?value) value;
+        };
     };
 
-    func retrieve() {
-        Prim.debugPrint("BTree retrieve " # debug_show(total));
-        for (count in Iter.range(0, total - 1)) {
-            let result = BTree.get(tree, Nat.compare, count);
-            assert(result == ?count)
-        }
+    func update(key : Nat, value : Nat) {
+        ignore BTree.insert(tree, Nat.compare, key, value);
     };
 
-    func clear() {
-        Prim.debugPrint("BTree clear");
-        tree := BTree.init<Nat, Nat>(Order);
-        total := 0
+    func delete(key : Nat) {
+        ignore BTree.delete(tree, Nat.compare, key);
     };
 
-    let script = [
-        ( 30, func() { populate(10_000) } ),
-        ( 10, func() { retrieve() } ),
-        ( 1, func() { clear() } ),
-        ( 40, func() { populate(10_000) } ),
-        ( 10, func() { retrieve() } )
-    ];
+    let benchmark = MapBenchmark.MapBenchmark(
+        "BTreeMap",
+        {
+            put;
+            get;
+            update;
+            delete;
+        },
+    );
 
-    public shared func run(): async Text {
-        Prim.debugPrint("BTree benchmark");
-        await* Benchmark.measure(script)
+    public func run() : async Text {
+        await benchmark.run();
     };
-
-    public shared func limitTest(): async (Nat, Runtime.Statistics) {
-        let amount = 10_000;
-        Prim.debugPrint("BTree limit test " # debug_show(amount));
-        populate(amount);
-        (amount, Runtime.collectStatistics())
-    }
-}
+};

@@ -17,10 +17,10 @@ impl SummaryPage {
 
     pub fn render(&self) -> String {
         let mut output = String::new();
-        output.push_str("<!DOCTYPE html><html><head><title>GC Benchmark</title>");
+        output.push_str("<!DOCTYPE html><html><head><title>Benchmark</title>");
         output.push_str("<link rel=\"stylesheet\" href=\"style.css\"/>");
         output.push_str("<script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>");
-        output.push_str("<body><h1>GC Benchmark</h1>");
+        output.push_str("<body><h1>Benchmark</h1>");
         output.push_str("<h2>Performance</h2>");
         for metric in PerformanceMetric::all() {
             self.render_performance_metric(&mut output, metric);
@@ -47,7 +47,7 @@ impl SummaryPage {
         for performance in &self.benchmark.performance {
             let scenario_name = &performance.test_case.scenario_name;
             let gc_type = &performance.test_case.gc_type;
-            write!(output, "<tr><td><a href=\"chart-{scenario_name}-{gc_type}.html?#\">{scenario_name} ({gc_type} GC)</a></td>").unwrap();
+            write!(output, "<tr><td><a href=\"chart-{scenario_name}-{gc_type}.html?#\">{scenario_name} ({gc_type})</a></td>").unwrap();
             for metric in PerformanceMetric::all() {
                 let performance_base = self.benchmark.get_performance_base(scenario_name, &metric);
                 let value = Performance::display_with_unit(
@@ -67,7 +67,7 @@ impl SummaryPage {
         self.render_performance_summary_chart(output, &metric);
         output.push_str("<table><thead><tr><th>Scenario</th>");
         for gc_type in &self.benchmark.gc_types {
-            write!(output, "<th>{gc_type} GC</th>").unwrap();
+            write!(output, "<th>{gc_type}</th>").unwrap();
         }
         output.push_str("</tr></thead>");
         for scenario_name in &self.benchmark.performance_scenarios {
@@ -137,7 +137,7 @@ impl SummaryPage {
         output.push_str("], datasets: [");
         for gc_type in &self.benchmark.gc_types {
             if gc_type != "no" || Performance::show_no_gc(metric) {
-                write!(output, "{{ label: '{gc_type} GC', data: [").unwrap();
+                write!(output, "{{ label: '{gc_type}', data: [").unwrap();
                 for scenario_name in &self.benchmark.performance_scenarios {
                     let performance_base =
                         self.benchmark.get_performance_base(scenario_name, metric);
@@ -206,7 +206,7 @@ impl SummaryPage {
         for limits in &self.benchmark.limits {
             let scenario_name = &limits.test_case.scenario_name;
             let gc_type = &limits.test_case.gc_type;
-            write!(output, "<tr><td>{scenario_name} ({gc_type} GC)</td>").unwrap();
+            write!(output, "<tr><td>{scenario_name} ({gc_type})</td>").unwrap();
             for metric in LimitMetric::all() {
                 let value = Limit::display_with_unit(&metric, limits.get_value(&metric));
                 write!(output, "<td>{value}</td>").unwrap()
@@ -222,7 +222,7 @@ impl SummaryPage {
         self.render_limit_summary_chart(output, &metric);
         output.push_str("<table><thead><tr><th>Scenario</th>");
         for gc_type in &self.benchmark.gc_types {
-            write!(output, "<th>{gc_type} GC</th>").unwrap();
+            write!(output, "<th>{gc_type}</th>").unwrap();
         }
         output.push_str("</tr></thead>");
         for scenario_name in &self.benchmark.limits_scenarios {
@@ -277,7 +277,7 @@ impl SummaryPage {
         output.push_str("], datasets: [");
         for gc_type in &self.benchmark.gc_types {
             if gc_type != "no" || Limit::show_no_gc(metric) {
-                write!(output, "{{ label: '{gc_type} GC', data: [").unwrap();
+                write!(output, "{{ label: '{gc_type}', data: [").unwrap();
                 for scenario_name in &self.benchmark.limits_scenarios {
                     let value = match self.benchmark.get_limits(scenario_name, gc_type) {
                         Some(performance) => performance.get_value(metric),

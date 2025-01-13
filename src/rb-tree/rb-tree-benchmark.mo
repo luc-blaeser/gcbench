@@ -1,65 +1,41 @@
-import Prim "mo:prim";
-import Iter "mo:base/Iter";
-import RBBase "mo:base/RBTree";
-import NatBase "mo:base/Nat";
-import Benchmark "../benchmark";
-import Runtime "../runtime";
+import Nat "mo:base/Nat";
+import MapBenchmark "../map-benchmark";
+import Debug "mo:base/Debug";
+import RBTree "mo:base/RBTree";
 
 actor {
-    var tree = RBBase.RBTree<Nat, Nat>(NatBase.compare);
+    var tree = RBTree.RBTree<Nat, Nat>(Nat.compare);
 
-    var total = 0;
-
-    func populate(amount: Nat) {
-        Prim.debugPrint("RB tree populate " # debug_show(amount));
-        for (count in Iter.range(0, amount - 1)) {
-            tree.put(total, total);
-            total += 1
-        }
+    func put(key : Nat, value : Nat) {
+        tree.put(key, value);
     };
 
-    func retrieve() {
-        Prim.debugPrint("RB tree retrieve " # debug_show(total));
-        for (count in Iter.range(0, total - 1)) {
-            let result = tree.get(count);
-            assert(result == ?count)
-        }
+    func get(key : Nat) : Nat {
+        switch (tree.get(key)) {
+            case null Debug.trap("Missing key");
+            case (?value) value;
+        };
     };
 
-    func discard(amount: Nat) {
-        Prim.debugPrint("RB tree discard " # debug_show(amount));
-        for (count in Iter.range(0, amount - 1)) {
-            total -= 1;
-            ignore tree.remove(total)
-        }
+    func update(key : Nat, value: Nat) {
+        tree.put(key, value);
     };
 
-    func clear() {
-        Prim.debugPrint("RB tree clear");
-        tree := RBBase.RBTree<Nat, Nat>(NatBase.compare);
-        total := 0
+    func delete(key : Nat) {
+        ignore tree.remove(key);
     };
 
-    let script = [
-        ( 20, func() { populate(10_000) } ),
-        ( 5, func() { retrieve() } ),
-        ( 10, func() { discard(10_000) } ),
-        ( 5, func() { retrieve() } ),
-        ( 10, func() { populate(10_000) } ),
-        ( 1, func() { clear() } ),
-        ( 20, func() { populate(10_000) } ),
-        ( 5, func() { retrieve() } )
-    ];
+    let benchmark = MapBenchmark.MapBenchmark(
+        "RBTree",
+        {
+            put;
+            get;
+            update;
+            delete;
+        },
+    );
 
-    public shared func run(): async Text {
-        Prim.debugPrint("RB tree benchmark");
-        await* Benchmark.measure(script)
+    public func run() : async Text {
+        await benchmark.run();
     };
-
-    public shared func limitTest(): async (Nat, Runtime.Statistics) {
-        let amount = 10_000;
-        Prim.debugPrint("RB tree limit test " # debug_show(amount));
-        populate(amount);
-        (amount, Runtime.collectStatistics())
-    }
-}
+};

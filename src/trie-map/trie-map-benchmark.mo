@@ -1,67 +1,42 @@
-import Prim "mo:prim";
-import Iter "mo:base/Iter";
-import TrieMapBase "mo:base/TrieMap";
-import NatBase "mo:base/Nat";
-import Benchmark "../benchmark";
-import Runtime "../runtime";
+import Nat "mo:base/Nat";
+import MapBenchmark "../map-benchmark";
+import Debug "mo:base/Debug";
+import TrieMap "mo:base/TrieMap";
+import Hash "mo:base/Hash";
 
 actor {
-    let trie = TrieMapBase.TrieMap<Nat, Nat>(NatBase.equal, Prim.natToNat32);
+    let map = TrieMap.TrieMap<Nat, Nat>(Nat.equal, Hash.hash);
 
-    var total = 0;
-
-    func populate(amount: Nat) {
-        Prim.debugPrint("Trie map populate " # debug_show(amount));
-        for (count in Iter.range(0, amount - 1)) {
-            trie.put(total, total);
-            total += 1
-        }
+    func put(key : Nat, value : Nat) {
+        map.put(key, value);
     };
 
-    func retrieve() {
-        Prim.debugPrint("Trie map retrieve " # debug_show(total));
-        for (count in Iter.range(0, total - 1)) {
-            let result = trie.get(count);
-            assert(result == ?count)
-        }
-    };
-
-    func discard(amount: Nat) {
-        Prim.debugPrint("Trie map discard " # debug_show(amount));
-        for (count in Iter.range(0, amount - 1)) {
-            total -= 1;
-            ignore trie.remove(total)
-        }
-    };
-
-    func deleteAll() {
-        Prim.debugPrint("Trie map delete all");
-        for ((key, value) in trie.entries()) {
-            trie.delete(key)
+    func get(key : Nat) : Nat {
+        switch (map.get(key)) {
+            case null Debug.trap("Missing key");
+            case (?value) value;
         };
-        total := 0
     };
 
-    let script = [
-        ( 20, func() { populate(10_000) } ),
-        ( 5, func() { retrieve() } ),
-        ( 10, func() { discard(10_000) } ),
-        ( 5, func() { retrieve() } ),
-        ( 10, func() { populate(10_000) } ),
-        ( 1, func() { deleteAll() } ),
-        ( 20, func() { populate(10_000) } ),
-        ( 5, func() { retrieve() } )
-    ];
-
-    public shared func run(): async Text {
-        Prim.debugPrint("Trie map benchmark");
-        await* Benchmark.measure(script)
+    func update(key: Nat, value: Nat) {
+        map.put(key, value);
     };
 
-    public shared func limitTest(): async (Nat, Runtime.Statistics) {
-        let amount = 2_500;
-        Prim.debugPrint("Trie map limit test " # debug_show(amount));
-        populate(amount);
-        (amount, Runtime.collectStatistics())
-    }
-}
+    func delete(key : Nat) {
+        map.delete(key);
+    };
+
+    let benchmark = MapBenchmark.MapBenchmark(
+        "Trie",
+        {
+            put;
+            get;
+            update;
+            delete;
+        },
+    );
+
+    public func run() : async Text {
+        await benchmark.run();
+    };
+};

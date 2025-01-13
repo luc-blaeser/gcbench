@@ -1,58 +1,32 @@
-import Prim "mo:prim";
-import Iter "mo:base/Iter";
+import Nat "mo:base/Nat";
 import Buffer "mo:base/Buffer";
-import Benchmark "../benchmark";
-import Runtime "../runtime";
+import ListBenchmark "../list-benchmark";
 
 actor {
-    let buffer = Buffer.Buffer<Nat>(8);
+    let list = Buffer.Buffer<Nat>(4);
 
-    func populate(amount: Nat) {
-        Prim.debugPrint("Buffer populate " # debug_show(amount));
-        for (count in Iter.range(0, amount - 1)) {
-            buffer.add(count)
-        }
+    func add(value: Nat) {
+        list.add(value);
     };
 
-    func traverse() {
-        Prim.debugPrint("Buffer traverse " # debug_show(buffer.size()));
-        for (value in buffer.vals()) {
-            ignore value
-        }
+    func get(index: Nat) : Nat {
+        list.get(index);
     };
 
-    func discard(amount: Nat) {
-        Prim.debugPrint("Buffer discard " # debug_show(amount));
-        for (count in Iter.range(0, amount - 1)) {
-            ignore buffer.removeLast()
-        }
+    func set(index: Nat, value : Nat) {
+        list.put(index, value);
     };
 
-    func clear() {
-        Prim.debugPrint("Buffer clear");
-        buffer.clear()
+    let benchmark = ListBenchmark.ListBenchmark(
+        "Buffer",
+        {
+            add;
+            get;
+            set;
+        },
+    );
+
+    public func run() : async Text {
+        await benchmark.run();
     };
-
-    let script = [
-        ( 50, func() { populate(100_000) } ),
-        ( 10, func() { traverse() } ),
-        ( 25, func() { discard(100_000) } ),
-        ( 10, func() { traverse() } ),
-        ( 25, func() { populate(100_000) } ),
-        ( 1, func() { clear() } ),
-        ( 45, func() { populate(100_000) } ),
-        ( 10, func() { traverse() } )
-    ];
-
-    public shared func run(): async Text {
-        Prim.debugPrint("Buffer benchmark");
-        await* Benchmark.measure(script)
-    };
-
-    public shared func limitTest(): async (Nat, Runtime.Statistics) {
-        let amount = 100_000;
-        Prim.debugPrint("Buffer limit test " # debug_show(amount));
-        populate(amount);
-        (amount, Runtime.collectStatistics())
-    }
-}
+};

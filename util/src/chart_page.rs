@@ -105,11 +105,11 @@ impl ChartPage {
         let mut output = String::new();
         write!(
             output,
-            "<!DOCTYPE html><html><head><title>GC Performance {name} ({gc_type} GC)</title><link rel=\"stylesheet\" href=\"style.css\"/></head>"
+            "<!DOCTYPE html><html><head><title>GC Performance {name} ({gc_type})</title><link rel=\"stylesheet\" href=\"style.css\"/></head>"
         )
         .unwrap();
         output += "<body><script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script><script src=\"display.js\"></script>";
-        write!(output, "<h1>{name} ({gc_type} GC)</h1>").unwrap();
+        write!(output, "<h1>{name} ({gc_type})</h1>").unwrap();
         output += "<div id=\"menu\">";
         output +=
             "<form id=\"animation\" action=\"#\"><button type=\"submit\">Animate</button></form>";

@@ -1,58 +1,32 @@
-import Prim "mo:prim";
-import Buffer "ScalableBuffer";
-import Iter "mo:base/Iter";
-import Benchmark "../benchmark";
-import Runtime "../runtime";
+import Nat "mo:base/Nat";
+import ListBenchmark "../list-benchmark";
+import ScalableBuffer "scalable-buffer";
 
 actor {
-    let buffer = Buffer.ScalableBuffer<Nat>();
+    let list = ScalableBuffer.ScalableBuffer<Nat>();
 
-    func populate(amount: Nat) {
-        Prim.debugPrint("Scalable buffer populate " # debug_show(amount));
-        for (count in Iter.range(0, amount - 1)) {
-            buffer.add(count)
-        }
+    func add(value: Nat) {
+        list.add(value);
     };
 
-    func traverse() {
-        Prim.debugPrint("Scalable buffer traverse " # debug_show(buffer.size()));
-        for (value in buffer.vals()) {
-            ignore value
-        }
+    func get(index: Nat) : Nat {
+        list.get(index);
     };
 
-    func discard(amount: Nat) {
-        Prim.debugPrint("Scalable buffer discard " # debug_show(amount));
-        for (count in Iter.range(0, amount - 1)) {
-            ignore buffer.removeLast()
-        }
+    func set(index: Nat, value : Nat) {
+        list.set(index, value);
     };
 
-    func clear() {
-        Prim.debugPrint("Scalable buffer clear");
-        buffer.clear()
+    let benchmark = ListBenchmark.ListBenchmark(
+        "Scalable Buffer",
+        {
+            add;
+            get;
+            set;
+        },
+    );
+
+    public func run() : async Text {
+        await benchmark.run();
     };
-
-    let script = [
-        ( 50, func() { populate(100_000) } ),
-        ( 10, func() { traverse() } ),
-        ( 25, func() { discard(100_000) } ),
-        ( 10, func() { traverse() } ),
-        ( 25, func() { populate(100_000) } ),
-        ( 1, func() { clear() } ),
-        ( 45, func() { populate(100_000) } ),
-        ( 10, func() { traverse() } )
-    ];
-
-    public shared func run(): async Text {
-        Prim.debugPrint("Scalable buffer benchmark");
-        await* Benchmark.measure(script)
-    };
-
-    public shared func limitTest(): async (Nat, Runtime.Statistics) {
-        let amount = 100_000;
-        Prim.debugPrint("Scalable buffer limit test " # debug_show(amount));
-        populate(amount);
-        (amount, Runtime.collectStatistics())
-    }
-}
+};
